@@ -1,11 +1,14 @@
 ---------------------------------------------------------------------------
--- Config Options **EDIT THESE**
+-- Reading Config options from config.json
 ---------------------------------------------------------------------------
-local communityID = ""
-local apiKey = ""
-local apiURL = 'https://sonorancad.com/api/emergency'
-local postTime = 5000 --Recommended to stay above 5000ms
+local loadFile = LoadResourceFile(GetCurrentResourceName(), "./config.json")
+local config = {}
+config = json.decode(loadFile)
 
+local communityID = config.communityId
+local apiKey = config.apiKey
+local apiURL = config.apiUrl
+local postTime = config.locationPostTime  -- Lowering this value will result in rate limiting, must be > 5000
 ---------------------------------------------------------------------------
 -- Server Event Handling **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
 ---------------------------------------------------------------------------
@@ -76,4 +79,26 @@ AddEventHandler('cadSendLocation', function(steamHex, currentLocation)
         -- Location does not exist in pending array -> Insert new location object
         table.insert(LocationCache, {['apiId'] = steamHex, ['location'] = currentLocation})
     end
+end)
+
+---------------------------------------------------------------------------
+-- Do stuff with data from listener :)
+---------------------------------------------------------------------------
+function dump(o)
+    if type(o) == 'table' then
+        local s = '{ '
+        for k,v in pairs(o) do
+        if type(k) ~= 'number' then k = '"'..k..'"' end
+        s = s .. '['..k..'] = ' .. dump(v) .. ','
+        end
+        return s .. '} '
+    else
+        return tostring(o)
+    end
+end
+
+RegisterServerEvent('recieveListenerData')
+AddEventHandler('recieveListenerData', function(data)
+    print('TRIGGERED LUA EVENT! :)')
+    print(dump(data))
 end)

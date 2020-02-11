@@ -1,8 +1,11 @@
 ---------------------------------------------------------------------------
--- Config Options
+-- Reading Config options from config.json
 ---------------------------------------------------------------------------
-local checkTime = "1000" -- Location check time in milliseconds
+--[[ local loadFile = LoadResourceFile(GetCurrentResourceName(), "./config.json")
+local config = {}
+config = json.decode(loadFile) ]]
 
+local checkTime = 1000 -- Location check time in milliseconds
 
 ---------------------------------------------------------------------------
 -- Client Event Handling **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
@@ -16,6 +19,7 @@ end)
         -- Unit Location Update
         ---------------------------------
 Citizen.CreateThread(function()
+    -- print(checkTime)
     while true do
         local pos = GetEntityCoords(PlayerPedId())
         local var1, var2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z, Citizen.ResultAsInteger(), Citizen.ResultAsInteger())
