@@ -1,0 +1,50 @@
+# SonoranCAD FiveM Integration
+
+This Integration functions to send player data from FiveM to the SonoranCAD API.
+
+## How to install
+
+Download the ZIP file. And extract the contents into `resources/sonorancad/`.
+
+Add the following to your server.cfg file.
+
+```
+set socket_port 30121
+set livemap_debug "warn" # "[all]" 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'off'
+set blip_file "server/blips.json"
+set livemap_access_control "*"
+
+start sonorancad
+```
+
+To get the in-game blips to show on the live map interface, you will need to generate a "blips" file.
+This can be easily done with the in-game command `blips generate` (must be ran as admin).
+
+## Configuration
+
+### Config.json
+The following options in the config.json file are available for you to change
+
+| Name                    | Type           | Default Value       | Description |
+| ----------------------- | -------------  | ------------------: | ----------- |
+| communitiyId            | string         | ""                  | REQUIRED: Set this to your Community ID found on [SonoranCad's Community Admin Panel](https://sonorancad.com/#/community/admin) |
+| apiKey                  | string         | ""                  | REQUIRED: Set this to your API Key found on [SonoranCad's Community Admin Panel](https://sonorancad.com/#/community/admin)  |
+| apiUrl                  | string         | "https://sonorancad.com/api/emergency" | This is already set to the default API URL for all SonoranCAD API communications |
+| locationPostTime        | int            | 5000                | Lowering this value will result in rate limiting by SonoranCAD, must be higher than 5000 miliseconds |
+| locationCheckTime       | int            | 1000                | This value controls the amount of time between each player's client checking for a change to their last reported location. It is not needed to lower or increase this value and doing so may result in worse performance or longer periods of time before SonoranCAD shows updates for units. |
+
+### Convars
+The following convars are available for you to change
+
+| Name                    | Type           | Default Value       | Description |
+| ----------------------- | -------------  | ------------------: | ----------- |
+| socket_port             | int            | 30121               | Sets the port the socket server should listen on |
+| livemap_debug           | int            | 0                   | Sets how much information gets printed to the console (0 = none, 1 = basic information, 2 = all) |
+| blip_file               | string         | "server/blips.json" | Sets the file that will contain the generated blips that is exposed via HTTP |
+| livemap_access_control  | string         | "*"                 | Sets the domain that is allowed to access the blips.json file (E.g. "https://example.com" will only allow the UI on http://example.com to get the blips), "*" will allow everyone |
+
+## Built with
+* [THRHavoc/live_map](https://github.com/TGRHavoc/live_map)
+* [Hellslicer/WebSocketServer](https://github.com/Hellslicer/WebSocketServer/blob/master/WebSocketEventListener.cs)
+* [deniszykov/WebSocketListener](https://github.com/deniszykov/WebSocketListener)
+* [JamesNK/Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
