@@ -17,6 +17,8 @@ set livemap_access_control "*"
 start sonorancad
 ```
 
+Configure the config.json file for your SonoranCAD Community. A table on the "REQUIRED" changes can be found below...
+
 To get the in-game blips to show on the live map interface, you will need to generate a "blips" file.
 This can be easily done with the in-game command `blips generate` (must be ran as admin).
 
