@@ -4,7 +4,7 @@ This Integration functions to send player data from FiveM to the SonoranCAD API.
 
 ## How to install
 
-Download the ZIP file. And extract the contents into `resources/sonorancad/`.
+Download the [ZIP file](https://github.com/SonoranBrian/SonoranCADLuaIntegration/archive/master.zip). And extract the contents into `resources/sonorancad/`.
 
 Add the following to your server.cfg file.
 
