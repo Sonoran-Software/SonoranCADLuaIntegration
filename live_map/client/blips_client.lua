@@ -20,7 +20,7 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
     A utility event that is triggered from the server to generate the blips.
     This will get all the blips that are shown on the map.
 ]]
-RegisterNetEvent("livemap:getBlipsFromClient")
+RegisterNetEvent("sonorancad:livemap:getBlipsFromClient")
 
 local blip_types = {
     1,16,36,38,40,43,47,50,51,52,
@@ -33,7 +33,7 @@ local blip_types = {
     400,401,402,403,404,405,408,409,410,411,415,419,420,421,426,427,428,430,431,432,434
 }
 
-AddEventHandler("livemap:getBlipsFromClient", function()
+AddEventHandler("sonorancad:livemap:getBlipsFromClient", function()
     Citizen.Trace("Generating blip table.. This may take a while for a large amount of blips")
     local blipTable = {}
 
@@ -60,7 +60,7 @@ AddEventHandler("livemap:getBlipsFromClient", function()
     end
 
     Citizen.Trace("Generated the blips!")
-    TriggerServerEvent("livemap:blipsGenerated", blipTable)
+    TriggerServerEvent("sonorancad:livemap:blipsGenerated", blipTable)
 end)
 
 RegisterCommand("blip", function(source, args, raw)
@@ -98,12 +98,12 @@ RegisterCommand("blip", function(source, args, raw)
             description = description
         }
 
-        TriggerServerEvent("livemap:AddBlip", blip)
+        TriggerServerEvent("sonorancad:livemap:AddBlip", blip)
 
     elseif(args[1] == "remove") then
         local pos = GetEntityCoords(PlayerPedId(), not IsPlayerDead(PlayerId()))
         
-        TriggerServerEvent("livemap:RemoveClosestBlip", {x = pos.x, y = pos.y, z = pos.z})
+        TriggerServerEvent("sonorancad:livemap:RemoveClosestBlip", {x = pos.x, y = pos.y, z = pos.z})
 
     elseif(args[1] == "update") then
 
