@@ -4,9 +4,9 @@ This Integration functions to send player data from FiveM to the SonoranCAD API.
 
 ## How to install
 
-Download the [ZIP file](https://github.com/SonoranBrian/SonoranCADLuaIntegration/archive/master.zip). And extract the contents into `resources/sonorancad/`.
+1. Download the [ZIP file](https://github.com/SonoranBrian/SonoranCADLuaIntegration/archive/master.zip). And extract the contents into `resources/sonorancad/`.
 
-Add the following to your server.cfg file.
+2. Add the following to your server.cfg file.
 
 ```
 set socket_port 30121
@@ -17,9 +17,9 @@ set livemap_access_control "*"
 start sonorancad
 ```
 
-Configure the config.json file for your SonoranCAD Community. A table on the "REQUIRED" changes can be found below...
+3. Configure the config.json file for your SonoranCAD Community. A table on the "REQUIRED" changes can be found below...
 
-To get the in-game blips to show on the live map interface, you will need to generate a "blips" file.
+4. To get the in-game blips to show on the live map interface, you will need to generate a "blips" file.
 This can be easily done with the in-game command `blips generate` (must be ran as admin).
 
 ## Configuration
