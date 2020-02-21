@@ -31,7 +31,7 @@ http.createServer(function (req, res) {
 	    const body = JSON.parse(chunk.toString());
       if (body.key === config.apiKey) {
         response = 'Success!';
-        emit('recieveListenerData', body);
+        emit('sonorancad:recieveListenerData', body);
       } else {
         response = 'Invalid API Key!';
       }

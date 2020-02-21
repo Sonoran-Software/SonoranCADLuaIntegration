@@ -110,7 +110,7 @@ const BlipController = (SocketController) => {
         }
     });
 
-    onNet("livemap:blipsGenerated", (blipTable) => {
+    onNet("sonorancad:livemap:blipsGenerated", (blipTable) => {
         let playerIdentifier = GetPlayerIdentifier(source, 0);
         if (playerWhoGeneratedBlips === null || playerWhoGeneratedBlips !== playerIdentifier){
             log.warn("playerWhoGeneratedBlips doesn't match... Not using the blips recieved");
@@ -121,7 +121,7 @@ const BlipController = (SocketController) => {
         saveBlips();
     });
 
-    onNet("livemap:AddBlip", (blip) => {
+    onNet("sonorancad:livemap:AddBlip", (blip) => {
         if (!validBlip(blip)){
             return;
         }
@@ -153,7 +153,7 @@ const BlipController = (SocketController) => {
         SocketController.AddBlip(sprite, blip);
     });
 
-    onNet("livemap:UpdateBlip", (blip) => {
+    onNet("sonorancad:livemap:UpdateBlip", (blip) => {
         if(!validBlip(blip)){
             return;
         }
@@ -183,7 +183,7 @@ const BlipController = (SocketController) => {
         }
     });
 
-    onNet("livemap:RemoveBlip", (blip) => {
+    onNet("sonorancad:livemap:RemoveBlip", (blip) => {
         if (!validBlip(blip)){
             return;
         }
@@ -208,7 +208,7 @@ const BlipController = (SocketController) => {
         }
     });
 
-    onNet("livemap:RemoveClosestBlip", (playerPos) => {
+    onNet("sonorancad:livemap:RemoveClosestBlip", (playerPos) => {
         let closest, sprite, currentBest;
         for (let spriteId in blips){
             blips[spriteId].forEach(blip => {
@@ -248,7 +248,7 @@ const BlipController = (SocketController) => {
         if (args[0] === "generate") {
             playerWhoGeneratedBlips = playerIdentifier;
             log.warn("Generating blips using the in-game natives: Player %s is generating them.", playerIdentifier);
-            emitNet("livemap:getBlipsFromClient", src);
+            emitNet("sonorancad:livemap:getBlipsFromClient", src);
         }
     }, true);
     

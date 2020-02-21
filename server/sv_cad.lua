@@ -32,10 +32,10 @@ local postTime = config.locationPostTime  -- Lowering this value will result in 
 ---------------------------------------------------------------------------
 
 -- Return client SteamHex request
-RegisterServerEvent("GetSteamHex")
-AddEventHandler("GetSteamHex", function(srscsd)
+RegisterServerEvent("sonorancad:GetSteamHex")
+AddEventHandler("sonorancad:GetSteamHex", function(srscsd)
     local steamHex = GetPlayerIdentifier(srscsd, 0)
-    TriggerClientEvent('ReturnSteamHex', srscsd, steamHex)
+    TriggerClientEvent('sonorancad:ReturnSteamHex', srscsd, steamHex)
 end)
 
         ---------------------------------
@@ -43,8 +43,8 @@ end)
         ---------------------------------
  
 -- Client Panic request
-RegisterServerEvent('cadSendPanicApi')
-AddEventHandler('cadSendPanicApi', function(steamHex, currentLocation)
+RegisterServerEvent('sonorancad:cadSendPanicApi')
+AddEventHandler('sonorancad:cadSendPanicApi', function(steamHex, currentLocation)
     PerformHttpRequest(apiURL, function(statusCode, res, headers) 
     end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'UNIT_PANIC', ['data'] = {{ ['isPanic'] = true, ['apiId'] = steamHex}}}), {["Content-Type"]="application/json"})
 end)
@@ -86,8 +86,8 @@ local function findIndex(steamHex)
 end
 
 -- Event from client when location changes occur
-RegisterServerEvent('cadSendLocation')
-AddEventHandler('cadSendLocation', function(steamHex, currentLocation)
+RegisterServerEvent('sonorancad:cadSendLocation')
+AddEventHandler('sonorancad:cadSendLocation', function(steamHex, currentLocation)
     -- Does this client location already exist in the pending location array?
     local index = findIndex(steamHex)
     if index then
@@ -115,8 +115,23 @@ function dump(o)
     end
 end
 
+function getPlayerSource(identifier)
+    local activePlayers = GetActivePlayers();
+    for i,player in pairs(activePlayers) do
+        if GetPlayerIdentifier(player) == identifier then
+            print("found player " .. tostring(i) .. " by identifier " .. identifier)
+            return i
+        end
+    end
+    print("ERROR: Could not find player with identifier " .. identifier)
+end
+
 RegisterServerEvent('recieveListenerData')
-AddEventHandler('recieveListenerData', function(data)
+AddEventHandler('recieveListenerData', function(call)
     print('TRIGGERED LUA EVENT! :)')
-    print(dump(data))
+    print(dump(call))
+    if call.type == "UNIT_UPDATE" then
+        targetPlayer = getPlayerSource(call.data.apiId)
+        TriggerClientEvent('sonorancad:livemap:unitUpdate', targetPlayer, call.data)
+    end
 end)
