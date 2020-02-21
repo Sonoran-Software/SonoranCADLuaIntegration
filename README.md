@@ -29,11 +29,13 @@ The following options in the config.json file are available for you to change
 
 | Name                    | Type           | Default Value       | Description |
 | ----------------------- | -------------  | ------------------: | ----------- |
-| communitiyId            | string         | ""                  | REQUIRED: Set this to your Community ID found on [SonoranCad's Community Admin Panel](https://sonorancad.com/#/community/admin) |
-| apiKey                  | string         | ""                  | REQUIRED: Set this to your API Key found on [SonoranCad's Community Admin Panel](https://sonorancad.com/#/community/admin)  |
+| communitiyId            | string         | ""                  | REQUIRED: Set this to your Community ID found on SonoranCAD's Community Admin Panel (pictured below) |
+| apiKey                  | string         | ""                  | REQUIRED: Set this to your API Key found on SonoranCAD's Community Admin Panel (pictured below)  |
 | apiUrl                  | string         | "https://sonorancad.com/api/emergency" | This is already set to the default API URL for all SonoranCAD API communications |
 | locationPostTime        | int            | 5000                | Lowering this value will result in rate limiting by SonoranCAD, must be higher than 5000 miliseconds |
 | locationCheckTime       | int            | 1000                | This value controls the amount of time between each player's client checking for a change to their last reported location. It is not needed to lower or increase this value and doing so may result in worse performance or longer periods of time before SonoranCAD shows updates for units. |
+
+![SonoranCAD Community Admin Panel Instructions](https://sonoransoftware.com/tutorials/sonorancad/images/integration_api_keys.png "Get your Community ID and apiKey here")
 
 ### Convars
 The following convars are available for you to change
