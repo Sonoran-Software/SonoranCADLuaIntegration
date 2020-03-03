@@ -18,8 +18,8 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 
 resource_manifest_version '44febabe-d386-4d18-afbe-5e627f4af937'
 
--- dependency "yarn"
--- dependency "webpack"
+dependency "yarn"
+dependency "webpack"
 webpack_config "webpack.config.js"
 
 client_scripts{
