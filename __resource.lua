@@ -48,8 +48,9 @@ server_scripts {
     "dist/livemap.js",
 
     -- CAD Integration
+    '@mysql-async/lib/MySQL.lua',
     "server/sv_update_check.lua",
     "server/sv_cad.lua",
     "server/sv_esx.lua",
     "server/sv_listener.js"
-}
+resource_manifest_version '44febabe-d386-4d18-afbe-5e627f4af937'
