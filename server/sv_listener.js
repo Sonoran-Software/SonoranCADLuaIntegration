@@ -28,9 +28,12 @@ http.createServer(function (req, res) {
 
   if (req.method == 'POST') {
     req.on('data', function(chunk) {
-	    const body = JSON.parse(chunk.toString());
+      console.log('recieved post request!');
+      const body = JSON.parse(chunk.toString());
+      // console.log(body);
       if (body.key === config.apiKey) {
         response = 'Success!';
+        console.log('Successful authentication of api key!');
         emit('sonorancad:recieveListenerData', body);
       } else {
         response = 'Invalid API Key!';

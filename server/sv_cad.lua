@@ -1,6 +1,6 @@
 --[[
         SonoranCAD FiveM - A SonoranCAD integration for FiveM servers
-         Copyright (C) 2020  Sonoran Software
+         Copyright (C) 2020  Sonoran Software Systems LLC
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -116,18 +116,20 @@ function dump(o)
 end
 
 function getPlayerSource(identifier)
-    local activePlayers = GetActivePlayers();
+    local activePlayers = GetPlayers();
+    print(dump(activePlayers))
     for i,player in pairs(activePlayers) do
-        if GetPlayerIdentifier(player) == identifier then
-            print("found player " .. tostring(i) .. " by identifier " .. identifier)
-            return i
+        print('player ' .. tostring(player) .. ' - ' .. GetPlayerIdentifier(player))
+        if GetPlayerIdentifier(player) == string.lower(identifier) then
+            print("found player " .. tostring(player) .. " by identifier " .. identifier)
+            return player
         end
     end
     print("ERROR: Could not find player with identifier " .. identifier)
 end
 
-RegisterServerEvent('recieveListenerData')
-AddEventHandler('recieveListenerData', function(call)
+RegisterServerEvent('sonorancad:recieveListenerData')
+AddEventHandler('sonorancad:recieveListenerData', function(call)
     print('TRIGGERED LUA EVENT! :)')
     print(dump(call))
     if call.type == "UNIT_UPDATE" then
@@ -135,3 +137,5 @@ AddEventHandler('recieveListenerData', function(call)
         TriggerClientEvent('sonorancad:livemap:unitUpdate', targetPlayer, call.data)
     end
 end)
+
+-- 11000010499f33c 

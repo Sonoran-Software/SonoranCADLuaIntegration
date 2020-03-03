@@ -1,7 +1,7 @@
 {
-    "name": "fivem-live_map",
+    "name": "fivem-live_map-sonorancad",
     "version": "2.3.4",
-    "description": "The FiveM resource to get Havoc's LiveMap working#",
+    "description": "The FiveM resource to get Havoc's LiveMap working with SonoranCAD's livemap integration",
     "main": "index.js",
     "scripts": {
         "lint": "eslint ./src/**/*",
@@ -9,14 +9,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/TGRHavoc/live_map.git"
+        "url": "git+https://github.com/Sonoran-Software/SonoranCADLuaIntegration.git"
     },
     "author": "Havoc",
     "license": "GPL-3.0",
     "bugs": {
-        "url": "https://github.com/TGRHavoc/live_map/issues"
+        "url": "https://github.com/Sonoran-Software/SonoranCADLuaIntegration/issues"
     },
-    "homepage": "https://github.com/TGRHavoc/live_map#readme",
+    "homepage": "https://github.com/Sonoran-Software/SonoranCADLuaIntegration#readme",
     "dependencies": {
         "koa": "^2.7.0",
         "koa-body": "^4.1.0",

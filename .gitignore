@@ -1,17 +1,17 @@
 config.json
 
-live_map/server/blips\.json
+server/blips\.json
 
-live_map/OLD/
+OLD/
 
-live_map/GitVersion\.yml
+GitVersion\.yml
 
-live_map/generate-changes\.bat
+generate-changes\.bat
 
-live_map/.changelog.rc
-live_map/changelog.py
+.changelog.rc
+changelog.py
 
-live_map/node_modules/
+node_modules/
 
-live_map/dist/livemap.js
-live_map/yarn.lock
+dist/livemap.js
+yarn.lock

@@ -19,7 +19,7 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 ---------------------------------------------------------------------------
 -- Update Checker
 ---------------------------------------------------------------------------
-local url = "https://raw.githubusercontent.com/SonoranBrian/SonoranCADLuaIntegration/master/version.json"
+local url = "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/master/version.json"
 local version = "1.1.0"
 local latest = true
 
@@ -37,12 +37,12 @@ function checkForUpdate()
         local parsed = json.decode(data)
 
         if (parsed["resource"] ~= version) then
-            print("|=======================================================================|")
-            print("|                      SonoranCAD Update Available                      |")
-            print("|                         Current : " .. version .. "                               |")
-            print("|                         Latest  : " .. parsed["resource"] .. "                               |")
-            print("| Download at: https://github.com/SonoranBrian/SonoranCADLuaIntegration |")
-            print("|=======================================================================|")
+            print("|===========================================================================|")
+            print("|                        SonoranCAD Update Available                        |")
+            print("|                           Current : " .. version .. "                                 |")
+            print("|                           Latest  : " .. parsed["resource"] .. "                                 |")
+            print("| Download at: https://github.com/Sonoran-Software/SonoranCADLuaIntegration |")
+            print("|===========================================================================|")
             latest = false -- Stop running the timeout
         end
 

@@ -78,6 +78,7 @@ end
 RegisterNetEvent('sonorancad:characterUpdated')
 AddEventHandler('sonorancad:characterUpdated', function(data)
     -- Fired when ESX_Identity changes character, should recheck job and char info
+    
 end)
 
 function dump(o)
