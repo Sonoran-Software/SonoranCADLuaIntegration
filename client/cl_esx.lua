@@ -38,7 +38,6 @@ end)
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
   PlayerData = xPlayer
-  print(ESX.DumpTable(PlayerData))
 end)
 
 RegisterNetEvent('esx:setJob')
@@ -74,28 +73,3 @@ function GetIdentity(callback, target)
     end
     callback(recievedIdentity)
 end
-
-RegisterNetEvent('sonorancad:characterUpdated')
-AddEventHandler('sonorancad:characterUpdated', function(data)
-    -- Fired when ESX_Identity changes character, should recheck job and char info
-    
-end)
-
-function dump(o)
-    if type(o) == 'table' then
-        local s = '{ '
-        for k,v in pairs(o) do
-        if type(k) ~= 'number' then k = '"'..k..'"' end
-        s = s .. '['..k..'] = ' .. dump(v) .. ','
-        end
-        return s .. '} '
-    else
-        return tostring(o)
-    end
-end
-
-RegisterCommand('test', function()
-    PlayerData = ESX.GetPlayerData()
-    PlayerData.inventory = nil
-    print(dump(PlayerData))
-end)

@@ -19,7 +19,14 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 ---------------------------------------------------------------------------
 -- Client Data Processing for Live Map Blip
 ---------------------------------------------------------------------------
-local playerBlipData = {
+local playerBlipData = {}
+local standalonePlayerBlipData = {
+    ["pos"] = { x=0, y=0, z=0 },
+    ["icon"] = 6, -- Curent player blip id
+    ["iconcolor"] = 0, -- Blip Color
+    ["name"] = "NOT SET"
+}
+local esxPlayerBlipData = {
     ["pos"] = { x=0, y=0, z=0 },
     ["icon"] = 6, -- Curent player blip id
     ["iconcolor"] = 0, -- Blip Color, Used to show job type
@@ -36,18 +43,6 @@ function updateData(name, value)
     print("updated data: " .. name .. " - " .. dump(value))
     table.insert(beenUpdated, name)
     playerBlipData[name] = value
-end
-
-function getCharName()
-    local pid = GetPlayerServerId(player)
-    local identity = nil
-    GetIdentity(function(data)
-        if data == nil then 
-            print("ERROR: Failed to obtain character name!")
-            return 
-        end
-        playerBlipData.name = returnedIdentity.firstname .. " " .. returnedIdentity.lastname
-    end, pid)
 end
 
 RegisterNetEvent('sonorancad:livemap:unitUpdate')
@@ -68,6 +63,14 @@ AddEventHandler('sonorancad:livemap:unitUpdate', function(data)
     end
 end)
 
+serverType = nil
+jobsTracked = nil
+RegisterNetEvent('sonorancad:returnConfig')
+AddEventHandler('sonorancad:returnConfig', function(data)
+    serverType = data.serverType
+    jobsTracked = data.jobsTracked
+end)
+
 local firstSpawn = true
 --[[
     When the player spawns, make sure we set their ID in the data that is going
@@ -75,7 +78,21 @@ local firstSpawn = true
 ]]
 AddEventHandler("playerSpawned", function(spawn)
     if firstSpawn then
-        TriggerServerEvent("sonorancad:livemap:playerSpawned") -- Set's the ID in "playerData" so it will get send va sockets
+        TriggerServerEvent("sonorancad:getConfig")
+        local timeStamp = GetGameTimer()
+        while serverType == nil do
+            --print('waiting for callback')
+            Citizen.Wait(1)
+        end
+        if serverType == 'standalone' then
+            playerBlipData = standalonePlayerBlipData
+        else if serverType == 'esx' then
+            playerBlipData = esxPlayerBlipData
+            while playerData == {} then
+                Citizen.SetTimeout(10)
+            end
+        end
+        TriggerServerEvent("sonorancad:livemap:playerSpawned") -- Set's the ID in "playerData" so it will get sent via sockets
 
         -- Now send the default data set
         for key,val in pairs(playerBlipData) do
@@ -86,28 +103,56 @@ AddEventHandler("playerSpawned", function(spawn)
     end
 end)
 
+function IsTrackedEmployee()
+    for i,job in pairs(jobsTracked) do
+        if playerData.job == job then
+            return true
+        end
+    end
+    return false
+end
+
 ---------------------------------------------------------------------------
 -- Thread that checks for data updates and updates server
 ---------------------------------------------------------------------------
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(10)
-        if NetworkIsPlayerActive(PlayerId()) then
-            -- Update position, if it has changed
-            local x,y,z = table.unpack(GetEntityCoords(PlayerPedId()))
-            local x1,y1,z1 = playerBlipData["pos"].x, playerBlipData["pos"].y, playerBlipData["pos"].z
+        if NetworkIsPlayerActive(PlayerId()) and not firstSpawn then
+            if serverType == 'esx' and IsTrackedEmployee() then
+                -- Update position, if it has changed
+                local x,y,z = table.unpack(GetEntityCoords(PlayerPedId()))
+                local x1,y1,z1 = playerBlipData["pos"].x, playerBlipData["pos"].y, playerBlipData["pos"].z
 
-            local dist = Vdist(x, y, z, x1, y1, z1)
+                local dist = Vdist(x, y, z, x1, y1, z1)
 
-            if (dist >= 5) then
-                -- Update every 5 meters.. Let's reduce the amount of spam
-                updateData("pos", {x = x, y=y, z=z})
-            end
-            -- Make sure the updated data is up-to-date on socket server as well
-            for i,k in pairs(beenUpdated) do
-                --Citizen.Trace("Updating " .. k)
-                TriggerServerEvent("sonorancad:livemap:UpdatePlayerData", k, playerBlipData[k])
-                table.remove(beenUpdated, i)
+                if (dist >= 5) then
+                    -- Update every 5 meters.. Let's reduce the amount of spam
+                    updateData("pos", {x = x, y=y, z=z})
+                end
+                -- Make sure the updated data is up-to-date on socket server as well
+                for i,k in pairs(beenUpdated) do
+                    --Citizen.Trace("Updating " .. k)
+                    TriggerServerEvent("sonorancad:livemap:UpdatePlayerData", k, playerBlipData[k])
+                    table.remove(beenUpdated, i)
+                end
+            else if serverType == 'standalone'
+                -- Update position, if it has changed
+                local x,y,z = table.unpack(GetEntityCoords(PlayerPedId()))
+                local x1,y1,z1 = playerBlipData["pos"].x, playerBlipData["pos"].y, playerBlipData["pos"].z
+
+                local dist = Vdist(x, y, z, x1, y1, z1)
+
+                if (dist >= 5) then
+                    -- Update every 5 meters.. Let's reduce the amount of spam
+                    updateData("pos", {x = x, y=y, z=z})
+                end
+                -- Make sure the updated data is up-to-date on socket server as well
+                for i,k in pairs(beenUpdated) do
+                    --Citizen.Trace("Updating " .. k)
+                    TriggerServerEvent("sonorancad:livemap:UpdatePlayerData", k, playerBlipData[k])
+                    table.remove(beenUpdated, i)
+                end
             end
         end
     end

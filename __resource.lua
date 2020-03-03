@@ -24,7 +24,7 @@ webpack_config "webpack.config.js"
 
 client_scripts{
     -- Live_Map
-    "client/client.lua",
+    "client/cl_livemap.lua",
     "client/reverse_weapon_hashes.lua",
     "client/reverse_car_hashes.lua",
     "client/reverse_location_hashes.lua",
@@ -53,4 +53,4 @@ server_scripts {
     "server/sv_cad.lua",
     "server/sv_esx.lua",
     "server/sv_listener.js"
-resource_manifest_version '44febabe-d386-4d18-afbe-5e627f4af937'
+}

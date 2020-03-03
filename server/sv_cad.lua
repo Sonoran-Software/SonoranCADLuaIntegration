@@ -17,17 +17,24 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 ]]
 
 ---------------------------------------------------------------------------
--- Reading Config options from config.json
+-- Reading Config options from config.json **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
 ---------------------------------------------------------------------------
 local loadFile = LoadResourceFile(GetCurrentResourceName(), "./config.json")
 local config = {}
 config = json.decode(loadFile)
 
-local communityID = config.communityId
-local apiKey = config.apiKey
+local communityID = config.communityId -- Sonoran CAD Community ID: Admin > Advanced > In-Game Integration > Web API
+local apiKey = config.apiKey -- Sonoran CAD API Key: Admin > Advanced > In-Game Integration > Web API
 local apiURL = config.apiUrl
 local postTime = config.locationPostTime  -- Lowering this value will result in rate limiting, must be > 5000
 local serverType = config.serverType -- Either specify "standalone" or "esx", "standalone" will use your Steam Name as the Caller ID, and "esx" will use "esx-identity" to use your character's name.
+local jobsTracked = config.jobsTracked -- Job names that you want to be tracked on the live map
+
+RegisterServerEvent('sonorancad:getConfig')
+AddEventHandler('sonorancad:getConfig', function(source)
+    local clientConfig = {serverType, jobsTracked}
+    TriggerClientEvent('sonorancad:returnConfig', source, clientConfig)
+end)
 ---------------------------------------------------------------------------
 -- Server Event Handling **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
 ---------------------------------------------------------------------------
@@ -105,31 +112,6 @@ AddEventHandler('sonorancad:cadSendLocation', function(source, currentLocation)
         table.insert(LocationCache, {['apiId'] = steamHex, ['location'] = currentLocation})
     end
 end)
-
-        ---------------------------------
-        -- Framework Integration
-        ---------------------------------
-
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
--- Helper function to get the ESX Identity object
-local function getIdentity(source)
-    local identifier = GetPlayerIdentifiers(source)[1]
-    local result = MySQL.Sync.fetchAll("SELECT * FROM users WHERE identifier = @identifier", {['@identifier'] = identifier})
-    if result[1] ~= nil then
-        local identity = result[1]
-
-        return {
-            identifier = identity['identifier'],
-            firstname = identity['firstname'],
-            lastname = identity['lastname'],
-            dateofbirth = identity['dateofbirth'],
-            sex = identity['sex'],
-            height = identity['height']
-        }
-    else
-        return nil
-    end
-end
 
         ---------------------------------
         -- Civilian 911
@@ -216,7 +198,7 @@ AddEventHandler('sonorancad:cadSendCallApi', function(emergency, caller, locatio
     end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = '1', ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}}), {["Content-Type"]="application/json"})
 end)
 ---------------------------------------------------------------------------
--- Do stuff with data from listener :)
+-- SonoranCAD Listener Event Handling (Recieves data from SonoranCAD)
 ---------------------------------------------------------------------------
 function dump(o)
     if type(o) == 'table' then
@@ -253,5 +235,3 @@ AddEventHandler('sonorancad:recieveListenerData', function(call)
         TriggerClientEvent('sonorancad:livemap:unitUpdate', targetPlayer, call.data)
     end
 end)
-
--- 11000010499f33c 

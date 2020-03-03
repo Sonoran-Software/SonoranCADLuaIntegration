@@ -3,5 +3,6 @@
     "apiKey": "",
     "apiUrl": "https://sonorancad.com/api/emergency",
     "locationPostTime": 5000,
-    "locationCheckTime": 1000
+    "serverType": "esx",
+    "jobsTracked": ["police", "ambulance"]
 }

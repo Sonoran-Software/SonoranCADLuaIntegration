@@ -29,11 +29,14 @@ The following options in the config.json file are available for you to change
 
 | Name                    | Type           | Default Value       | Description |
 | ----------------------- | -------------  | ------------------: | ----------- |
-| communitiyId            | string         | ""                  | REQUIRED: Set this to your Community ID found on SonoranCAD's Community Admin Panel (pictured below) |
-| apiKey                  | string         | ""                  | REQUIRED: Set this to your API Key found on SonoranCAD's Community Admin Panel (pictured below)  |
+| communitiyId            | string         | ""                  | REQUIRED TO CHANGE: Set this to your Community ID found on SonoranCAD's Community Admin Panel (pictured below) |
+| apiKey                  | string         | ""                  | REQUIRED TO CHANGE: Set this to your API Key found on SonoranCAD's Community Admin Panel (pictured below)  |
 | apiUrl                  | string         | "https://sonorancad.com/api/emergency" | This is already set to the default API URL for all SonoranCAD API communications |
 | locationPostTime        | int            | 5000                | Lowering this value will result in rate limiting by SonoranCAD, must be higher than 5000 miliseconds |
-| locationCheckTime       | int            | 1000                | This value controls the amount of time between each player's client checking for a change to their last reported location. It is not needed to lower or increase this value and doing so may result in worse performance or longer periods of time before SonoranCAD shows updates for units. |
+| serverType              | string         | "esx"               | OPTIONAL: Set this to one of the following options indicating what mode you want to run in. ("**standalone**" or "**esx**") |
+| jobsTracked             | array of strings| ["police","ambulance"] | OPTIONAL: Set this to the job names that you want tracked on the SonoranCAD live map. |
+
+**NOTE: standalone mode will show all players on the SonoranCAD live map integration**
 
 ![SonoranCAD Community Admin Panel Instructions](https://sonoransoftware.com/tutorials/sonorancad/images/integration_api_keys.png "Get your Community ID and apiKey here")
 

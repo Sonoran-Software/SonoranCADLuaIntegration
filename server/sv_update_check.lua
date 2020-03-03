@@ -38,12 +38,12 @@ function checkForUpdate()
         local parsed = json.decode(data)
 
         if (parsed["resource"] ~= version) then
-            print("|===========================================================================|")
-            print("|                        SonoranCAD Update Available                        |")
-            print("|                           Current : " .. version .. "                                 |")
-            print("|                           Latest  : " .. parsed["resource"] .. "                                 |")
-            print("| Download at: https://github.com/Sonoran-Software/SonoranCADLuaIntegration |")
-            print("|===========================================================================|")
+            print("^3|===========================================================================|")
+            print("^3|                        ^5SonoranCAD Update Available                        ^3|")
+            print("^3|                             ^8Current : " .. version .. "                               ^3|")
+            print("^3|                             ^2Latest  : " .. parsed["resource"] .. "                               ^3|")
+            print("^3| Download at: ^4https://github.com/Sonoran-Software/SonoranCADLuaIntegration ^3|")
+            print("^3|===========================================================================|^7")
             latest = false -- Stop running the timeout
         end
 
