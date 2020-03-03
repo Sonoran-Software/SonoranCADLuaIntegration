@@ -1,6 +1,7 @@
 --[[
-            LiveMap - A LiveMap for FiveM servers
-              Copyright (C) 2017  Jordan Dalton
+              LiveMap - A LiveMap for FiveM servers
+            Adapted to SonoranCAD LiveMap Integration
+                Copyright (C) 2017  Jordan Dalton
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

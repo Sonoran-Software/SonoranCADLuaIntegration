@@ -1,6 +1,6 @@
 --[[
         SonoranCAD FiveM - A SonoranCAD integration for FiveM servers
-         Copyright (C) 2020  Sonoran Software Systems LLC
+              Copyright (C) 2020  Sonoran Software Systems LLC
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
