@@ -11,22 +11,27 @@ local serverType = "" -- Either specify "standalone" or "esx", "standalone" will
 -- Server Event Handling **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
 ---------------------------------------------------------------------------
 
--- Return client SteamHex request
-RegisterServerEvent("GetSteamHex")
-AddEventHandler("GetSteamHex", function(srscsd)
-    local steamHex = GetPlayerIdentifier(srscsd, 0)
-    TriggerClientEvent('ReturnSteamHex', srscsd, steamHex)
-end)
-
         ---------------------------------
         -- Unit Panic
         ---------------------------------
- 
--- Client Panic request
-RegisterServerEvent('cadSendPanicApi')
-AddEventHandler('cadSendPanicApi', function(steamHex)
+-- shared function to send panic signals
+function sendPanic(source)
+    -- Determine steamHex identifier
+    local steamHex = GetPlayerIdentifier(source, 0)
+    -- Process panic POST request
     PerformHttpRequest(apiURL, function(statusCode, res, headers) 
     end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'UNIT_PANIC', ['data'] = {{ ['isPanic'] = true, ['apiId'] = steamHex}}}), {["Content-Type"]="application/json"})
+end
+
+-- Creation of a /panic command
+RegisterCommand('panic', function(source, args, rawCommand)
+    sendPanic(source)
+end, false)
+
+-- Client Panic request (to be used by other resources)
+RegisterServerEvent('cadSendPanicApi')
+AddEventHandler('cadSendPanicApi', function(source)
+    sendPanic(source)
 end)
 
         ---------------------------------
@@ -67,8 +72,9 @@ end
 
 -- Event from client when location changes occur
 RegisterServerEvent('cadSendLocation')
-AddEventHandler('cadSendLocation', function(steamHex, currentLocation)
+AddEventHandler('cadSendLocation', function(source, currentLocation)
     -- Does this client location already exist in the pending location array?
+    local steamHex = GetPlayerIdentifier(source, 0)
     local index = findIndex(steamHex)
     if index then
         -- Location already in pending array -> Update
