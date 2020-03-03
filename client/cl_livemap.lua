@@ -73,8 +73,7 @@ local firstSpawn = true
     When the player spawns, make sure we set their ID in the data that is going
         to be sent via sockets.
 ]]
--- AddEventHandler("playerSpawned", function(spawn)
-Citizen.CreateThread(function()
+AddEventHandler("playerSpawned", function(spawn)
     if firstSpawn then
         TriggerServerEvent("sonorancad:livemap:playerSpawned") -- Set's the ID in "playerData" so it will get send va sockets
 
