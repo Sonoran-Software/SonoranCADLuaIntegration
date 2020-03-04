@@ -19,6 +19,7 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 ---------------------------------------------------------------------------
 -- ESX Integration Initialization/Events/Functions
 ---------------------------------------------------------------------------
+-- Initialize ESX Framework hooks to allow obtaining data
 PlayerData = {}
 ESX = nil
 
@@ -32,25 +33,23 @@ Citizen.CreateThread(function()
 		Citizen.Wait(10)
 	end
 
-  	PlayerData = ESX.GetPlayerData()
+    PlayerData = ESX.GetPlayerData()
 end)
 
+-- Listen for when new players load into the game
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
   PlayerData = xPlayer
 end)
-
+-- Listen for when jobs are changed in esx_jobs
 RegisterNetEvent('esx:setJob')
 AddEventHandler('esx:setJob', function(job)
   PlayerData.job = job
+  TriggerEvent('sonorancad:livemap:firstSpawn', true)
 end)
 
-function getJob()
-  if PlayerData.job ~= nil then
-  return PlayerData.job.name
-  end
-end
-
+-- Function to return esx_identity data on the client from server
+-- This event listens for data from the server when requested
 local recievedIdentity = false
 returnedIdentity = nil
 RegisterNetEvent('sonorancad:returnIdentity')
@@ -58,18 +57,14 @@ AddEventHandler('sonorancad:returnIdentity', function(data)
     returnedIdentity = data
     recievedIdentity = true
 end)
-
-function GetIdentity(callback, target)
+-- This function requests data from the server
+function GetIdentity(callback)
     recievedIdentity = false
     returnIdentity = false
-    TriggerServerEvent("sonorancad:getIdentity", target)
+    TriggerServerEvent("sonorancad:getIdentity")
     local timeStamp = GetGameTimer()
     while not recievedIdentity do
-        if GetGameTimer() > timeStamp then
-            callback(nil)
-        end
-        --print('waiting for callback')
         Citizen.Wait(0)
     end
-    callback(recievedIdentity)
+    callback(returnedIdentity)
 end

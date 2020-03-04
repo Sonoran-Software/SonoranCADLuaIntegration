@@ -54,6 +54,7 @@ end)
 ---------------------------------------------------------------------------
 -- Chat Suggestions **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
 ---------------------------------------------------------------------------
+-- Add helpers to chat when typing commands
 TriggerEvent('chat:addSuggestion', '/panic', 'Sends a panic signal to your SonoranCAD')
 TriggerEvent('chat:addSuggestion', '/911', 'Sends a emergency call to your SonoranCAD', {
     { name="Description of Call", help="State what the call is about" }

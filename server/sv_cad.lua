@@ -17,7 +17,7 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 ]]
 
 ---------------------------------------------------------------------------
--- Reading Config options from config.json **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
+-- Reading Config options from config.json **EDIT CONFIG.JSON, NOT THIS FILE**
 ---------------------------------------------------------------------------
 local loadFile = LoadResourceFile(GetCurrentResourceName(), "./config.json")
 local config = {}
@@ -30,9 +30,10 @@ local postTime = config.locationPostTime  -- Lowering this value will result in 
 local serverType = config.serverType -- Either specify "standalone" or "esx", "standalone" will use your Steam Name as the Caller ID, and "esx" will use "esx-identity" to use your character's name.
 local jobsTracked = config.jobsTracked -- Job names that you want to be tracked on the live map
 
+-- Function for clients to request client-sided configuration options from the server
 RegisterServerEvent('sonorancad:getConfig')
-AddEventHandler('sonorancad:getConfig', function(source)
-    local clientConfig = {serverType, jobsTracked}
+AddEventHandler('sonorancad:getConfig', function()
+    local clientConfig = {serverType = serverType, jobsTracked = jobsTracked, clientName = GetPlayerName(source)}
     TriggerClientEvent('sonorancad:returnConfig', source, clientConfig)
 end)
 ---------------------------------------------------------------------------
@@ -200,36 +201,20 @@ end)
 ---------------------------------------------------------------------------
 -- SonoranCAD Listener Event Handling (Recieves data from SonoranCAD)
 ---------------------------------------------------------------------------
-function dump(o)
-    if type(o) == 'table' then
-        local s = '{ '
-        for k,v in pairs(o) do
-        if type(k) ~= 'number' then k = '"'..k..'"' end
-        s = s .. '['..k..'] = ' .. dump(v) .. ','
-        end
-        return s .. '} '
-    else
-        return tostring(o)
-    end
-end
-
+-- Function to figure out the player server id from their steamHex
 function getPlayerSource(identifier)
     local activePlayers = GetPlayers();
-    print(dump(activePlayers))
     for i,player in pairs(activePlayers) do
-        print('player ' .. tostring(player) .. ' - ' .. GetPlayerIdentifier(player))
         if GetPlayerIdentifier(player) == string.lower(identifier) then
-            print("found player " .. tostring(player) .. " by identifier " .. identifier)
             return player
         end
     end
-    print("ERROR: Could not find player with identifier " .. identifier)
 end
-
+-- Listener Event to recieve data from the API listener
 RegisterServerEvent('sonorancad:recieveListenerData')
 AddEventHandler('sonorancad:recieveListenerData', function(call)
-    print('TRIGGERED LUA EVENT! :)')
-    print(dump(call))
+    -- Strip the secret SonoranCAD API Key before passing data to clients
+    call.key = nil
     if call.type == "UNIT_UPDATE" then
         targetPlayer = getPlayerSource(call.data.apiId)
         TriggerClientEvent('sonorancad:livemap:unitUpdate', targetPlayer, call.data)

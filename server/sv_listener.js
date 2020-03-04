@@ -21,22 +21,51 @@ const listenPort = GetConvarInt('SonoranListenPort', 3232);
 
 var http = require('http');
 
-
 http.createServer(function (req, res) {
   res.writeHead(200, {'Content-Type': 'text/plain'});
   let response = '';
 
   if (req.method == 'POST') {
     req.on('data', function(chunk) {
-      console.log('recieved post request!');
-      const body = JSON.parse(chunk.toString());
-      // console.log(body);
-      if (body.key === config.apiKey) {
-        response = 'Success!';
-        console.log('Successful authentication of api key!');
-        emit('sonorancad:recieveListenerData', body);
-      } else {
-        response = 'Invalid API Key!';
+      try {
+        const body = JSON.parse(chunk.toString());
+        // Ensure KEY exists and is valid
+        if (body.key && body.key.toUpperCase() === config.apiKey.toUpperCase()) {
+          // Ensure TYPE exists
+          if (body.type) {
+            // Check data fields per request type
+            switch (body.type.toUpperCase()) {
+              case 'UNIT_UPDATE':
+                // Check for missing request fields
+                if (!body.data.apiId) {
+                  response = 'Missing field: data.apiId';
+                } else if (!body.data.unitNumber) {
+                  response = 'Missing field: data.unitNumber';
+                } else if (!body.data.unitStatus.type) {
+                  response = 'Missing field: data.unitStatus.type';
+                } else if (!body.data.unitStatus.label) {
+                  response = 'Missing field: data.unitStatus.label';
+                } else if (!body.data.unitName) {
+                  response = 'Missing field: data.unitName';
+                } else {
+                  // All required fields are present
+                  emit('sonorancad:recieveListenerData', body);
+                  response = 'Success!';
+                }
+                break;
+              default:
+                response = `Invalid API request type: ${body.type}`;
+            }
+          } else
+          {
+            // TYPE field does not exist
+            response = 'TYPE field not provided!';
+          }
+        } else {
+          response = 'Invalid API Key!';
+        }
+      } catch (e) {
+        response = `Invalid JSON syntax: ${e}`;
       }
     });
   } else {

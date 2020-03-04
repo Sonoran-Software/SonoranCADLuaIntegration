@@ -38,7 +38,7 @@ AddEventHandler("sonorancad:livemap:getBlipsFromClient", function()
     Citizen.Trace("Generating blip table.. This may take a while for a large amount of blips")
     local blipTable = {}
 
-    -- Loop through ALL the fucking blips
+    -- Loop through ALL the blips
     for _,spriteId in pairs(blip_types) do
         local blip = GetFirstBlipInfoId(spriteId)
 
@@ -49,7 +49,7 @@ AddEventHandler("sonorancad:livemap:getBlipsFromClient", function()
 
             local x,y,z = table.unpack(GetBlipCoords(blip))
 
-            -- Damn! There's no way to get the fucking display text for the blip :(
+            -- No way to get the display text for the blip :(
             table.insert(blipTable[spriteId], {
                 x = tonumber(string.format("%.2f", x)), -- Round them to 2dp
                 y = tonumber(string.format("%.2f", y)),

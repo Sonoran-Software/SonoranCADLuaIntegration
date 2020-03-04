@@ -7,17 +7,17 @@ const EventsWrapper = (SocketController) => {
         SocketController.AddPlayerData(id, "name", GetPlayerName(source));
     };
 
-    onNet("onResourceStart", (name) => {
-        if (name == GetCurrentResourceName()){
-            if (GetNumPlayerIndices() !== 0){
-                log.info("Players on the server... Initialising them");
-                for(let i = 0; i < GetNumPlayerIndices(); i++){
-                    const id = GetPlayerIdentifier(GetPlayerFromIndex(i), 0);
-                    setStaticData(GetPlayerFromIndex(i), id);
-                }
-            }
-        }
-    });
+    // onNet("onResourceStart", (name) => {
+    //     if (name == GetCurrentResourceName()){
+    //         if (GetNumPlayerIndices() !== 0){
+    //             log.info("Players on the server... Initialising them");
+    //             for(let i = 0; i < GetNumPlayerIndices(); i++){
+    //                 const id = GetPlayerIdentifier(GetPlayerFromIndex(i), 0);
+    //                 setStaticData(GetPlayerFromIndex(i), id);
+    //             }
+    //         }
+    //     }
+    // });
 
     onNet("sonorancad:livemap:playerSpawned", () => {
         setStaticData(source, GetPlayerIdentifier(source));

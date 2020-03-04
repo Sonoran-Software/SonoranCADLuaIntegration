@@ -1,14 +1,16 @@
 # SonoranCAD FiveM Integration
+**NOW INCLUDES HOSTED LIVE MAP INTEGRATION!**
 
-This Integration functions to send player data from FiveM to the SonoranCAD API.
+This Integration functions to send player data from FiveM to the SonoranCAD API. Recent updates have added example commands, the ability to recieve data from SonoranCAD, live map integration, and ESX framework integration.
 
 ## How to install
 
 1. Download the [ZIP file](https://github.com/SonoranBrian/SonoranCADLuaIntegration/archive/master.zip). And extract the contents into `resources/sonorancad/`.
 
-2. Add the following to your server.cfg file.
+2. Add the following to your **server.cfg** file.
 
 ```
+set SonoranListenPort 3232
 set socket_port 30121
 set livemap_debug "warn" # "[all]" 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'off'
 set blip_file "server/blips.json"
@@ -41,10 +43,11 @@ The following options in the config.json file are available for you to change
 ![SonoranCAD Community Admin Panel Instructions](https://sonoransoftware.com/tutorials/sonorancad/images/integration_api_keys.png "Get your Community ID and apiKey here")
 
 ### Convars
-The following convars are available for you to change
+The following convars are available for you to change. We suggest you include these options in your server.cfg, but it is NOT REQUIRED. Just make sure you have opened the default ports or the ports you change the convar-based settings to.
 
 | Name                    | Type           | Default Value       | Description |
 | ----------------------- | -------------  | ------------------: | ----------- |
+| SonoranListenPort       | int            | 3232                | Sets the port the SonoranCAD Listener to recieve inbound API requests on |
 | socket_port             | int            | 30121               | Sets the port the socket server should listen on |
 | livemap_debug           | int            | 0                   | Sets how much information gets printed to the console (0 = none, 1 = basic information, 2 = all) |
 | blip_file               | string         | "server/blips.json" | Sets the file that will contain the generated blips that is exposed via HTTP |

@@ -27,7 +27,7 @@ local latest = true
 local rawData = LoadResourceFile(GetCurrentResourceName(), "version.json")
 
 if not rawData then
-    print("Couldn't read \"versions.json\" file.. Please make sure it's readable and exists.")
+    print("SonoranCAD ERROR: Couldn't read \"versions.json\" file.. Please make sure it's readable and exists.")
 else
     rawData = json.decode(rawData)
     version = rawData["resource"]

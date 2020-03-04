@@ -17,16 +17,13 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 ]]
 
 ---------------------------------------------------------------------------
--- Framework Integrations
+-- ESX Framework Integration
 ---------------------------------------------------------------------------
-
-        ---------------------------------
-        -- ESX Framework Integration
-        ---------------------------------
+-- Request framework object to allow for requests for data
 ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
--- Helper function to get the ESX Identity object
+-- Helper function to get the ESX Identity object from your database
 function GetIdentity(target)
     local identifier = GetPlayerIdentifiers(target)[1]
     local result = MySQL.Sync.fetchAll("SELECT firstname, lastname, sex, dateofbirth, height FROM users WHERE identifier = @identifier", {
@@ -48,14 +45,9 @@ function GetIdentity(target)
     end
 end
 
+-- Event for clients to request esx_identity information from the server
 RegisterServerEvent('sonorancad:getIdentity')
-AddEventHandler('sonorancad:getIdentity', function(target)
-    local returnData = GetIdentity(target)
-    local src = source
-    TriggerClientEvent('sonorancad:returnIdentity', src, returnData)
-end)
-
-RegisterNetEvent('esx_identity:characterUpdated')
-AddEventHandler('esx_identity:characterUpdated', function(playerId, data)
-    TriggerClientEvent('sonorancad:characterUpdated', playerId, data)
+AddEventHandler('sonorancad:getIdentity', function()
+    local returnData = GetIdentity(source)
+    TriggerClientEvent('sonorancad:returnIdentity', source, returnData)
 end)
