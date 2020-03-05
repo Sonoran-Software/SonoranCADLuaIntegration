@@ -101,7 +101,7 @@ end
 
 -- Event from client when location changes occur
 RegisterServerEvent('sonorancad:cadSendLocation')
-AddEventHandler('sonorancad:cadSendLocation', function(source, currentLocation)
+AddEventHandler('sonorancad:cadSendLocation', function(currentLocation)
     -- Does this client location already exist in the pending location array?
     local steamHex = GetPlayerIdentifier(source, 0)
     local index = findIndex(steamHex)
