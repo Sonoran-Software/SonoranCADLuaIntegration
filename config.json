@@ -1,6 +1,6 @@
 {
-    "communityId": "TEST2",
-    "apiKey": "DF58F1E-FD8A-44C5-BA",
+    "communityId": "",
+    "apiKey": "",
     "apiUrl": "https://sonorancad.com/api/emergency",
     "locationPostTime": 5000,
     "serverType": "esx",
