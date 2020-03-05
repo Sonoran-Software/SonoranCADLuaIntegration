@@ -101,7 +101,7 @@ end
 
 -- Event from client when location changes occur
 RegisterServerEvent('sonorancad:cadSendLocation')
-AddEventHandler('sonorancad:cadSendLocation', function(source, currentLocation)
+AddEventHandler('sonorancad:cadSendLocation', function(currentLocation)
     -- Does this client location already exist in the pending location array?
     local steamHex = GetPlayerIdentifier(source, 0)
     local index = findIndex(steamHex)
@@ -120,7 +120,7 @@ end)
 
 RegisterCommand('911', function(source, args, rawCommand)
     -- Getting the user's Steam Hexidecimal and getting their location from the table.
-    local identifier = GetPlayerIdentifiers(source)[1]
+    local identifier = GetPlayerIdentifier(source, 0)
     local index = findIndex(identifier)
     if index then
         callLocation = LocationCache[index].location
@@ -159,7 +159,7 @@ end, false)
 
 RegisterCommand('311', function(source, args, rawCommand)
     -- Getting the user's Steam Hexidecimal and getting their location from the table.
-    local identifier = GetPlayerIdentifiers(source)[1]
+    local identifier = GetPlayerIdentifier(source, 0)
     local index = findIndex(identifier)
     if index then
         callLocation = LocationCache[index].location
