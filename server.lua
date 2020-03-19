@@ -72,7 +72,7 @@ end
 
 -- Event from client when location changes occur
 RegisterServerEvent('cadSendLocation')
-AddEventHandler('cadSendLocation', function(source, currentLocation)
+AddEventHandler('cadSendLocation', function(currentLocation)
     -- Does this client location already exist in the pending location array?
     local steamHex = GetPlayerIdentifier(source, 0)
     local index = findIndex(steamHex)
@@ -88,7 +88,7 @@ end)
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 -- Helper function to get the ESX Identity object
 local function getIdentity(source)
-    local identifier = GetPlayerIdentifiers(source)[1]
+    local identifier = GetPlayerIdentifier(source, 0)
     local result = MySQL.Sync.fetchAll("SELECT * FROM users WHERE identifier = @identifier", {['@identifier'] = identifier})
     if result[1] ~= nil then
         local identity = result[1]
@@ -112,7 +112,7 @@ end
 
 RegisterCommand('911', function(source, args, rawCommand)
     -- Getting the user's Steam Hexidecimal and getting their location from the table.
-    local identifier = GetPlayerIdentifiers(source)[1]
+    local identifier = GetPlayerIdentifier(source, 0)
     local index = findIndex(identifier)
     if index then
         callLocation = LocationCache[index].location
@@ -151,7 +151,7 @@ end, false)
 
 RegisterCommand('311', function(source, args, rawCommand)
     -- Getting the user's Steam Hexidecimal and getting their location from the table.
-    local identifier = GetPlayerIdentifiers(source)[1]
+    local identifier = GetPlayerIdentifier(source, 0)
     local index = findIndex(identifier)
     if index then
         callLocation = LocationCache[index].location
