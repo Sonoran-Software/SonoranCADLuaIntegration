@@ -4,8 +4,9 @@
 local communityID = ""
 local apiKey = ""
 local apiURL = 'https://sonorancad.com/api/emergency'
-local postTime = 5000 --Recommended to stay above 5000ms
-local serverType = "" -- Either specify "standalone" or "esx", "standalone" will use your Steam Name as the Caller ID, and "esx" will use "esx-identity" to use your character's name.
+local postTime = 5000 --Recommended to stay above 5000ms3
+local serverId = "1" -- Default is 1
+local serverType = "standalone" -- Either specify "standalone" or "esx", "standalone" will use your Steam Name as the Caller ID, and "esx" will use "esx-identity" to use your character's name.
 
 ---------------------------------------------------------------------------
 -- Server Event Handling **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
@@ -127,7 +128,7 @@ RegisterCommand('911', function(source, args, rawCommand)
             -- Getting the Steam Name
             local standCaller = GetPlayerName(source)
             -- Sending the API event
-            TriggerEvent('cadSendCallApi', true, standCaller, callLocation, description, source)
+            TriggerEvent('cadSendCallApi', true, standCaller, callLocation, description)
             -- Sending the user a message stating the call has been sent
             TriggerClientEvent('chatMessage', source, "^5^*[SonoranCAD]^r^7 Your call has been sent to the dispatch. Help is now on the way!")
         elseif serverType == "esx" then
@@ -166,7 +167,7 @@ RegisterCommand('311', function(source, args, rawCommand)
             -- Getting the Steam Name
             local standCaller = GetPlayerName(source)
             -- Sending the API event
-            TriggerEvent('cadSendCallApi', false, standCaller, callLocation, description, source)
+            TriggerEvent('cadSendCallApi', false, standCaller, callLocation, description)
             -- Sending the user a message stating the call has been sent
             TriggerClientEvent('chatMessage', source, "^5^*[SonoranCAD]^r^7 Your call has been sent to the dispatch. Help is now on the way!")
         elseif serverType == "esx" then
@@ -188,5 +189,5 @@ end, false)
 RegisterServerEvent('cadSendCallApi')
 AddEventHandler('cadSendCallApi', function(emergency, caller, location, description)
     PerformHttpRequest(apiURL, function(statusCode, res, headers) 
-    end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = '1', ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}}), {["Content-Type"]="application/json"})
+    end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}}), {["Content-Type"]="application/json"})
 end)
