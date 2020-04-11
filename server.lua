@@ -59,6 +59,7 @@ end
 
 -- Main update thread sending api location update POST requests per the postTime interval
 Citizen.CreateThread(function()
+    Wait(0)
     while true do
         if #LocationCache > 0 then
             -- Make API request if 1 or more updates exist
