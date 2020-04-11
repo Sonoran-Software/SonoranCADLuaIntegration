@@ -44,6 +44,18 @@ AddEventHandler('cadSendPanicApi', function(source)
     sendPanic(source)
 end)
 
+-- Toggles API sender.
+RegisterServerEvent("cadToggleApi")
+AddEventHandler("cadToggleApi", function()
+    apiSendEnabled = not apiSendEnabled
+end)
+
+-- Toggles Postal Sender
+RegisterNetEvent("getShouldSendPostal")
+AddEventHandler("getShouldSendPostal", function()
+    TriggerClientEvent("getShouldSendPostalResponse", source, prefixPostal)
+end)
+
         ---------------------------------
         -- Unit Location Update
         ---------------------------------
@@ -131,6 +143,9 @@ function HandleCivilianCall(type, source, args, rawCommand)
     -- Checking if there are any description arguments.
     if args[1] then
         local description = table.concat(args, " ")
+        if type == "511" then
+            description = "(511 CALL) "..description
+        end
         local caller = nil
         -- Checking wether you have set it to standalone or esx.
         if serverType == "standalone" then
@@ -159,7 +174,7 @@ end
         ---------------------------------
 
 RegisterCommand('911', function(source, args, rawCommand)
-    HandleCivilianCall(true, source, args, rawCommand)
+    HandleCivilianCall("911", source, args, rawCommand)
 end, false)
 
         ---------------------------------
@@ -167,7 +182,7 @@ end, false)
         ---------------------------------
 
 RegisterCommand('311', function(source, args, rawCommand)
-    HandleCivilianCall(false, source, args, rawCommand)
+    HandleCivilianCall("311", source, args, rawCommand)
 end, false)
 
         ---------------------------------
@@ -175,7 +190,7 @@ end, false)
         ---------------------------------
 
 RegisterCommand('511', function(source, args, rawCommand)
-    HandleCivilianCall(false, source, args, rawCommand)
+    HandleCivilianCall("511", source, args, rawCommand)
 end, false)
 
 -- Client Call request
@@ -183,8 +198,12 @@ RegisterServerEvent('cadSendCallApi')
 AddEventHandler('cadSendCallApi', function(emergency, caller, location, description, source)
     -- send an event to be consumed by other resources
     TriggerEvent("cadIncomingCall", emergency, caller, location, description, source)
-    PerformHttpRequest(apiURL, function(statusCode, res, headers) 
-    end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}}), {["Content-Type"]="application/json"})
+    if apiSendEnabled then
+        PerformHttpRequest(apiURL, function(statusCode, res, headers) 
+        end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}}), {["Content-Type"]="application/json"})
+    else
+        -- do something else?
+    end
 end)
 
 -- Utility Functions

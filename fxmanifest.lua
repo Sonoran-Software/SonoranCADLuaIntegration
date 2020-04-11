@@ -6,6 +6,9 @@ server_scripts {'config.lua'
                 ,'sv_update_check.lua'
                 ,'@mysql-async/lib/MySQL.lua' -- if not using ESX, you can remove this line
                }
-client_script 'client.lua'
+client_scripts {
+    'postal_client.lua',
+    'client.lua'
+} 
 
 dependency 'mysql-async'
