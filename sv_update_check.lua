@@ -21,7 +21,7 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 -- Update Checker
 ---------------------------------------------------------------------------
 local url = "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/master/version.json"
-local version = "1.1.4"
+local version = "1.2.0"
 local latest = true
 
 local rawData = LoadResourceFile(GetCurrentResourceName(), "version.json")
