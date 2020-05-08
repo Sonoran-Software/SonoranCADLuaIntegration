@@ -30,6 +30,9 @@ function sendPanic(source)
     local identifier = GetIdentifiers(source)[primaryIdentifier]
     -- Process panic POST request
     PerformHttpRequest(apiURL, function(statusCode, res, headers) 
+        if statusCode ~= 200 then
+            print(("[SonoraCAD] API error sending panic button: %s %s %s"):format(statusCode, res, headers)
+        end
     end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'UNIT_PANIC', ['data'] = {{ ['isPanic'] = true, ['apiId'] = identifier}}}), {["Content-Type"]="application/json"})
 end
 
@@ -66,6 +69,9 @@ LocationCache = {}
 -- Main api POST function
 local function SendLocations()
     PerformHttpRequest(apiURL, function(statusCode, res, headers) 
+        if statusCode ~= 200 then
+            print(("[SonoraCAD] API error sending locations: %s %s %s"):format(statusCode, res, headers)
+        end
     end, "POST", json.encode({['id'] = communityID,['key'] = apiKey,['type'] = 'UNIT_LOCATION',['data'] = LocationCache}), {["Content-Type"]="application/json"})
 end
 
@@ -200,6 +206,9 @@ AddEventHandler('cadSendCallApi', function(emergency, caller, location, descript
     TriggerEvent("cadIncomingCall", emergency, caller, location, description, source)
     if apiSendEnabled then
         PerformHttpRequest(apiURL, function(statusCode, res, headers) 
+            if statusCode ~= 200 then
+                print(("[SonoraCAD] API error sending call: %s %s %s"):format(statusCode, res, headers)
+            end
         end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}}), {["Content-Type"]="application/json"})
     else
         -- do something else?
