@@ -128,6 +128,9 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 -- Helper function to get the ESX Identity object
 local function getIdentity(source)
     local identifier = GetIdentifiers(source)[primaryIdentifier]
+    if primaryIdentifier == "steam" then
+        identifier = ("steam:%s"):format(identifier)
+    end
     local result = MySQL.Sync.fetchAll("SELECT * FROM users WHERE identifier = @identifier", {['@identifier'] = identifier})
     if result[1] ~= nil then
         local identity = result[1]
@@ -170,7 +173,12 @@ function HandleCivilianCall(type, source, args, rawCommand)
         elseif serverType == "esx" then
             -- Getting the ESX Identity Name
             local name = getIdentity(source)
-            caller = name.firstname .. "  " .. name.lastname
+            if name ~= nil then
+                caller = ("%s %s"):format(name.firstname,name.lastname)
+            else
+                debugPrint("[SenoranCAD] Warning: Unable to get a proper identity for the caller. Falling back to player name.")
+                caller = GetPlayerName(source)
+            end
         else
             print("ERROR: Improper serverType was specified in configuration. Please check it!")
             return
