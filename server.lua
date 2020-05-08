@@ -20,6 +20,15 @@
 -- Server Event Handling **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
 ---------------------------------------------------------------------------
 
+if debugMode == nil then
+    debugMode = false
+end
+
+function debugPrint(msg)
+    if debugMode then
+        print(msg)
+    end
+end
         ---------------------------------
         -- Unit Panic
         ---------------------------------
@@ -30,7 +39,7 @@ function sendPanic(source)
     -- Process panic POST request
     PerformHttpRequest(apiURL, function(statusCode, res, headers) 
         if statusCode ~= 200 then
-            print(("[SonoraCAD] API error sending panic button: %s %s %s"):format(statusCode, res, headers))
+            print(("[SonoranCAD] API error sending panic button: %s %s %s"):format(statusCode, res, headers))
         end
     end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'UNIT_PANIC', ['data'] = {{ ['isPanic'] = true, ['apiId'] = identifier}}}), {["Content-Type"]="application/json"})
 end
@@ -67,11 +76,13 @@ LocationCache = {}
 
 -- Main api POST function
 local function SendLocations()
+    local payload = json.encode({['id'] = communityID,['key'] = apiKey,['type'] = 'UNIT_LOCATION',['data'] = LocationCache})
+    debugPrint(("[SonoranCAD:DEBUG] SendLocations payload: %s"):format(payload))
     PerformHttpRequest(apiURL, function(statusCode, res, headers) 
         if statusCode ~= 200 then
-            print(("[SonoraCAD] API error sending locations: %s %s %s"):format(statusCode, res, headers))
+            print(("[SonoranCAD] API error sending locations: %s %s"):format(statusCode, res))
         end
-    end, "POST", json.encode({['id'] = communityID,['key'] = apiKey,['type'] = 'UNIT_LOCATION',['data'] = LocationCache}), {["Content-Type"]="application/json"})
+    end, "POST", payload, {["Content-Type"]="application/json"})
 end
 
 -- Main update thread sending api location update POST requests per the postTime interval
@@ -204,13 +215,15 @@ AddEventHandler('cadSendCallApi', function(emergency, caller, location, descript
     -- send an event to be consumed by other resources
     TriggerEvent("cadIncomingCall", emergency, caller, location, description, source)
     if apiSendEnabled then
+        local payload = json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}})
+        debugPrint(("[SonoranCAD:DEBUG] cadSendCallApi payload: %s"):format(payload))
         PerformHttpRequest(apiURL, function(statusCode, res, headers) 
             if statusCode ~= 200 then
-                print(("[SonoraCAD] API error sending call: %s %s %s"):format(statusCode, res, headers))
+                print(("[SonoranCAD] API error sending call: %s %s %s"):format(statusCode, res, headers))
             end
-        end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}}), {["Content-Type"]="application/json"})
+        end, "POST", payload, {["Content-Type"]="application/json"})
     else
-        -- do something else?
+        debugPrint("[SonoranCAD] API sending is disabled. Incoming call ignored.")
     end
 end)
 
