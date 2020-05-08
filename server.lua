@@ -114,6 +114,9 @@ RegisterServerEvent('cadSendLocation')
 AddEventHandler('cadSendLocation', function(currentLocation)
     -- Does this client location already exist in the pending location array?
     local identifier = GetIdentifiers(source)[primaryIdentifier]
+    if serverType == "esx" then
+        identifier = ("%s:%s"):format(primaryIdentifier, identifier)
+    end
     local index = findIndex(identifier)
     if index then
         -- Location already in pending array -> Update
