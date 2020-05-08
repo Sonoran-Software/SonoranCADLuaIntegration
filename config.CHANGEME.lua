@@ -1,7 +1,7 @@
 -- rename this file to config.lua before using!
 communityID = ""
 apiKey = ""
-apiURL = 'https://sonorancad.com/api/emergency'
+apiURL = 'https://api.sonorancad.com/emergency'
 postTime = 5000 --Recommended to stay above 5000ms3
 serverId = "1" -- Default is 1
 serverType = "standalone" -- Either specify "standalone" or "esx", "standalone" will use Player Name as the Caller ID, and "esx" will use "esx-identity" to use your character's name.
