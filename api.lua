@@ -2,6 +2,10 @@
     Sonoran CAD API Handler
 ]]
 
+local apiDebug = false -- change to true to print useful debugging data to console
+
+local function debugPrint(message) if apiDebug then print(message) end end
+
 function performApiRequest(postData, type, cb)
     -- apply required headers
     local payload = {}
@@ -11,6 +15,7 @@ function performApiRequest(postData, type, cb)
     payload["data"] = {postData}
     PerformHttpRequest(apiURL, function(statusCode, res, headers) 
         if statusCode == 200 and res ~= nil then
+            debugPrint("result: "..tostring(res))
             cb(res)
         else
             print(("CAD API ERROR: %s %s"):format(statusCode, res))
@@ -25,6 +30,7 @@ function nameLookup(first, last, mi, callback)
     data["mi"] = mi ~= nil and mi or ""
     
     performApiRequest(data, "LOOKUP_NAME", function(result)
+        debugPrint("name lookup: "..tostring(result))
         local lookup = json.decode(result)
         callback(lookup)
     end)
@@ -32,8 +38,9 @@ end
 
 function plateLookup(plate, callback)
     local data = {}
-    data["plate"] = plate
+    data["plate"] = plate:gsub("%s+","")
     performApiRequest(data, "LOOKUP_PLATE", function(result)
+        debugPrint("plate lookup: "..tostring(result))
         local lookup = json.decode(result)
         callback(lookup)
     end)
