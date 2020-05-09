@@ -1,3 +1,22 @@
+        ---------------------------------
+        -- Unit Location Update
+        ---------------------------------
+
+-- Pending location updates array
+LocationCache = {}
+
+-- Main api POST function
+local function SendLocations()
+    local payload = json.encode({['id'] = communityID,['key'] = apiKey,['type'] = 'UNIT_LOCATION',['data'] = LocationCache})
+    debugPrint(("[SonoranCAD:DEBUG] SendLocations payload: %s"):format(payload))
+    PerformHttpRequest(Config.apiURL, function(statusCode, res, headers) 
+        if statusCode ~= 200 then
+            print(("[SonoranCAD] API error sending locations: %s %s"):format(statusCode, res))
+        end
+    end, "POST", payload, {["Content-Type"]="application/json"})
+end
+
+
 -- Main update thread sending api location update POST requests per the postTime interval
 Citizen.CreateThread(function()
     Wait(0)
@@ -26,9 +45,9 @@ end
 RegisterServerEvent('cadSendLocation')
 AddEventHandler('cadSendLocation', function(currentLocation)
     -- Does this client location already exist in the pending location array?
-    local identifier = GetIdentifiers(source)[primaryIdentifier]
-    if serverType == "esx" then
-        identifier = ("%s:%s"):format(primaryIdentifier, identifier)
+    local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
+    if Config.serverType == "esx" then
+        identifier = ("%s:%s"):format(Config.primaryIdentifier, identifier)
     end
     local index = findIndex(identifier)
     if index then

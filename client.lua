@@ -37,12 +37,3 @@ Citizen.CreateThread(function()
     end
 end)
 
----------------------------------------------------------------------------
--- Chat Suggestions **DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING**
----------------------------------------------------------------------------
-TriggerEvent('chat:addSuggestion', '/panic', 'Sends a panic signal to your SonoranCAD')
-TriggerEvent('chat:addSuggestion', '/911', 'Sends a emergency call to your SonoranCAD', {
-    { name="Description of Call", help="State what the call is about" }
-})TriggerEvent('chat:addSuggestion', '/311', 'Sends a non-emergency call to your SonoranCAD', {
-    { name="Description of Call", help="State what the call is about" }
-})

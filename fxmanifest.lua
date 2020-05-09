@@ -7,6 +7,7 @@ server_scripts {
                 ,'core/server.lua'
                 ,'plugins/**/config_*.lua'
                 ,'plugins/**/sv_*.lua'
+                ,'core/plugin_loader.lua'
                 ,'@mysql-async/lib/MySQL.lua' -- if not using ESX, you can remove this line
                }
 client_scripts {

@@ -31,17 +31,27 @@ AddEventHandler("cadToggleApi", function()
     apiSendEnabled = not apiSendEnabled
 end)
 
--- Plugins Handler
+--[[
+    Sonoran CAD API Handler - Core Wrapper
+]]
 
-function RegisterPlugin(pluginName, initFunction)
-    table.insert(Plugins, pluginName)
-    initFunction()
+function performApiRequest(postData, type, cb)
+    -- apply required headers
+    local payload = {}
+    payload["id"] = communityID
+    payload["key"] = apiKey
+    payload["type"] = type
+    payload["data"] = {postData}
+    PerformHttpRequest(apiURL, function(statusCode, res, headers) 
+        if statusCode == 200 and res ~= nil then
+            debugPrint("result: "..tostring(res))
+            cb(res)
+        else
+            print(("CAD API ERROR: %s %s"):format(statusCode, res))
+        end
+    end, "POST", json.encode(payload), {["Content-Type"]="application/json"})
 end
 
-function UnloadPlugin(pluginName)
-    Plugins[pluginName] = nil
-    Config.plugins[pluginName] = nil
-end
 
 
 -- Utility Functions
