@@ -40,6 +40,10 @@ RegisterServerEvent('cadSendLocation')
 AddEventHandler('cadSendLocation', function(currentLocation)
     local source = source
     local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
+    if identifier == nil then
+        debugLog(("user %s has no identifier for %s, skipped."):format(source, Config.primaryIdentifier))
+        return
+    end
     if Config.serverType == "esx" then
         identifier = ("%s:%s"):format(Config.primaryIdentifier, identifier)
     end

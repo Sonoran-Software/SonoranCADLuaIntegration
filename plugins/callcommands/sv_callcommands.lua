@@ -14,11 +14,7 @@ function HandleCivilianCall(type, source, args, rawCommand)
     local isEmergency = type == "911" and true or false
     local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
     local index = findIndex(identifier)
-    if index then
-        callLocation = LocationCache[index].location
-    else
-        callLocation = 'Unknown'
-    end 
+    local callLocation = LocationCache[source] ~= nil and LocationCache[source].location or 'Unknown'
     -- Checking if there are any description arguments.
     if args[1] then
         local description = table.concat(args, " ")

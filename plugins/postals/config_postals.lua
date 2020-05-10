@@ -31,7 +31,7 @@ local config = {
 
 -- edit the below function if specifying "custom" postal handler above
 function getPostalCustom()
-    return nil -- remove this line!
+    return exports.sosa_postal:NearestPostal()  -- remove this line!
 end
 
 Config.RegisterPluginConfig(config.pluginName, config)

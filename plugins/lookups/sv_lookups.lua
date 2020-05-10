@@ -9,7 +9,7 @@
 registerApiType("PLATE_LOOKUP", "emergency")
 registerApiType("NAME_LOOKUP", "emergency")
 
-local function nameLookup(first, last, mi, callback)
+function cadNameLookup(first, last, mi, callback)
     local data = {}
     data["first"] = first ~= nil and first or ""
     data["last"] = last ~= nil and last or ""
@@ -22,7 +22,7 @@ local function nameLookup(first, last, mi, callback)
     end)
 end
 
-local function plateLookup(plate, callback)
+function cadPlateLookup(plate, callback)
     local data = {}
     data["plate"] = plate:gsub("%s+","")
     performApiRequest(data, "LOOKUP_PLATE", function(result)
@@ -32,14 +32,14 @@ local function plateLookup(plate, callback)
     end)
 end
 
-exports('cadNameLookup', nameLookup)
-exports('cadPlateLookup', plateLookup)
+exports('cadNameLookup', cadNameLookup)
+exports('cadPlateLookup', cadPlateLookup)
 
 -- The follow two commands are for developer use to analyze API responses
 
 RegisterCommand("platefind", function(source, args, rawCommand)
     if args[1] ~= nil then
-        plateLookup(args[1], function(data)
+        cadPlateLookup(args[1], function(data)
             print(("Raw data: %s"):format(json.encode(data)))
         end)
     end
@@ -50,7 +50,7 @@ RegisterCommand("namefind", function(source, args, rawCommand)
         local firstName = args[1]
         local lastName = args[2] ~= nil and args[2] or ""
         local mi = args[3] ~= nil and args[3] or ""
-        nameLookup(firstName, lastName, mi, function(data)
+        cadNameLookup(firstName, lastName, mi, function(data)
             print(("Raw data: %s"):format(json.encode(data)))
         end)
     end

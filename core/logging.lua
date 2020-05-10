@@ -3,7 +3,7 @@ local function sendConsole(level, message)
 end
 
 function debugLog(message)
-    if debugMode then
+    if Config.debugMode then
         sendConsole("DEBUG", message)
     end
 end

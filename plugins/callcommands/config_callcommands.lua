@@ -13,7 +13,7 @@ config = {
 
     -- put your configuration options below
     enable911 = true,
-    enable511 = false,
+    enable511 = true,
     enable311 = true,
     enablePanic = true
 }
