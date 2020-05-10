@@ -5,20 +5,26 @@
 
     DOES NOTHING BY DEFAULT. Add client-side code here to get the player's postal code.
 ]]
-
-shouldSendPostalData = false
-local postalPulseTimer = 950 -- how often to send postal data? Set slightly more often than location sends to prevent race conditions.
-
--- edit this function with your code
-function getPostal()
-    return nil -- remove this line!
-
-end
-
+local pluginConfig = Config.plugins["template"]
 
 -- Don't touch this!
+
+local function getNearestPostal()
+    if pluginConfig.getPostalMethod == "nearestpostal" then
+        if exports[pluginConfig.nearestPostalResourceName] ~= nil then
+            return exports[pluginConfig.nearestPostalResourceName]:getPostal()
+        else
+            assert(false, "Required postal resource is not loaded. Cannot use postals plugin.")
+        end
+    else if pluginConfig.getPostalMethod == "custom" then
+        return getPostalCustom()
+    else
+        errorLog("MISCONFIGURATION: postals plugin is misconfigured. Please check it.")
+        assert(false, "Postal configuration is not correct.")
+    end
+end
 local function sendPostalData()
-    local postal = getPostal()
+    local postal = getNearestPostal()
     if postal ~= nil then
         TriggerServerEvent("cadClientPostal", postal)
     end

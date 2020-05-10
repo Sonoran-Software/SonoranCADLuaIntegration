@@ -1,6 +1,10 @@
 fx_version 'bodacious'
 games {'gta5'}
 
+author 'Sonoran CAD'
+description 'Sonoran CAD FiveM Integration'
+version '2.0.0-alpha'
+
 server_scripts {
                 'core/configuration.lua'
                 ,'core/logging.lua'
@@ -12,6 +16,7 @@ server_scripts {
                }
 client_scripts {
     'core/client.lua'
+    ,'plugins/**/config_*.lua'
     ,'plugins/**/cl_*.lua'
 } 
 

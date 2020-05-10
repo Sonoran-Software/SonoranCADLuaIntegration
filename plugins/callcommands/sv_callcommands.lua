@@ -8,7 +8,6 @@
 
 local pluginConfig = Config.plugins["callcommands"]
 
-
 -- 911/311 Handler
 function HandleCivilianCall(type, source, args, rawCommand)
     -- Getting the user's Steam Hexidecimal and getting their location from the table.

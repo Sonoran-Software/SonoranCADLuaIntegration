@@ -1,21 +1,28 @@
-        ---------------------------------
-        -- Unit Location Update
-        ---------------------------------
+--[[
+    Sonaran CAD Plugins
+
+    Plugin Name: locations
+    Creator: SonoranCAD
+    Description: Implements location updating for players
+]]
+local pluginConfig = Config.plugins["locations"]
 
 -- Pending location updates array
 LocationCache = {}
 
 -- Main api POST function
 local function SendLocations()
-    local payload = json.encode({['id'] = communityID,['key'] = apiKey,['type'] = 'UNIT_LOCATION',['data'] = LocationCache})
-    debugPrint(("[SonoranCAD:DEBUG] SendLocations payload: %s"):format(payload))
-    PerformHttpRequest(Config.apiURL, function(statusCode, res, headers) 
-        if statusCode ~= 200 then
-            print(("[SonoranCAD] API error sending locations: %s %s"):format(statusCode, res))
-        end
-    end, "POST", payload, {["Content-Type"]="application/json"})
+    performApiRequest(LocationCache, 'UNIT_LOCATION', function() end)
 end
 
+function findPlayerLocation(playerSrc)
+    for k, v in pairs(LocationCache) do
+        if v.playerId == playerSrc then
+            return v.location
+        end
+    end
+    return nil
+end
 
 -- Main update thread sending api location update POST requests per the postTime interval
 Citizen.CreateThread(function()
@@ -24,11 +31,9 @@ Citizen.CreateThread(function()
         if #LocationCache > 0 then
             -- Make API request if 1 or more updates exist
             SendLocations()
-            -- Clear pending location calls
-            LocationCache = {}
         end
         -- Wait the (5000ms) delay to check for pending location calls
-        Citizen.Wait(postTime)
+        Citizen.Wait(pluginConfig.postTime)
     end
 end)
 
@@ -55,6 +60,15 @@ AddEventHandler('cadSendLocation', function(currentLocation)
         LocationCache[index].location = currentLocation
     else
         -- Location does not exist in pending array -> Insert new location object
-        table.insert(LocationCache, {['apiId'] = identifier, ['location'] = currentLocation})
+        table.insert(LocationCache, {['playerId'] = source, ['apiId'] = identifier, ['location'] = currentLocation})
+    end
+end)
+
+AddEventHandler("playerDropped", function()
+    for k, v in pairs(LocationCache) do
+        if v.playerId == source then
+            LocationCache[k] = nil
+            return
+        end
     end
 end)

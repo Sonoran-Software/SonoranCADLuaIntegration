@@ -8,3 +8,4 @@
     Put all server-side logic in this file.
 ]]
 
+local pluginConfig = Config.plugins["template"]

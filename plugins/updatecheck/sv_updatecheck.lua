@@ -21,17 +21,8 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 -- Update Checker
 ---------------------------------------------------------------------------
 local url = "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/master/version.json"
-local version = "1.2.4"
+local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
 local latest = true
-
-local rawData = LoadResourceFile(GetCurrentResourceName(), "version.json")
-
-if not rawData then
-    print("SonoranCAD ERROR: Couldn't read \"versions.json\" file.. Please make sure it's readable and exists.")
-else
-    rawData = json.decode(rawData)
-    version = rawData["resource"]
-end
 
 function checkForUpdate()
     PerformHttpRequest(url, function(err, data, headers)
@@ -55,4 +46,6 @@ function checkForUpdate()
     end, "GET", "",  { ["Content-Type"] = 'application/json' })
 end
 
-checkForUpdate();
+CreateThread(function()
+    checkForUpdate()
+end)
