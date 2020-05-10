@@ -3,7 +3,6 @@ local function sendConsole(level, message)
 end
 
 function debugLog(message)
-    sendConsole("DEBUG", message)
     if debugMode then
         sendConsole("DEBUG", message)
     end
