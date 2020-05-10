@@ -15,4 +15,4 @@ local config = {
     myConfigOption = "value"
 }
 
-Config.RegisterPluginConfig(config.pluginName, config)
+--Config.RegisterPluginConfig(config.pluginName, config)

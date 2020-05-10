@@ -5,7 +5,7 @@
 
     Put all needed configuration in this file.
 ]]
-local config = {
+config = {
     pluginName = "callcommands", -- name your plugin here
     pluginVersion = "1.0", -- version of your plugin
     pluginAuthor = "SonoranCAD", -- author

@@ -1,11 +1,13 @@
 --[[
-    Nearest Postal Integration
+    Sonaran CAD Plugins
 
-    This resource sends postal data to the server on request.
-
-    DOES NOTHING BY DEFAULT. Add client-side code here to get the player's postal code.
+    Plugin Name: postals
+    Creator: SonoranCAD
+    Description: Fetches nearest postal from client
 ]]
-local pluginConfig = Config.plugins["template"]
+
+
+local pluginConfig = Config.plugins["postals"]
 
 -- Don't touch this!
 

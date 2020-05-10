@@ -1,8 +1,9 @@
 local function sendConsole(level, message)
-    print(("[SonoranCAD:%s] %s", level, message))
+    print(("[SonoranCAD:%s] %s"):format(level, message))
 end
 
 function debugLog(message)
+    sendConsole("DEBUG", message)
     if debugMode then
         sendConsole("DEBUG", message)
     end

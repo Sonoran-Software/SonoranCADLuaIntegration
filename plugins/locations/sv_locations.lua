@@ -33,7 +33,7 @@ Citizen.CreateThread(function()
             SendLocations()
         end
         -- Wait the (5000ms) delay to check for pending location calls
-        Citizen.Wait(pluginConfig.postTime)
+        Citizen.Wait(pluginConfig.checkTime)
     end
 end)
 
