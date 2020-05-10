@@ -7,6 +7,7 @@ version '1.2.4'
 
 server_scripts {
                 'core/configuration.lua'
+                ,'config.lua'
                 ,'core/logging.lua'
                 ,'core/server.lua'
                 ,'plugins/**/config_*.lua'

@@ -18,7 +18,7 @@ local function getNearestPostal()
         else
             assert(false, "Required postal resource is not loaded. Cannot use postals plugin.")
         end
-    else if pluginConfig.getPostalMethod == "custom" then
+    elseif pluginConfig.getPostalMethod == "custom" then
         return getPostalCustom()
     else
         errorLog("MISCONFIGURATION: postals plugin is misconfigured. Please check it.")
@@ -40,7 +40,7 @@ CreateThread(function()
         if shouldSendPostalData then
             sendPostalData()
         end
-        Wait(postalPulseTimer)
+        Wait(pluginConfig.sendTimer)
     end
 end)
 

@@ -1,5 +1,9 @@
 Plugins = {}
 
+CreateThread(function()
+    Wait(1)
+    infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
+end)
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 -- Helper function to get the ESX Identity object
@@ -28,28 +32,42 @@ end
 -- Toggles API sender.
 RegisterServerEvent("cadToggleApi")
 AddEventHandler("cadToggleApi", function()
-    apiSendEnabled = not apiSendEnabled
+    Config.apiSendEnabled = not Config.apiSendEnabled
 end)
 
 --[[
     Sonoran CAD API Handler - Core Wrapper
 ]]
 
+ApiEndpoints = {
+    ["UNIT_LOCATION"] = "emergency",
+    ["CALL_911"] = "emergency",
+    ["UNIT_PANIC"] = "emergency"
+}
+
 function performApiRequest(postData, type, cb)
-    -- apply required headers
+    -- apply required headers 
     local payload = {}
-    payload["id"] = communityID
-    payload["key"] = apiKey
+    payload["id"] = Config.communityID
+    payload["key"] = Config.apiKey
     payload["type"] = type
     payload["data"] = {postData}
-    PerformHttpRequest(apiURL, function(statusCode, res, headers) 
+    local endpoint = nil
+    if ApiEndpoints[type] ~= nil then
+        endpoint = ApiEndpoints[type]
+    end
+    PerformHttpRequest(Config.apiUrl..tostring(endpoint), function(statusCode, res, headers) 
         if statusCode == 200 and res ~= nil then
             debugPrint("result: "..tostring(res))
+            for k, v in pairs(headers) do
+                --debugPrint(("%s: %s"):format(k, v))
+            end
             cb(res)
         else
-            print(("CAD API ERROR: %s %s"):format(statusCode, res))
+            errorLog(("CAD API ERROR: %s %s"):format(statusCode, res))
         end
     end, "POST", json.encode(payload), {["Content-Type"]="application/json"})
+    debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(postData), Config.apiUrl))
 end
 
 

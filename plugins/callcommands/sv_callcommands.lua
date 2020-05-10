@@ -54,22 +54,22 @@ function HandleCivilianCall(type, source, args, rawCommand)
 end
 
 CreateThread(function()
-    if Config.enable911 then
+    if pluginConfig.enable911 then
         RegisterCommand('911', function(source, args, rawCommand)
             HandleCivilianCall("911", source, args, rawCommand)
         end, false)
     end
-    if Config.enable511 then
+    if pluginConfig.enable511 then
         RegisterCommand('511', function(source, args, rawCommand)
             HandleCivilianCall("511", source, args, rawCommand)
         end, false)
     end
-    if Config.enable311 then
+    if pluginConfig.enable311 then
         RegisterCommand('311', function(source, args, rawCommand)
             HandleCivilianCall("311", source, args, rawCommand)
         end, false)
     end
-    if Config.enablePanic then
+    if pluginConfig.enablePanic then
         RegisterCommand('panic', function(source, args, rawCommand)
             sendPanic(source)
         end, false)
@@ -87,14 +87,9 @@ RegisterServerEvent('cadSendCallApi')
 AddEventHandler('cadSendCallApi', function(emergency, caller, location, description, source)
     -- send an event to be consumed by other resources
     TriggerEvent("cadIncomingCall", emergency, caller, location, description, source)
-    if apiSendEnabled then
-        local payload = json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'CALL_911', ['data'] = {{['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}}})
-        debugPrint(("[SonoranCAD:DEBUG] cadSendCallApi payload: %s"):format(payload))
-        PerformHttpRequest(apiURL, function(statusCode, res, headers) 
-            if statusCode ~= 200 then
-                print(("[SonoranCAD] API error sending call: %s %s %s"):format(statusCode, res, headers))
-            end
-        end, "POST", payload, {["Content-Type"]="application/json"})
+    if Config.apiSendEnabled then
+        local data = {['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}
+        performApiRequest(data, 'CALL_911', function() end)
     else
         debugPrint("[SonoranCAD] API sending is disabled. Incoming call ignored.")
     end
@@ -108,13 +103,5 @@ function sendPanic(source)
     -- Determine identifier
     local identifier = GetIdentifiers(source)[primaryIdentifier]
     -- Process panic POST request
-    PerformHttpRequest(apiURL, function(statusCode, res, headers) 
-        if statusCode ~= 200 then
-            print(("[SonoranCAD] API error sending panic button: %s %s %s"):format(statusCode, res, headers))
-        end
-    end, "POST", json.encode({['id'] = communityID, ['key'] = apiKey, ['type'] = 'UNIT_PANIC', ['data'] = {{ ['isPanic'] = true, ['apiId'] = identifier}}}), {["Content-Type"]="application/json"})
+    performApiRequest({'isPanic'] = true, ['apiId'] = identifier}, 'UNIT_PANIC', function() end)
 end
-
--- Creation of a /panic command
-
-

@@ -13,7 +13,11 @@ Citizen.CreateThread(function()
     while true do
         local pos = GetEntityCoords(PlayerPedId())
         local var1, var2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z, Citizen.ResultAsInteger(), Citizen.ResultAsInteger())
-        local postal = getPostal()
+        local postal = nil
+        if Plugins["postals"] ~= nil then
+            postal = getNearestPostal()
+            shouldSendPostalData = false
+        end
         -- Determine location format
         if (GetStreetNameFromHashKey(var2) == '') then
             currentLocation = GetStreetNameFromHashKey(var1)
