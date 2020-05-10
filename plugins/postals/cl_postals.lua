@@ -11,7 +11,7 @@ local pluginConfig = Config.plugins["postals"]
 
 -- Don't touch this!
 
-local function getNearestPostal()
+function getNearestPostal()
     if pluginConfig.getPostalMethod == "nearestpostal" then
         if exports[pluginConfig.nearestPostalResourceName] ~= nil then
             return exports[pluginConfig.nearestPostalResourceName]:getPostal()
@@ -37,7 +37,7 @@ CreateThread(function()
     end
     TriggerServerEvent("getShouldSendPostal")
     while true do
-        if shouldSendPostalData then
+        if pluginConfig.shouldSendPostalData then
             sendPostalData()
         end
         Wait(pluginConfig.sendTimer)
@@ -46,5 +46,5 @@ end)
 
 RegisterNetEvent("getShouldSendPostalResponse")
 AddEventHandler("getShouldSendPostalResponse", function(toggle)
-    shouldSendPostalData = toggle
+    pluginConfig.shouldSendPostalData = toggle
 end)

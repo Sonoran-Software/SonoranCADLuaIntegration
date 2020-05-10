@@ -51,12 +51,13 @@ function performApiRequest(postData, type, cb)
     payload["id"] = Config.communityID
     payload["key"] = Config.apiKey
     payload["type"] = type
-    payload["data"] = {postData}
+    payload["data"] = postData
     local endpoint = nil
     if ApiEndpoints[type] ~= nil then
         endpoint = ApiEndpoints[type]
     end
     PerformHttpRequest(Config.apiUrl..tostring(endpoint), function(statusCode, res, headers) 
+        debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(payload), Config.apiUrl..tostring(endpoint)))
         if statusCode == 200 and res ~= nil then
             debugPrint("result: "..tostring(res))
             for k, v in pairs(headers) do
@@ -67,7 +68,7 @@ function performApiRequest(postData, type, cb)
             errorLog(("CAD API ERROR: %s %s"):format(statusCode, res))
         end
     end, "POST", json.encode(payload), {["Content-Type"]="application/json"})
-    debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(postData), Config.apiUrl))
+    
 end
 
 
@@ -85,6 +86,16 @@ function stringsplit(inputstr, sep)
     end
     return t
 end
+
+-- Helper function to determine index of given identifier
+function findIndex(identifier)
+    for i,loc in ipairs(LocationCache) do
+        if loc.apiId == identifier then
+            return i
+        end
+    end
+end
+
 
 function GetIdentifiers(player)
     local ids = {}

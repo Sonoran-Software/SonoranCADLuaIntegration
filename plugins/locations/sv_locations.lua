@@ -12,6 +12,9 @@ LocationCache = {}
 
 -- Main api POST function
 local function SendLocations()
+    for k, v in pairs(LocationCache) do
+        LocationCache[k].playerId = nil
+    end
     performApiRequest(LocationCache, 'UNIT_LOCATION', function() end)
 end
 
@@ -36,15 +39,6 @@ Citizen.CreateThread(function()
         Citizen.Wait(pluginConfig.checkTime)
     end
 end)
-
--- Helper function to determine index of given steamHex
-local function findIndex(identifier)
-    for i,loc in ipairs(LocationCache) do
-        if loc.apiId == identifier then
-            return i
-        end
-    end
-end
 
 -- Event from client when location changes occur
 RegisterServerEvent('cadSendLocation')

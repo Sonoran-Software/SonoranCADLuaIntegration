@@ -17,3 +17,13 @@ Config.GetPluginConfig = function(pluginName)
         return nil
     end
 end
+
+
+function isPluginLoaded(pluginName)
+    for k, v in pairs(Plugins) do
+        if v == pluginName then
+            return true
+        end
+    end
+    return false
+end

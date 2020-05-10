@@ -27,10 +27,10 @@ function HandleCivilianCall(type, source, args, rawCommand)
         end
         local caller = nil
         -- Checking wether you have set it to standalone or esx.
-        if serverType == "standalone" then
+        if Config.serverType == "standalone" then
             -- Getting the Steam Name
             caller = GetPlayerName(source) 
-        elseif serverType == "esx" then
+        elseif Config.serverType == "esx" then
             -- Getting the ESX Identity Name
             local name = getIdentity(source)
             if name ~= nil then
@@ -88,8 +88,9 @@ AddEventHandler('cadSendCallApi', function(emergency, caller, location, descript
     -- send an event to be consumed by other resources
     TriggerEvent("cadIncomingCall", emergency, caller, location, description, source)
     if Config.apiSendEnabled then
-        local data = {['serverId'] = serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}
-        performApiRequest(data, 'CALL_911', function() end)
+        local data = {['serverId'] = Config.serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}
+        debugLog("sending call!")
+        performApiRequest({data}, 'CALL_911', function() end)
     else
         debugPrint("[SonoranCAD] API sending is disabled. Incoming call ignored.")
     end
@@ -103,5 +104,5 @@ function sendPanic(source)
     -- Determine identifier
     local identifier = GetIdentifiers(source)[primaryIdentifier]
     -- Process panic POST request
-    performApiRequest({'isPanic'] = true, ['apiId'] = identifier}, 'UNIT_PANIC', function() end)
+    performApiRequest({['isPanic'] = true, ['apiId'] = identifier}, 'UNIT_PANIC', function() end)
 end

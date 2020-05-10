@@ -14,9 +14,10 @@ Citizen.CreateThread(function()
         local pos = GetEntityCoords(PlayerPedId())
         local var1, var2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z, Citizen.ResultAsInteger(), Citizen.ResultAsInteger())
         local postal = nil
-        if Plugins["postals"] ~= nil then
+        if isPluginLoaded("postals") then
             postal = getNearestPostal()
-            shouldSendPostalData = false
+        else
+            pluginConfig.prefixPostal = false
         end
         -- Determine location format
         if (GetStreetNameFromHashKey(var2) == '') then
@@ -32,7 +33,7 @@ Citizen.CreateThread(function()
                 lastLocation = currentLocation
             end
         end
-        if shouldSendPostalData and postal ~= nil then
+        if pluginConfig.prefixPostal and postal ~= nil then
             currentLocation = "["..tostring(postal).."] "..currentLocation
         end
         TriggerServerEvent('cadSendLocation', currentLocation) 

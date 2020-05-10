@@ -12,8 +12,8 @@ local config = {
     requiresPlugins = {}, -- required plugins for this plugin to work, separated by commas
 
     -- put your configuration options below
-    checkTime = 1000, -- how frequently to send locations to the server
-    prefixPostal = false -- prefix postal code on locations sent, requires postal plugin
+    checkTime = 5000, -- how frequently to send locations to the server
+    prefixPostal = true -- prefix postal code on locations sent, requires postal plugin
 }
 
 Config.RegisterPluginConfig(config.pluginName, config)
