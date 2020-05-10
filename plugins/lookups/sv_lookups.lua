@@ -6,8 +6,8 @@
     Description: Implements the name/plate lookup API
 ]]
 
-registerApiType("PLATE_LOOKUP", "emergency")
-registerApiType("NAME_LOOKUP", "emergency")
+registerApiType("LOOKUP_PLATE", "emergency")
+registerApiType("LOOKUP_NAME", "emergency")
 
 function cadNameLookup(first, last, mi, callback)
     local data = {}
