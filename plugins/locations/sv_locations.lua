@@ -12,57 +12,41 @@ LocationCache = {}
 
 -- Main api POST function
 local function SendLocations()
+    local cache = {}
     for k, v in pairs(LocationCache) do
-        LocationCache[k].playerId = nil
+        table.insert(cache, v)
     end
-    performApiRequest(LocationCache, 'UNIT_LOCATION', function() end)
+    if #cache > 0 then
+        performApiRequest(cache, 'UNIT_LOCATION', function() end)
+    end
+    SetTimeout(pluginConfig.checkTime, SendLocations)
 end
 
 function findPlayerLocation(playerSrc)
-    for k, v in pairs(LocationCache) do
-        if v.playerId == playerSrc then
-            return v.location
-        end
+    if LocationCache[playerSrc] ~= nil then
+        return LocationCache[playerSrc].location
     end
     return nil
 end
 
 -- Main update thread sending api location update POST requests per the postTime interval
 Citizen.CreateThread(function()
-    Wait(0)
-    while true do
-        if #LocationCache > 0 then
-            -- Make API request if 1 or more updates exist
-            SendLocations()
-        end
-        -- Wait the (5000ms) delay to check for pending location calls
-        Citizen.Wait(pluginConfig.checkTime)
-    end
+    Wait(1)
+    SendLocations()
 end)
 
 -- Event from client when location changes occur
 RegisterServerEvent('cadSendLocation')
 AddEventHandler('cadSendLocation', function(currentLocation)
-    -- Does this client location already exist in the pending location array?
+    local source = source
     local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
     if Config.serverType == "esx" then
         identifier = ("%s:%s"):format(Config.primaryIdentifier, identifier)
     end
-    local index = findIndex(identifier)
-    if index then
-        -- Location already in pending array -> Update
-        LocationCache[index].location = currentLocation
-    else
-        -- Location does not exist in pending array -> Insert new location object
-        table.insert(LocationCache, {['playerId'] = source, ['apiId'] = identifier, ['location'] = currentLocation})
-    end
+    LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation}
 end)
 
 AddEventHandler("playerDropped", function()
-    for k, v in pairs(LocationCache) do
-        if v.playerId == source then
-            LocationCache[k] = nil
-            return
-        end
-    end
+    local source = source
+    LocationCache[source] = nil
 end)

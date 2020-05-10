@@ -6,8 +6,10 @@
     Description: Implements the name/plate lookup API
 ]]
 
+registerApiType("PLATE_LOOKUP", "emergency")
+registerApiType("NAME_LOOKUP", "emergency")
 
-function nameLookup(first, last, mi, callback)
+local function nameLookup(first, last, mi, callback)
     local data = {}
     data["first"] = first ~= nil and first or ""
     data["last"] = last ~= nil and last or ""
@@ -20,7 +22,7 @@ function nameLookup(first, last, mi, callback)
     end)
 end
 
-function plateLookup(plate, callback)
+local function plateLookup(plate, callback)
     local data = {}
     data["plate"] = plate:gsub("%s+","")
     performApiRequest(data, "LOOKUP_PLATE", function(result)
