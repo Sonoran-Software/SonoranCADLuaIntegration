@@ -23,6 +23,7 @@ CreateThread(function()
                 end
                 local reg = data.vehicleRegistrations[1] -- scanner is always full lookup
                 if reg then
+                    TriggerEvent("SonoranCAD::wraithv2:PlateLocked", source, reg, cam, plate, index)
                     local mi = reg.person.mi ~= "" and ", "..reg.person.mi or ""
                     debugLog(("DATA: Plate [%s]: S: %s E: %s O: %s"):format(reg.vehicle.plate, reg.status, reg.expiration, reg.person.first.." "..reg.person.last..mi))
                     
@@ -37,6 +38,7 @@ CreateThread(function()
         AddEventHandler("wk:onPlateScanned", function(cam, plate, index)
             debugLog(("plate scan: %s - %s - %s"):format(cam, plate, index))
             local source = source
+            TriggerEvent("SonoranCAD::wraithv2:PlateScanned", source, reg, cam, plate, index)
             cadPlateLookup(plate, function(data)
                 if data ~= nil then
                     local reg = data.vehicleRegistrations[1] -- scanner is always full lookup

@@ -36,8 +36,8 @@ Citizen.CreateThread(function()
 end)
 
 -- Event from client when location changes occur
-RegisterServerEvent('cadSendLocation')
-AddEventHandler('cadSendLocation', function(currentLocation)
+RegisterServerEvent('SonoranCAD::locations:SendLocation')
+AddEventHandler('SonoranCAD::locations:SendLocation', function(currentLocation)
     local source = source
     local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
     if identifier == nil then

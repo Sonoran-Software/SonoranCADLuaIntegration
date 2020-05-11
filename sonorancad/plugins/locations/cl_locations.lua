@@ -36,7 +36,7 @@ Citizen.CreateThread(function()
         if pluginConfig.prefixPostal and postal ~= nil then
             currentLocation = "["..tostring(postal).."] "..currentLocation
         end
-        TriggerServerEvent('cadSendLocation', currentLocation) 
+        TriggerServerEvent('SonoranCAD::locations:SendLocation', currentLocation) 
         -- Wait (1000ms) before checking for an updated unit location
         Citizen.Wait(pluginConfig.checkTime)
     end

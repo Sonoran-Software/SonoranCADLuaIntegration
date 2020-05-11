@@ -40,7 +40,7 @@ function HandleCivilianCall(type, source, args, rawCommand)
             return
         end
         -- Sending the API event
-        TriggerEvent('cadSendCallApi', isEmergency, caller, callLocation, description, source)
+        TriggerEvent('SonoranCAD::callcommands:SendCallApi', isEmergency, caller, callLocation, description, source)
         -- Sending the user a message stating the call has been sent
         TriggerClientEvent("chat:addMessage", source, {args = {"^0^5^*[SonoranCAD]^r ", "^7Your call has been sent to dispatch. Help is on the way!"}})
     else
@@ -70,8 +70,8 @@ CreateThread(function()
             sendPanic(source)
         end, false)
         -- Client Panic request (to be used by other resources)
-        RegisterServerEvent('cadSendPanicApi')
-        AddEventHandler('cadSendPanicApi', function(source)
+        RegisterNetEvent('SonoranCAD::callcommands:SendPanicApi')
+        AddEventHandler('SonoranCAD::callcommands:SendPanicApi', function(source)
             sendPanic(source)
         end)
     end
@@ -79,10 +79,10 @@ CreateThread(function()
 end)
 
 -- Client Call request
-RegisterServerEvent('cadSendCallApi')
-AddEventHandler('cadSendCallApi', function(emergency, caller, location, description, source)
+RegisterServerEvent('SonoranCAD::callcommands:SendCallApi')
+AddEventHandler('SonoranCAD::callcommands:SendCallApi', function(emergency, caller, location, description, source)
     -- send an event to be consumed by other resources
-    TriggerEvent("cadIncomingCall", emergency, caller, location, description, source)
+    TriggerEvent("SonoranCAD::callcommands:cadIncomingCall", emergency, caller, location, description, source)
     if Config.apiSendEnabled then
         local data = {['serverId'] = Config.serverId, ['isEmergency'] = emergency, ['caller'] = caller, ['location'] = location, ['description'] = description}
         debugLog("sending call!")
