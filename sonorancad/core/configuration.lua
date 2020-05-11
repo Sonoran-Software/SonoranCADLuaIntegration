@@ -8,6 +8,7 @@ Config = {
     primaryIdentifier = nil,
     apiSendEnabled = nil,
     debugMode = nil,
+    updateBranch = "rewrite",
     plugins = {}
 }
 

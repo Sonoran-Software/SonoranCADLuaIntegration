@@ -18,5 +18,20 @@ CreateThread(function()
             end
         end
         debugLog(("Plugin %s loaded OK"):format(k))
+
+        -- Plugin updater system
+        local version = json.decode(LoadResourceFile(GetCurrentResourceName(), "plugins/"..k.."/version_"..k..".json"))
+        if version.check_url ~= "" then
+            PerformHttpRequest(version.check_url, function(code, data, headers)
+                if code == 200 then
+                    local remote = json.decode(data)
+                    if remote.version ~= version.version then
+                        infoLog(("Plugin Updater: %s has an available update! %s -> %s"):format(version.version, remote.version))
+                    end
+                else
+                    errorLog(("Failed to check plugin updates for %s: %s %s"):format(k, code, data))
+                end
+            end, "GET")
+        end
     end
 end)

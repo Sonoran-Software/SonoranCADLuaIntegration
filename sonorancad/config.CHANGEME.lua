@@ -10,3 +10,4 @@ Config.primaryIdentifier = "steam" -- Used for location data. What ID will playe
 Config.apiSendEnabled = true -- Set to false to disable sending over the API and you use your own 911 handler
 
 Config.debugMode = false -- When set to true, print every web request to console. Very spammy, only set if asked to by support!
+Config.updateBranch = "rewrite" -- Use a specific branch when checking for updates
