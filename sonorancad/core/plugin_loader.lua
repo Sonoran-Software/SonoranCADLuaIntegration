@@ -28,7 +28,7 @@ CreateThread(function()
                     if code == 200 then
                         local remote = json.decode(data)
                         if remote.version ~= version.version then
-                            infoLog(("Plugin Updater: %s has an available update! %s -> %s"):format(version.version, remote.version))
+                            infoLog(("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(version.version, remote.version, remote.download_url))
                         end
                     else
                         errorLog(("Failed to check plugin updates for %s: %s %s"):format(k, code, data))

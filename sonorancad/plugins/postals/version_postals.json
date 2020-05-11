@@ -1,5 +1,5 @@
 {
     "version": "1.0",
-    "check_url": "",
-    "download_url": ""
+    "check_url": "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/rewrite/sonorancad/plugins/postals/version_postals.json",
+    "download_url": "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/rewrite/sonorancad/plugins/postals/"
 }
