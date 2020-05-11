@@ -22,7 +22,7 @@ end
 
 -- command to toggle debug mode, console only
 RegisterCommand("caddebug", function()
-    if source ~= 0 then
+    if source ~= nil then
         print("Console only command!")
         return
     end
