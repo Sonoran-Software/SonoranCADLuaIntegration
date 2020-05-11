@@ -19,3 +19,13 @@ end
 function infoLog(message)
     sendConsole("INFO", message)
 end
+
+-- command to toggle debug mode, console only
+RegisterCommand("caddebug", function()
+    if source ~= 0 then
+        print("Console only command!")
+        return
+    end
+    Config.debugMode = not Config.debugMode
+    infoLog(("Debug mode toggled to %s"):format(Config.debugMode))
+end, true)
