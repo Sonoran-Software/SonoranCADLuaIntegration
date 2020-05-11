@@ -8,9 +8,13 @@ Config = {
     primaryIdentifier = nil,
     apiSendEnabled = nil,
     debugMode = nil,
-    updateBranch = "rewrite",
+    updateBranch = nil,
     plugins = {}
 }
+
+if Config.updateBranch == nil then
+    Config.updateBranch = "rewrite"
+end
 
 Config.RegisterPluginConfig = function(pluginName, configs)
     Config.plugins[pluginName] = {}

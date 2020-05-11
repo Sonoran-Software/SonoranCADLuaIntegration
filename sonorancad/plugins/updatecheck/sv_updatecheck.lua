@@ -20,7 +20,7 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 ---------------------------------------------------------------------------
 -- Update Checker
 ---------------------------------------------------------------------------
-local url = "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/"..Config.updateBranch.."/version.json"
+local url = "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/"..Config.updateBranch.."/sonorancad/version.json"
 local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
 local latest = true
 
