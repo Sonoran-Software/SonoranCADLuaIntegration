@@ -15,7 +15,7 @@ function cadNameLookup(first, last, mi, callback)
     data["last"] = last ~= nil and last or ""
     data["mi"] = mi ~= nil and mi or ""
     
-    performApiRequest(data, "LOOKUP_NAME", function(result)
+    performApiRequest({data}, "LOOKUP_NAME", function(result)
         debugPrint("name lookup: "..tostring(result))
         local lookup = json.decode(result)
         callback(lookup)
@@ -25,7 +25,7 @@ end
 function cadPlateLookup(plate, callback)
     local data = {}
     data["plate"] = plate:gsub("%s+","")
-    performApiRequest(data, "LOOKUP_PLATE", function(result)
+    performApiRequest({data}, "LOOKUP_PLATE", function(result)
         debugPrint("plate lookup: "..tostring(result))
         local lookup = json.decode(result)
         callback(lookup)

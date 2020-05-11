@@ -98,7 +98,7 @@ end)
 -- shared function to send panic signals
 function sendPanic(source)
     -- Determine identifier
-    local identifier = GetIdentifiers(source)[primaryIdentifier]
+    local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
     -- Process panic POST request
-    performApiRequest({['isPanic'] = true, ['apiId'] = identifier}, 'UNIT_PANIC', function() end)
+    performApiRequest({{['isPanic'] = true, ['apiId'] = identifier}}, 'UNIT_PANIC', function() end)
 end
