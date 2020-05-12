@@ -6,7 +6,7 @@
     Description: Implements ts command
 ]]
 
-local pluginConfig = Config.plugins["traffiicstop"]
+local pluginConfig = Config.plugins["trafficstop"]
 registerApiType("NEW_DISPATCH", "emergency")
 -- Traffic Stop Handler
 function HandleTrafficStop(type, source, args, rawCommand)
