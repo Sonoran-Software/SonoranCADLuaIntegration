@@ -29,7 +29,7 @@ function HandleTrafficStop(type, source, args, rawCommand)
 
    
         -- Sending the API event
-        TriggerEvent('SonoranCAD::trafficstop:SendTrafficApi', isEmergency, caller, callLocation, description, source)
+        TriggerEvent('SonoranCAD::trafficstop:SendTrafficApi', origin, status, priority, address, title, code, description, units, source)
         -- Sending the user a message stating the call has been sent
         TriggerClientEvent("chat:addMessage", source, {args = {"^0^5^*[SonoranCAD]^r ", "^7Details regarding you traffic Stop have been added to CAD"}})
     else
