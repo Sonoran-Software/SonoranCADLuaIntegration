@@ -16,7 +16,7 @@ CreateThread(function()
         AddEventHandler("wk:onPlateLocked", function(cam, plate, index)
             debugLog(("plate lock: %s - %s - %s"):format(cam, plate, index))
             local source = source
-            cadPlateLookup(plate, function(data)
+            cadPlateLookup(plate, false, function(data)
                 if data == nil then
                     debugLog("No data returned")
                     return

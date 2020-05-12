@@ -1,5 +1,5 @@
 {
-    "version": "1.1",
+    "version": "1.2",
     "check_url": "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/rewrite/sonorancad/plugins/wraithv2/version_wraithv2.json",
     "download_url": "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/rewrite/sonorancad/plugins/wraithv2/"
 }

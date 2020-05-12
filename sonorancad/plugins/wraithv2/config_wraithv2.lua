@@ -13,10 +13,6 @@ local config = {
 
     -- put your configuration options below
     isPluginEnabled = false -- disable this plugin by default
-
-    -- VERY IMPORTANT: YOU MUST EDIT THE RADAR CODE TO SCAN PLAYER PLATES ONLY!
 }
-
--- IMPORTANT: UNCOMMENT THE BELOW LINE ON ACTUAL PLUGINS!
 
 Config.RegisterPluginConfig(config.pluginName, config)
