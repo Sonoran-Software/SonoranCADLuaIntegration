@@ -12,12 +12,12 @@ registerApiType("NEW_DISPATCH", "emergency")
 function HandleTrafficStop(type, source, args, rawCommand)
     local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
     local index = findIndex(identifier)
-    local origin = 3
-    local status = 2
-    local priority = 1
+    local origin = pluginConfig.orgin 
+    local status =  pluginConfig.status
+    local priority =  pluginConfig.priority
     local address = LocationCache[source] ~= nil and LocationCache[source].location or 'Unknown'
-    local title = "Traffic Stop"
-    local code = "10-11 - Traffic Stop"
+    local title =  pluginConfig.title
+    local code =  pluginConfig.code
     local units = array(identifier)
     -- Checking if there are any description arguments.
     if args[1] then
