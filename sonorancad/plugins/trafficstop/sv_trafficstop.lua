@@ -18,7 +18,7 @@ function HandleTrafficStop(type, source, args, rawCommand)
     local address = LocationCache[source] ~= nil and LocationCache[source].location or 'Unknown'
     local title =  pluginConfig.title
     local code =  pluginConfig.code
-    local units = array(identifier)
+    local units = {identifier}
     -- Checking if there are any description arguments.
     if args[1] then
         local description = table.concat(args, " ")
@@ -51,19 +51,24 @@ end)
 
 -- Client TraficStop request
 RegisterServerEvent('SonoranCAD::trafficstop:SendTrafficApi')
-AddEventHandler('SonoranCAD::trafficstop:SendTrafficApii', function(origin, status, priority, address, title, code, description, units, source)
+AddEventHandler('SonoranCAD::trafficstop:SendTrafficApi', function(origin, status, priority, address, title, code, description, units, source)
     -- send an event to be consumed by other resources
     TriggerEvent("SonoranCAD::trafficstop:cadIncomingTraffic", origin, status, priority, address, title, code, description, units, source)
     if Config.apiSendEnabled then
-        local data = {['serverId'] = Config.serverId, 
-        ['origin'] = origin, 
-        ['status'] = status, 
-        ['priority'] = priority, 
-        ['address'] = address, 
-        ['title'] = title, 
-        ['code'] = code, 
-        ['description'] = description, 
-        ['units'] = units}
+        local data = {
+            ['serverId'] = Config.serverId, 
+            ['origin'] = origin, 
+            ['status'] = status, 
+            ['priority'] = priority, 
+            ['block'] = "", -- not used, but required
+            ['postal'] = "", --TODO
+            ['address'] = address, 
+            ['title'] = title, 
+            ['code'] = code, 
+            ['description'] = description, 
+            ['units'] = units,
+            ['notes'] = "" -- required
+        }
         debugLog("sending Traffic Stop!")
         performApiRequest({data}, 'NEW_DISPATCH', function() end)
     else

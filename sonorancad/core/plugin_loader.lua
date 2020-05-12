@@ -9,7 +9,7 @@
 CreateThread(function()
     Wait(1)
     for k, v in pairs(Config.plugins) do
-        infoLog(("Checking plugin %s..."):format(k))
+        debugLog(("Checking plugin %s..."):format(k))
         if Config.plugins[k].requiredPlugins ~= nil then
             for _, v in pairs(Config.plugins[k].requiredPlugins) do
                 if Plugins[v] == nil then
@@ -17,7 +17,7 @@ CreateThread(function()
                 end
             end
         end
-        infoLog(("Plugin %s loaded OK"):format(k))
+        debugLog(("Plugin %s loaded OK"):format(k))
 
         -- Plugin updater system
         local f = LoadResourceFile(GetCurrentResourceName(), "plugins/"..k.."/version_"..k..".json")
@@ -39,4 +39,9 @@ CreateThread(function()
             debugLog("Got empty file for "..k)
         end
     end
+    local pluginList = {}
+    for name, v in pairs(Config.plugins) do
+        table.insert(pluginList, name)
+    end
+    infoLog(("Loaded plugins: %s"):format(table.concat(pluginList, ", ")))
 end)

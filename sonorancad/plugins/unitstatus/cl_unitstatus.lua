@@ -29,7 +29,7 @@ end
 RegisterNetEvent("SonoranCAD::unitstatus:StatusUpdate")
 AddEventHandler("SonoranCAD::unitstatus:StatusUpdate", function(apiId, status, success)
     if success then
-        print("Successfully changed status to "..pluginConfig.statusCodes[status])
+        print("Successfully changed status.")
     else
         print("Failed to change status.")
     end
