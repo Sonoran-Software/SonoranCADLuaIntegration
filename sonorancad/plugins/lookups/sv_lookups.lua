@@ -31,6 +31,22 @@ function Plate:UpdateCache(regInfo)
     self.lastFetched = GetGameTimer()
 end
 
+
+-- Stale plate garbage collector
+local function PurgeStalePlates()
+    local currentTime = GetGameTimer()
+    for k, v in pairs(PlateCache) do
+        local garbageTime = v.lastFetched + (pluginConfig.maxCacheTime*1000)
+        if currentTime >= garbageTime then
+            PlateCache[k] = nil
+            debugPrint(("Stale plate purged %s"):format(k))
+        end
+    end
+    SetTimeout(pluginConfig.stalePurgeTimer*1000, PurgeStalePlates)
+end
+
+PurgeStalePlates()
+
 --[[
     cadNameLookup
         first: First Name

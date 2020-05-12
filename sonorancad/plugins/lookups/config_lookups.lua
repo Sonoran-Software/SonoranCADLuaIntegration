@@ -10,7 +10,8 @@ local config = {
     requiresPlugins = {}, -- required plugins for this plugin to work, separated by commas
 
     -- put your configuration options below
-    maxCacheTime = 120 -- max time to cache a plate hit, in seconds
+    maxCacheTime = 120, -- max time to cache a plate hit, in seconds
+    stalePurgeTimer = 600 -- delay between garbage collection, default 10 minutes
 }
 
 Config.RegisterPluginConfig(config.pluginName, config)
