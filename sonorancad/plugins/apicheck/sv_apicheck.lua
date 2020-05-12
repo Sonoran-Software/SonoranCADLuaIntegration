@@ -12,7 +12,7 @@ local pluginConfig = Config.plugins["apicheck"]
 registerApiType("CHECK_APIID", "general")
 
 function cadApiIdExists(apiId, callback)
-    performApiRequest({["apiId"] = apiId}, "CHECK_APIID", function(res, exists)
+    performApiRequest({{["apiId"] = apiId}}, "CHECK_APIID", function(res, exists)
         callback(exists)
     end)
 end
@@ -26,3 +26,12 @@ AddEventHandler("SonoranCAD::apicheck:CheckPlayerLinked", function(player)
 end)
 
 exports('CadIsPlayerLinked', cadApiIdExists)
+
+RegisterCommand("apiid", function(source, args, rawCommand)
+    local identifiers = GetIdentifiers(source)
+    if identifiers[Config.primaryIdentifier] ~= nil then
+        print("Your API ID: "..tostring(identifiers[Config.primaryIdentifier]))
+    else
+        print("API ID not found")
+    end
+end)
