@@ -10,7 +10,7 @@ local config = {
     requiresPlugins = {}, -- required plugins for this plugin to work, separated by commas
 
     -- put your configuration options below
-    --myConfigOption = "value"
+    maxCacheTime = 5 -- max time to cache a plate hit, in seconds
 }
 
 Config.RegisterPluginConfig(config.pluginName, config)

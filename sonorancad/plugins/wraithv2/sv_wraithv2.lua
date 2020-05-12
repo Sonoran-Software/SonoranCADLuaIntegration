@@ -39,7 +39,7 @@ CreateThread(function()
             debugLog(("plate scan: %s - %s - %s"):format(cam, plate, index))
             local source = source
             TriggerEvent("SonoranCAD::wraithv2:PlateScanned", source, reg, cam, plate, index)
-            cadPlateLookup(plate, function(data)
+            cadPlateLookup(plate, true, function(data)
                 if data ~= nil then
                     local reg = data.vehicleRegistrations[1] -- scanner is always full lookup
                     if reg then

@@ -6,9 +6,38 @@
     Description: Implements the name/plate lookup API
 ]]
 
+local pluginConfig = Config.plugins["lookups"]
+
 registerApiType("LOOKUP_PLATE", "emergency")
 registerApiType("LOOKUP_NAME", "emergency")
 
+local PlateCache = {}
+
+local Plate = {
+    plateNumber = nil,
+    lastFetched = nil,
+    regInfo = nil
+}
+function Plate.Create(plateNumber, regInfo)
+    local self = shallowcopy(Plate)
+    self.plateNumber = plateNumber
+    self.regInfo = {["vehicleRegistrations"] = regInfo}
+    self.lastFetched = GetGameTimer()
+    return self
+end
+
+function Plate:UpdateCache(regInfo)
+    self.regInfo = regInfo
+    self.lastFetched = GetGameTimer()
+end
+
+--[[
+    cadNameLookup
+        first: First Name
+        last: Last Name
+        mi: Middle Initial
+        callback: function called with return data
+]]
 function cadNameLookup(first, last, mi, callback)
     local data = {}
     data["first"] = first ~= nil and first or ""
@@ -22,14 +51,42 @@ function cadNameLookup(first, last, mi, callback)
     end)
 end
 
-function cadPlateLookup(plate, callback)
+--[[
+    cadPlateLookup
+        plate: plate number
+        basicFlag: true returns cached record if possible which only contains vehicleRegistrations object, false calls the API
+        callback: the function called with the return data
+]]
+function cadPlateLookup(plate, basicFlag, callback)
     local data = {}
     data["plate"] = plate:gsub("%s+","")
-    performApiRequest({data}, "LOOKUP_PLATE", function(result)
-        debugPrint("plate lookup: "..tostring(result))
-        local lookup = json.decode(result)
-        callback(lookup)
-    end)
+    if PlateCache[data["plate"]] ~= nil and basicFlag then
+        local currentTime = GetGameTimer()
+        local expireTime = PlateCache[data["plate"]].lastFetched + (pluginConfig.maxCacheTime * 1000)
+        if currentTime <= expireTime then
+            -- cache hit
+            callback(PlateCache[data["plate"]].regInfo) 
+        else
+            -- cache miss
+            debugPrint(("Plate %s out of date, fetching."):format(data["plate"]))
+            performApiRequest({data}, "LOOKUP_PLATE", function(result)
+                debugPrint("plate lookup: "..tostring(result))
+                local lookup = json.decode(result)
+                PlateCache[data["plate"]]:UpdateCache(lookup["vehicleRegistrations"])
+                callback(lookup)
+            end)
+        end
+    else
+        -- not cached
+        debugPrint(("Plate %s not cached or basicFlag not set, fetching."):format(data["plate"]))
+        performApiRequest({data}, "LOOKUP_PLATE", function(result)
+            debugPrint("plate lookup: "..tostring(result))
+            local lookup = json.decode(result)
+            local plate = Plate.Create(data["plate"], lookup["vehicleRegistrations"])
+            PlateCache[data["plate"]] = plate
+            callback(lookup)
+        end)
+    end
 end
 
 exports('cadNameLookup', cadNameLookup)
@@ -39,7 +96,7 @@ exports('cadPlateLookup', cadPlateLookup)
 
 RegisterCommand("platefind", function(source, args, rawCommand)
     if args[1] ~= nil then
-        cadPlateLookup(args[1], function(data)
+        cadPlateLookup(args[1], true, function(data)
             print(("Raw data: %s"):format(json.encode(data)))
         end)
     end
