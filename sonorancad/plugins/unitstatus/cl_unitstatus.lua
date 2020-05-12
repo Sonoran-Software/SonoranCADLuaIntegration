@@ -14,7 +14,9 @@ local pluginConfig = Config.plugins["unitstatus"]
 if pluginConfig.setStatusCommand ~= "" then
     RegisterCommand(pluginConfig.setStatusCommand, function(source, args, rawCommand)
         if #args == 1 then
-            TriggerServerEvent("SonoranCAD::unitstatus:UpdateStatus", args[1])
+            if pluginConfig.statusCodes[args[1]] ~= nil then
+                TriggerServerEvent("SonoranCAD::unitstatus:UpdateStatus", args[1])
+            end
         else
             print("Invalid arguments.")
         end
