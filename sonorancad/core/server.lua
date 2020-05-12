@@ -67,7 +67,9 @@ function performApiRequest(postData, type, cb)
             for k, v in pairs(headers) do
                 --debugPrint(("%s: %s"):format(k, v))
             end
-            cb(res)
+            cb(res, true)
+        elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
+            cb(res, false)
         else
             errorLog(("CAD API ERROR: %s %s"):format(statusCode, res))
         end
