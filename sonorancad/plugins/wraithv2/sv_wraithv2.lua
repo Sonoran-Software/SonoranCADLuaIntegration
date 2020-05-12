@@ -27,9 +27,21 @@ CreateThread(function()
                     local mi = reg.person.mi ~= "" and ", "..reg.person.mi or ""
                     debugLog(("DATA: Plate [%s]: S: %s E: %s O: %s"):format(reg.vehicle.plate, reg.status, reg.expiration, reg.person.first.." "..reg.person.last..mi))
                     
-                    TriggerClientEvent("chat:addMessage", source, {args = {"^3 ALPR ^0", ("Plate [%s]: Status: %s Expires: %s Owner: %s"):format(reg.vehicle.plate, reg.status, reg.expiration, reg.person.first.." "..reg.person.last..mi)}})
+                    TriggerClientEvent("pNotify:SendNotification", source, {
+                        text = "<b style='color:yellow'>"..cam.." ALPR</b><br/>Plate: "..reg.vehicle.plate.."<br/>Status: "..reg.status.."<br/>Expires: "..reg.expiration.."<br/>Owner: "..reg.person.first.." "..reg.person.last..mi,
+                        type = "success",
+                        queue = "alpr",
+                        timeout = 45000,
+                        layout = "centerLeft"
+                    })
                 else
-                    TriggerClientEvent("chat:addMessage", source, {args = {"^3 ALPR ^0", "No license records found for locked plate." }})
+                    TriggerClientEvent("pNotify:SendNotification", source, {
+                        text = "<b style='color:yellow'>"..cam.." ALPR</b><br/>Plate: "..plate.."<br/>Status: Not Registered",
+                        type = "error",
+                        queue = "alpr",
+                        timeout = 15000,
+                        layout = "centerLeft"
+                    })
                 end
             end)
         end)
@@ -46,7 +58,21 @@ CreateThread(function()
                         local mi = reg.person.mi ~= "" and ", "..reg.person.mi or ""
                         debugLog(("DATA: Plate [%s]: S: %s E: %s O: %s"):format(reg.vehicle.plate, reg.status, reg.expiration, reg.person.first.." "..reg.person.last..mi))
                         
-                        TriggerClientEvent("chat:addMessage", source, {args = {"^3 ALPR ^0", ("Plate [%s]: Status: %s Expires: %s Owner: %s"):format(reg.vehicle.plate, reg.status, reg.expiration, reg.person.first.." "..reg.person.last..mi)}})
+                        TriggerClientEvent("pNotify:SendNotification", source, {
+                            text = "<b style='color:yellow'>"..cam.." ALPR</b><br/>Plate: "..reg.vehicle.plate.."<br/>Status: "..reg.status.."<br/>Expires: "..reg.expiration.."<br/>Owner: "..reg.person.first.." "..reg.person.last..mi,
+                            type = "success",
+                            queue = "alpr",
+                            timeout = 45000,
+                            layout = "centerLeft"
+                        })
+                    else
+                        TriggerClientEvent("pNotify:SendNotification", source, {
+                            text = "<b style='color:yellow'>"..cam.." ALPR</b><br/>Plate: "..plate.."<br/>Status: Not Registered",
+                            type = "error",
+                            queue = "alpr",
+                            timeout = 15000,
+                            layout = "centerLeft"
+                        })
                     end
                 end
             end)
