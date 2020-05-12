@@ -39,4 +39,9 @@ CreateThread(function()
             debugLog("Got empty file for "..k)
         end
     end
+    local pluginList = {}
+    for name, v in pairs(Config.plugins) do
+        table.insert(pluginList, name)
+    end
+    infoLog(("Loaded plugins: %s"):format(table.concat(pluginList, ", ")))
 end)

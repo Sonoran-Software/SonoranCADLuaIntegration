@@ -18,7 +18,11 @@ function HandleTrafficStop(type, source, args, rawCommand)
     local address = LocationCache[source] ~= nil and LocationCache[source].location or 'Unknown'
     local title =  pluginConfig.title
     local code =  pluginConfig.code
+<<<<<<< HEAD
     local units = array(identifier)
+=======
+    local units = {identifier}
+>>>>>>> 3069eab40b91408980f14f34e06c4f5db228f417
     -- Checking if there are any description arguments.
     if args[1] then
         local description = table.concat(args, " ")
@@ -51,6 +55,7 @@ end)
 
 -- Client TraficStop request
 RegisterServerEvent('SonoranCAD::trafficstop:SendTrafficApi')
+<<<<<<< HEAD
 AddEventHandler('SonoranCAD::trafficstop:SendTrafficApii', function(origin, status, priority, address, title, code, description, units, source)
     -- send an event to be consumed by other resources
     TriggerEvent("SonoranCAD::trafficstop:cadIncomingTraffic", origin, status, priority, address, title, code, description, units, source)
@@ -64,6 +69,26 @@ AddEventHandler('SonoranCAD::trafficstop:SendTrafficApii', function(origin, stat
         ['code'] = code, 
         ['description'] = description, 
         ['units'] = units}
+=======
+AddEventHandler('SonoranCAD::trafficstop:SendTrafficApi', function(origin, status, priority, address, title, code, description, units, source)
+    -- send an event to be consumed by other resources
+    TriggerEvent("SonoranCAD::trafficstop:cadIncomingTraffic", origin, status, priority, address, title, code, description, units, source)
+    if Config.apiSendEnabled then
+        local data = {
+            ['serverId'] = Config.serverId, 
+            ['origin'] = origin, 
+            ['status'] = status, 
+            ['priority'] = priority, 
+            ['block'] = "", -- not used, but required
+            ['postal'] = "", --TODO
+            ['address'] = address, 
+            ['title'] = title, 
+            ['code'] = code, 
+            ['description'] = description, 
+            ['units'] = units,
+            ['notes'] = "" -- required
+        }
+>>>>>>> 3069eab40b91408980f14f34e06c4f5db228f417
         debugLog("sending Traffic Stop!")
         performApiRequest({data}, 'NEW_DISPATCH', function() end)
     else
