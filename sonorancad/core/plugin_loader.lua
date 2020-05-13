@@ -20,7 +20,7 @@ CreateThread(function()
         debugLog(("Plugin %s loaded OK"):format(k))
 
         -- Plugin updater system
-        local f = LoadResourceFile(GetCurrentResourceName(), "plugins/"..k.."/version_"..k..".json")
+        local f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/version_%s.json"):format(k, k, k))
         if f ~= nil then
             local version = json.decode(f)
             if version.check_url ~= "" then

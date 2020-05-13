@@ -1,3 +1,6 @@
 [submodule "wk_wars2x"]
 	path = wk_wars2x
 	url = https://github.com/Sonoran-Software/wk_wars2x.git
+[submodule "sonorancad/plugins/sonoran_apicheck"]
+	path = sonorancad/plugins/sonoran_apicheck
+	url = https://github.com/Sonoran-Software/sonoran_apicheck.git
