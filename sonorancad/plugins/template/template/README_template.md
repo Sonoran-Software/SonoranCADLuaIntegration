@@ -1,0 +1,1 @@
+This is just a template plugin. To learn how to use, see PLUGINS.md.

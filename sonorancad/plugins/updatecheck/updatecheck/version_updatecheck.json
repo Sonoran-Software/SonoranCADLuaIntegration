@@ -1,0 +1,5 @@
+{
+    "version": "1.0",
+    "check_url": "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/rewrite/sonorancad/plugins/updatecheck/version_updatecheck.json",
+    "download_url": "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/rewrite/sonorancad/plugins/updatecheck/"
+}
