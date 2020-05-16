@@ -3,7 +3,7 @@ games {'gta5'}
 
 author 'Sonoran CAD'
 description 'Sonoran CAD FiveM Integration'
-version '2.0.0-alpha8'
+version '2.0.0-alpha9'
 
 server_scripts {
     'core/shared_functions.lua'
