@@ -28,3 +28,6 @@
 [submodule "sonorancad/plugins/livemap"]
 	path = sonorancad/plugins/livemap
 	url = https://github.com/Sonoran-Software/sonoran_livemap.git
+[submodule "sonorancad/plugins/pushevents"]
+	path = sonorancad/plugins/pushevents
+	url = https://github.com/Sonoran-Software/sonoran_pushevents.git
