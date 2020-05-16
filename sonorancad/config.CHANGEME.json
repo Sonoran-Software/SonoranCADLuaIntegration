@@ -8,5 +8,6 @@
     "primaryIdentifier": "steam",
     "apiSendEnabled": true,
     "debugMode": false,
-    "updateBranch": "rewrite"
+    "updateBranch": "rewrite",
+    "statusLabels": ["UNAVAILABLE", "BUSY", "AVAILABLE", "ENROUTE", "ON_SCENE"]
 }
