@@ -12,6 +12,11 @@ Config = {
     plugins = {}
 }
 
+local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
+for k, v in pairs(json.decode(conf)) do
+    Config[k] = v
+end
+
 if Config.updateBranch == nil then
     Config.updateBranch = "rewrite"
 end
@@ -31,3 +36,30 @@ Config.GetPluginConfig = function(pluginName)
         return nil
     end
 end
+
+RegisterServerEvent("SonoranCAD::core::getConfig")
+AddEventHandler("SonoranCAD::core::getConfig", function()
+    local config = json.encode({
+        communityID = Config.communityID,
+        apiKey = Config.apiKey,
+        postTime = Config.postTime,
+        serverType = Config.serverType,
+        apiSendEnabled = Config.apiSendEnabled
+    })
+    TriggerEvent("SonoranCAD::core:configData", config)
+end)
+
+RegisterNetEvent("SonoranCAD::core:sendClientConfig")
+AddEventHandler("SonoranCAD::core:sendClientConfig", function()
+    local config = {
+        communityID = Config.communityID,
+        postTime = Config.postTime,
+        serverId = Config.serverId,
+        serverType = Config.serverType,
+        primaryIdentifier = Config.primaryIdentifier,
+        apiSendEnabled = Config.apiSendEnabled,
+        debugMode = Config.debugMode,
+        statusLabels = Config.statusLabels
+    }
+    TriggerClientEvent("SonoranCAD::core:recvClientConfig", source, config)
+end)

@@ -25,3 +25,6 @@
 [submodule "sonorancad/plugins/apicheck"]
 	path = sonorancad/plugins/apicheck
 	url = https://github.com/Sonoran-Software/sonoran_apicheck.git
+[submodule "sonorancad/plugins/livemap"]
+	path = sonorancad/plugins/livemap
+	url = https://github.com/Sonoran-Software/sonoran_livemap.git
