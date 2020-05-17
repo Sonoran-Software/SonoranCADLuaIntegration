@@ -1,0 +1,30 @@
+[submodule "sonorancad/plugins/callcommands"]
+	path = sonorancad/plugins/callcommands
+	url = https://github.com/Sonoran-Software/sonoran_callcommands.git
+[submodule "sonorancad/plugins/locations"]
+	path = sonorancad/plugins/locations
+	url = https://github.com/Sonoran-Software/sonoran_locations.git
+[submodule "sonorancad/plugins/lookups"]
+	path = sonorancad/plugins/lookups
+	url = https://github.com/Sonoran-Software/sonoran_lookups.git
+[submodule "sonorancad/plugins/postals"]
+	path = sonorancad/plugins/postals
+	url = https://github.com/Sonoran-Software/sonoran_postals.git
+[submodule "sonorancad/plugins/trafficstop"]
+	path = sonorancad/plugins/trafficstop
+	url = https://github.com/Sonoran-Software/sonoran_trafficstop.git
+[submodule "sonorancad/plugins/unitstatus"]
+	path = sonorancad/plugins/unitstatus
+	url = https://github.com/Sonoran-Software/sonoran_unitstatus.git
+[submodule "sonorancad/plugins/wraithv2"]
+	path = sonorancad/plugins/wraithv2
+	url = https://github.com/Sonoran-Software/sonoran_wraithv2.git
+[submodule "sonorancad/plugins/apicheck"]
+	path = sonorancad/plugins/apicheck
+	url = https://github.com/Sonoran-Software/sonoran_apicheck.git
+[submodule "sonorancad/plugins/livemap"]
+	path = sonorancad/plugins/livemap
+	url = https://github.com/Sonoran-Software/sonoran_livemap.git
+[submodule "sonorancad/plugins/pushevents"]
+	path = sonorancad/plugins/pushevents
+	url = https://github.com/Sonoran-Software/sonoran_pushevents.git
