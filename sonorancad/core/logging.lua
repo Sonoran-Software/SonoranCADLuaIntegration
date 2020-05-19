@@ -16,6 +16,10 @@ function errorLog(message)
     sendConsole("ERROR", message)
 end
 
+function warnLog(message)
+    sendConsole("WARNING", message)
+end
+
 function infoLog(message)
     sendConsole("INFO", message)
 end
