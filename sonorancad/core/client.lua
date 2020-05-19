@@ -12,9 +12,15 @@ Config.RegisterPluginConfig = function(pluginName, configs)
 end
 Config.GetPluginConfig = function(pluginName) 
     if Config.plugins[pluginName] ~= nil then
+        if Config.plugins[pluginName].enabled == nil then
+            Config.plugins[pluginName].enabled = true
+        end
         return Config.plugins[pluginName]
     else
-        return nil
+        if pluginName == "yourpluginname" then
+            return { enabled = false }
+        end
+        return { enabled = false }
     end
 end
 
