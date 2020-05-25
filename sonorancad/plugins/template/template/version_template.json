@@ -1,5 +1,6 @@
 {
     "version": "1.0",
     "check_url": "",
-    "download_url": ""
+    "download_url": "",
+    "configVersion": "1.0"
 }

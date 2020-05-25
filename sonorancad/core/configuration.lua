@@ -18,7 +18,7 @@ for k, v in pairs(json.decode(conf)) do
 end
 
 if Config.updateBranch == nil then
-    Config.updateBranch = "rewrite"
+    Config.updateBranch = "master"
 end
 
 Config.RegisterPluginConfig = function(pluginName, configs)
@@ -31,9 +31,18 @@ Config.RegisterPluginConfig = function(pluginName, configs)
 end
 Config.GetPluginConfig = function(pluginName) 
     if Config.plugins[pluginName] ~= nil then
+        if Config.plugins[pluginName].enabled == nil then
+            Config.plugins[pluginName].enabled = true
+        end
         return Config.plugins[pluginName]
     else
-        return nil
+        if pluginName == "yourpluginname" then
+            return { enabled = false }
+        end
+        if not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/config_%s.lua"):format(pluginName, pluginName, pluginName)) and not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/config_%s.lua"):format(pluginName, pluginName))  then
+            warnLog(("Plugin %s is missing critical configuration. Please check our plugin install guide at https://info.sonorancad.com/integration-plugins/integration-plugins/plugin-installation for steps to properly install."):format(pluginName))
+        end
+        return { enabled = false }
     end
 end
 

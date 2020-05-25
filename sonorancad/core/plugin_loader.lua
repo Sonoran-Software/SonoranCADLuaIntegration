@@ -28,7 +28,13 @@ CreateThread(function()
                     if code == 200 then
                         local remote = json.decode(data)
                         if remote.version ~= version.version then
-                            infoLog(("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url))
+                            infoLog(("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url.."releases/"))
+                        end
+                        if remote.configVersion ~= nil then
+                            local myversion = version.configVersion ~= nil and version.configVersion or "0.0"
+                            if remote.configVersion ~= version.configVersion then
+                                infoLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration."):format(k, k))
+                            end
                         end
                     else
                         errorLog(("Failed to check plugin updates for %s: %s %s"):format(k, code, data))
@@ -36,7 +42,7 @@ CreateThread(function()
                 end, "GET")
             end
         else
-            debugLog("Got empty file for "..k)
+            debugLog("Got an empty version file for "..k)
         end
     end
     local pluginList = {}

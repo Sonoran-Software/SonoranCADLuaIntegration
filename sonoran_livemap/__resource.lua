@@ -5,7 +5,7 @@ dependency "webpack"
 webpack_config "webpack.config.js"
 
 client_scripts{
-    "client/client.lua",
+    -- "client/client.lua", -- No longer used, sonorancad_livemap plugin replaces functionality
     "client/reverse_weapon_hashes.lua",
     "client/reverse_car_hashes.lua",
     "client/reverse_location_hashes.lua",
