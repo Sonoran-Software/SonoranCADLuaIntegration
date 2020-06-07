@@ -22,3 +22,7 @@ The plugin `lookups` contains name and plate lookup functionality. See `sonoranc
 ### Bonus Integration: wk_wars2k Plate Scan Search
 
 SonoranCAD comes bundled with a [popular radar resource](https://forum.cfx.re/t/release-wraith-ars-2x-police-radar-and-plate-reader-v1-2-4/1058277) which allows you to automatically search plates in the CAD. See `sonorancad/plugins/radar_wraithv2` for detailed information.
+
+### Bonus Integration: Tablet
+
+This integration script includes a very basic "tablet" so you can use the CAD in-game via the `tablet` resource. Check out `tablet\html\index.html` to edit the link with your custom page.

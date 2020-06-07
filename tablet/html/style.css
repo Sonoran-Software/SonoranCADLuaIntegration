@@ -1,0 +1,45 @@
+/*.hidden {
+    overflow: hidden;
+    display: none;
+}*/
+
+/* The device with borders */
+
+#tablet {
+	position: absolute;
+	top: 25%;
+	width: 1100px;
+	height: 525px;
+	margin: auto;
+	border: 15px black solid;
+	border-top-width: 15px;
+	border-bottom-width: 15px;
+	border-radius: 15px;
+	display: flex;
+	flex-direction: column;
+}
+.tablet .content {
+	width: 1100px;
+	height: 525px;
+	background: white;
+	flex-grow: 1;
+	
+}
+.tablet .content {
+	margin-left: 37%;
+	margin-bottom: 15%;
+	margin-top: 10%;
+	border: 5px;
+	border-color: yellow
+	
+	
+}
+#blackbar {
+	background-color: #333;
+	height: 15px;
+	width: 1100px;
+	color: white;
+	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+	
+}
+
