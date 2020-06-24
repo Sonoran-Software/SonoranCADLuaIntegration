@@ -1,10 +1,10 @@
-local function sendConsole(level, message)
-    print(("[SonoranCAD:%s] %s"):format(level, message))
+local function sendConsole(level, color, message)
+    print(("[SonoranCAD:%s%s^7]%s %s^0"):format(color, level, color, message))
 end
 
 function debugLog(message)
     if Config.debugMode then
-        sendConsole("DEBUG", message)
+        sendConsole("DEBUG", "^7", message)
     end
 end
 
@@ -13,15 +13,15 @@ function debugPrint(message)
 end
 
 function errorLog(message)
-    sendConsole("ERROR", message)
+    sendConsole("ERROR", "^8", message)
 end
 
 function warnLog(message)
-    sendConsole("WARNING", message)
+    sendConsole("WARNING", "^3", message)
 end
 
 function infoLog(message)
-    sendConsole("INFO", message)
+    sendConsole("INFO", "^5", message)
 end
 
 -- command to toggle debug mode, console only
