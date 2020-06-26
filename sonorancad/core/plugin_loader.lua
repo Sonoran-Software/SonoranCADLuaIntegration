@@ -18,7 +18,6 @@ CreateThread(function()
             end
         end
         debugLog(("Plugin %s loaded OK"):format(k))
-
         -- Plugin updater system
         local f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/version_%s.json"):format(k, k, k))
         if f ~= nil then
@@ -62,8 +61,19 @@ CreateThread(function()
         end
     end
     local pluginList = {}
+    local loadedPlugins = {}
+    local disabledPlugins = {}
     for name, v in pairs(Config.plugins) do
         table.insert(pluginList, name)
+        if v.enabled then
+            table.insert(loadedPlugins, name)
+        else
+            table.insert(disabledPlugins, name)
+        end
     end
-    infoLog(("Loaded plugins: %s"):format(table.concat(pluginList, ", ")))
+    infoLog(("Available Plugins: %s"):format(table.concat(pluginList, ", ")))
+    infoLog(("Loaded Plugins: %s"):format(table.concat(loadedPlugins, ", ")))
+    if #disabledPlugins > 0 then
+        warnLog(("Disabled Plugins: %s"):format(table.concat(disabledPlugins, ", ")))
+    end
 end)

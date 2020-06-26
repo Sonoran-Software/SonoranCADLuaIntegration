@@ -50,15 +50,3 @@ function HashString(str)
     m:update(str)
     return md5.tohex(m:finish())
 end
-
-CreateThread(function()
-    Wait(0)
-    CheckHashes("livemap", function(isokay) 
-        if not isokay then
-            errorLog("uh oh")
-        else
-            infoLog("yay!")
-        end
-    end)
-    
-end)
