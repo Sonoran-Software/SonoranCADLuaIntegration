@@ -22,6 +22,7 @@ CreateThread(function()
         local f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/version_%s.json"):format(k, k, k))
         if f ~= nil then
             local version = json.decode(f)
+            debugLog(("Loaded plugin %s (%s)"):format(k, version.version))
             if version.check_url ~= "" then
                 PerformHttpRequest(version.check_url, function(code, data, headers)
                     if code == 200 then
