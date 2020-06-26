@@ -24,13 +24,12 @@ Config.GetPluginConfig = function(pluginName)
     end
 end
 
-CreateThread(function()
-    TriggerServerEvent("SonoranCAD::core:sendClientConfig")
-end)
+TriggerServerEvent("SonoranCAD::core:sendClientConfig")
 
 RegisterNetEvent("SonoranCAD::core:recvClientConfig")
 AddEventHandler("SonoranCAD::core:recvClientConfig", function(config)
     for k, v in pairs(config) do
         Config[k] = v
     end
+    Config.inited = true
 end)

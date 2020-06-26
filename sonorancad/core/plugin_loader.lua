@@ -43,12 +43,20 @@ CreateThread(function()
             end
             if version.minCoreVersion ~= nil then
                 local coreVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
-                _, _, v1, v2, v3 = strfind( version.minCoreVersion, "(%d+)%.(%d+)%.(%d+)" )
-                _, _, r1, r2, r3 = strfind( coreVersion, "(%d+)%.(%d+)%.(%d+)" )
+                _, _, v1, v2, v3 = string.find( version.minCoreVersion, "(%d+)%.(%d+)%.(%d+)" )
+                _, _, r1, r2, r3 = string.find( coreVersion, "(%d+)%.(%d+)%.(%d+)" )
+                v1 = v1 and tonumber(v1) or 0
+                v2 = v2 and tonumber(v2) or 0
+                v3 = v3 and tonumber(v3) or 0
+                r1 = tonumber(r1)
+                r2 = tonumber(r2)
+                r3 = tonumber(r3)
+                debugLog(("versions: %s.%s.%s - %s.%s.%s"):format(r1, r2, r3, v1, v2, v3))
                 if v1 > r1 or v2 > r2 or v3 > r3 then
                     errorLog(("PLUGIN ERROR: Plugin %s requires Core Version %s, but you have %s. Please update SonoranCAD to use this plugin. Force disabled."):format(k, version.minCoreVersion, coreVersion))
                     Config.plugins[k].enabled = false
                 end
+            end
         else
             debugLog("Got an empty version file for "..k)
         end
