@@ -76,3 +76,13 @@ function CheckIdentifiers(id1, id2, callback, stripPrefix)
         end
     end
 end
+
+function PerformHttpRequest(url, cb, method, data, headers)
+    if not data then
+        data = ""
+    end
+    if not headers then
+        headers = {["X-User-Agent"] = "SonoranCAD"}
+    end
+    exports[GetCurrentResourceName()]:HandleHttpRequest(url, cb, method, data, headers)
+end
