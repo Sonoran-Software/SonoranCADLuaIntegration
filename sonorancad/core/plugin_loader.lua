@@ -23,6 +23,7 @@ CreateThread(function()
         if f ~= nil then
             local version = json.decode(f)
             debugLog(("Loaded plugin %s (%s)"):format(k, version.version))
+            Config.plugins[k].version = version.version
             if version.check_url ~= "" then
                 PerformHttpRequest(version.check_url, function(code, data, headers)
                     if code == 200 then

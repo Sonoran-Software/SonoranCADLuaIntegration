@@ -24,16 +24,6 @@ function infoLog(message)
     sendConsole("INFO", "^5", message)
 end
 
--- command to toggle debug mode, console only
-RegisterCommand("caddebug", function()
-    if source ~= nil then
-        print("Console only command!")
-        return
-    end
-    Config.debugMode = not Config.debugMode
-    infoLog(("Debug mode toggled to %s"):format(Config.debugMode))
-end, true)
-
 RegisterServerEvent("SonoranCAD::core:writeLog")
 AddEventHandler("SonoranCAD::core:writeLog", function(level, message)
     if level == "debug" then
@@ -47,12 +37,12 @@ AddEventHandler("SonoranCAD::core:writeLog", function(level, message)
     end
 end)
 
-print([[
+print(("^5%s^0"):format([[
     _____                                    _________    ____     
-    / ___/____  ____  ____  _________ _____  / ____/   |  / __ \    
-    \__ \/ __ \/ __ \/ __ \/ ___/ __ `/ __ \/ /   / /| | / / / /    
-   ___/ / /_/ / / / / /_/ / /  / /_/ / / / / /___/ ___ |/ /_/ /     
-  /____/\____/_/ /_/\____/_/   \__,_/_/ /_/\____/_/  |_/_____/      
-                                                                    
-]])
+   / ___/____  ____  ____  _________ _____  / ____/   |  / __ \    
+   \__ \/ __ \/ __ \/ __ \/ ___/ __ `/ __ \/ /   / /| | / / / /    
+  ___/ / /_/ / / / / /_/ / /  / /_/ / / / / /___/ ___ |/ /_/ /     
+ /____/\____/_/ /_/\____/_/   \__,_/_/ /_/\____/_/  |_/_____/      
+                                                                   
+]]))
 infoLog("Starting up...")
