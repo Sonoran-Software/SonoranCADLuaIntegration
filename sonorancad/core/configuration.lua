@@ -13,6 +13,10 @@ Config = {
 }
 
 local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
+if not conf then
+    errorLog("Failed to load core configuration. Ensure config.json is present.")
+    return
+end
 for k, v in pairs(json.decode(conf)) do
     Config[k] = v
 end
