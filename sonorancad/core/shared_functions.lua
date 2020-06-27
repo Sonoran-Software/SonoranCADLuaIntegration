@@ -77,7 +77,7 @@ function CheckIdentifiers(id1, id2, callback, stripPrefix)
     end
 end
 
-local HandleHttpRequest = function(...) return exports["sonorancad"]:HandleHttpRequest(...)
+local HandleHttpRequest = function(...) return exports["sonorancad"]:HandleHttpRequest(...) end
 
 function PerformHttpRequest(url, cb, method, data, headers)
     if not data then

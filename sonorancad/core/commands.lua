@@ -51,7 +51,20 @@ Disabled Plugins
     elseif args[1] == "verify" then
         return
     elseif args[1] == "plugin" and args[2] then
-        return
+        if Config.plugins[args[2]] then
+            local pluginDetail = {}
+            for k, v in pairs(Config.plugins[args[2]]) do
+                table.insert(pluginDetail, ("%s = %s"):format(k, v))
+            end
+            print(([[
+Plugin: %s
+Version: %s
+Configuration:
+     %s
+            ]]):format(args[2], Config.plugins[args[2]].version, table.concat(pluginDetail, "\n     ")))
+        else
+            errorLog("Invalid plugin")
+        end
     elseif args[1] == "update" then
         return
     else
