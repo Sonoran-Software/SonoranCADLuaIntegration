@@ -6,6 +6,20 @@
     Provides logic for checking loaded plugins after startup
 ]]
 
+local function LoadVersionFile(pluginName)
+    local f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/version_%s.json"):format(pluginName, pluginName, pluginName))
+    if f then
+        return f
+    else
+        f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/version_%s.json"):format(pluginName, pluginName)) 
+        if f then
+            return f
+        else
+            return nil
+        end
+    end
+end
+
 CreateThread(function()
     Wait(1)
     for k, v in pairs(Config.plugins) do
@@ -19,7 +33,7 @@ CreateThread(function()
         end
         debugLog(("Plugin %s loaded OK"):format(k))
         -- Plugin updater system
-        local f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/version_%s.json"):format(k, k, k))
+        local f = LoadVersionFile(k)
         if f ~= nil then
             local version = json.decode(f)
             debugLog(("Loaded plugin %s (%s)"):format(k, version.version))

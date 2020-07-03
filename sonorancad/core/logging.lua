@@ -24,7 +24,7 @@ function infoLog(message)
     sendConsole("INFO", "^5", message)
 end
 
-RegisterServerEvent("SonoranCAD::core:writeLog")
+--RegisterServerEvent("SonoranCAD::core:writeLog")
 AddEventHandler("SonoranCAD::core:writeLog", function(level, message)
     if level == "debug" then
         debugLog(message)

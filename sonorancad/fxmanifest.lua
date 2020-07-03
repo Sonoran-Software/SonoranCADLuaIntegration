@@ -11,8 +11,8 @@ server_scripts {
     ,'core/configuration.lua'
     ,'config.lua'
     ,'core/logging.lua'
-    ,'core/commands.lua'
     ,'core/server.lua'
+    ,'core/commands.lua'
     ,'plugins/**/config_*.lua'
     ,'plugins/**/sv_*.lua'
     ,'plugins/**/sv_*.js'
@@ -21,6 +21,7 @@ server_scripts {
                }
 client_scripts {
     'core/shared_functions.lua'
+    ,'core/logging.lua'
     ,'core/client.lua'
     ,'plugins/**/config_*.lua'
     ,'plugins/**/cl_*.lua'
