@@ -20,9 +20,9 @@ along with this program in the file "LICENSE".  If not, see <http://www.gnu.org/
 ---------------------------------------------------------------------------
 -- Update Checker
 ---------------------------------------------------------------------------
+local pluginConfig = Config.GetPluginConfig("updatecheck")
 local url = "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/"..Config.updateBranch.."/sonorancad/version.json"
 local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
-local latest = true
 
 function checkForUpdate()
     PerformHttpRequest(url, function(err, data, headers)
@@ -43,13 +43,8 @@ function checkForUpdate()
             print("^3|                             ^2Latest  : " .. parsed["resource"] .. "                               ^3|")
             print("^3| Download at: ^4https://github.com/Sonoran-Software/SonoranCADLuaIntegration ^3|")
             print("^3|===========================================================================|^7")
-            latest = false -- Stop running the timeout
         end
-
-        -- Every 30 minutes, do the check (print the message if it's not up to date)
-        if latest then
-            SetTimeout( 30 * (60*1000), checkForUpdate)
-        end
+        SetTimeout(config.checkFrequency, checkForUpdate)
 
     end, "GET", "",  { ["Content-Type"] = 'application/json' })
 end

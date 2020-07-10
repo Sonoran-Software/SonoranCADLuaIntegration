@@ -53,8 +53,46 @@ Configuration:
     ]]):format(name, Config.plugins[name].version, table.concat(pluginDetail, "\n     "))
 end
 
+local function sendSupportLogs(key)
+    infoLog("Please wait, gathering required data...")
+    local cadOutput = {}
+    cadOutput.key = tonumber(key)
+    if cadOutput.key == nil then
+        errorLog("Invalid support key.")
+        return
+    end
+    local plugins = {}
+    for name, config in pairs(Config.plugins) do
+        pluginData = {}
+        pluginData.name = name
+        pluginData.version = config.version
+        pluginData.config = config
+        table.insert(plugins, pluginData)
+    end
+    cadOutput.plugins = plugins
+    cadOutput.logs = ([[
+SonoranCAD Support Output
+---------------------------------------
+Configuration Information
+---
+%s
+
+---------------------------------------
+Console Buffer
+------
+%s
+    ]]):format(dumpInfo(), GetConsoleBuffer())
+    Config.debugMode = false
+    performApiRequest({cadOutput}, "UPLOAD_LOGS", function(data)
+        if data == "LOGS UPDATED" then
+            infoLog("Support logs have been successfully uploaded. Debug mode was disabled during the upload.")
+        else
+            errorLog(("Failed to upload support logs: %s"):format(data))
+        end
+    end)
+end
+
 registerApiType("UPLOAD_LOGS", "support")
---"apiUrl": "https://cadapi.dev.sonoransoftware.com/",
 RegisterCommand("sonoran", function(source, args, rawCommand)
     if source ~= 0 then
         print("Console only command")
@@ -70,9 +108,7 @@ SonoranCAD Help
     debugmode - Toggles debugging mode
     info - dump version info, configuration
     support - dump useful data for support staff 
-    verify - run hash checks to confirm all files are untampered
     plugin <name> - show info about a plugin (config)
-    update - attempt to auto-update
 ]])
     elseif args[1] == "debugmode" then
         Config.debugMode = not Config.debugMode
@@ -80,43 +116,8 @@ SonoranCAD Help
     elseif args[1] == "info" then
         print(dumpInfo())
     elseif args[1] == "support" and args[2] ~= nil then
-        infoLog("Please wait, gathering required data...")
-        local cadOutput = {}
-        cadOutput.key = tonumber(args[2])
-        if cadOutput.key == nil then
-            errorLog("Invalid support key.")
-            return
-        end
-        local plugins = {}
-        for name, config in pairs(Config.plugins) do
-            pluginData = {}
-            pluginData.name = name
-            pluginData.version = config.version
-            pluginData.config = config
-            table.insert(plugins, pluginData)
-        end
-        cadOutput.plugins = plugins
-        cadOutput.logs = ([[
-    SonoranCAD Support Output
----------------------------------------
-Configuration Information
----
-%s
-
----------------------------------------
-Console Buffer
-------
-%s
-        ]]):format(dumpInfo(), GetConsoleBuffer()) --GetConsoleBuffer()
-        Config.debugMode = false
-        performApiRequest({cadOutput}, "UPLOAD_LOGS", function(data)
-            if data == "LOGS UPDATED" then
-                infoLog("Support logs have been successfully uploaded. Debug mode was disabled during the upload.")
-            else
-                errorLog(("Failed to upload support logs: %s"):format(data))
-            end
-        end)
-    elseif args[1] == "verify" then
+        sendSupportLogs(args[2])
+    elseif args[1] == "verify" then --verify - run hash checks to confirm all files are untampered
         return
     elseif args[1] == "plugin" and args[2] then
         if Config.plugins[args[2]] then
@@ -124,7 +125,7 @@ Console Buffer
         else
             errorLog("Invalid plugin")
         end
-    elseif args[1] == "update" then
+    elseif args[1] == "update" then --update - attempt to auto-update
         return
     else
         print("Missing command. Try \"sonoran help\" for help.")
@@ -145,3 +146,10 @@ function GetPluginLists()
     end
     return pluginList, loadedPlugins, disabledPlugins
 end
+
+-- Support Push Event
+
+AddEventHandler("SonoranCAD::pushevents:SendSupportLogs", function(key)
+    infoLog("Support has requested logs to be uploaded. Collecting now...")
+    sendSupportLogs(key)
+end)

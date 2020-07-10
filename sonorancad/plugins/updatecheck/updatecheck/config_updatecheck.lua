@@ -13,7 +13,7 @@ local config = {
     requiresPlugins = {}, -- required plugins for this plugin to work, separated by commas
 
     -- put your configuration options below
-    --myConfigOption = "value"
+    checkFrequency = 1000*60*60*2 -- 2 hours
 }
 
 Config.RegisterPluginConfig(config.pluginName, config)
