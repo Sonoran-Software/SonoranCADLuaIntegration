@@ -84,7 +84,5 @@ function PerformHttpRequest(url, cb, method, data, headers)
     if not headers then
         headers = {["X-User-Agent"] = "SonoranCAD"}
     end
-    CreateThread(function()
-        exports["sonorancad"]:HandleHttpRequest(url, cb, method, data, headers)
-    end)
+    exports["sonorancad"]:HandleHttpRequest(url, cb, method, data, headers)
 end
