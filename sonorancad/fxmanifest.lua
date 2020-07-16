@@ -6,7 +6,7 @@ description 'Sonoran CAD FiveM Integration'
 version '2.2.0'
 
 server_scripts {
-    'core/SonoranHttpHandler.net.dll'
+    'core/http.js'
     ,'core/shared_functions.lua'
     ,'core/configuration.lua'
     ,'config.lua'

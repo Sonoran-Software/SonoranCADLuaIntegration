@@ -69,7 +69,7 @@ function performApiRequest(postData, type, cb)
         if statusCode == 200 and res ~= nil then
             debugPrint("result: "..tostring(res))
             for k, v in pairs(headers) do
-                --debugPrint(("%s: %s"):format(k, v))
+                debugPrint(("%s: %s"):format(k, v))
             end
             cb(res, true)
         elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID

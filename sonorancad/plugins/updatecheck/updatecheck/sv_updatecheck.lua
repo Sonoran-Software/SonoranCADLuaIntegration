@@ -44,7 +44,7 @@ function checkForUpdate()
             print("^3| Download at: ^4https://github.com/Sonoran-Software/SonoranCADLuaIntegration ^3|")
             print("^3|===========================================================================|^7")
         end
-        SetTimeout(config.checkFrequency, checkForUpdate)
+        SetTimeout(1000*60*60*2 , checkForUpdate)
 
     end, "GET", "",  { ["Content-Type"] = 'application/json' })
 end
