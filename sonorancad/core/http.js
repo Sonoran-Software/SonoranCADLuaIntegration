@@ -19,8 +19,12 @@ exports('HandleHttpRequest', (dest, callback, method, data, headers) => {
     }
 
     const req = https.request(options, (res) => {
+        let output = "";
         res.on('data', (d) => {
-            callback(res.statusCode, d.toString(), res.headers);
+            output += d.toString()
+        }),
+        res.on('end', () => {
+            callback(res.statusCode, output, res.headers);
         })
       })
         
