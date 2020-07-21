@@ -3,14 +3,16 @@ games {'gta5'}
 
 author 'Sonoran CAD'
 description 'Sonoran CAD FiveM Integration'
-version '2.1.0'
+version '2.2.0'
 
 server_scripts {
-    'core/shared_functions.lua'
+    'core/http.js'
+    ,'core/shared_functions.lua'
     ,'core/configuration.lua'
     ,'config.lua'
     ,'core/logging.lua'
     ,'core/server.lua'
+    ,'core/commands.lua'
     ,'plugins/**/config_*.lua'
     ,'plugins/**/sv_*.lua'
     ,'plugins/**/sv_*.js'
@@ -19,6 +21,7 @@ server_scripts {
                }
 client_scripts {
     'core/shared_functions.lua'
+    ,'core/logging.lua'
     ,'core/client.lua'
     ,'plugins/**/config_*.lua'
     ,'plugins/**/cl_*.lua'

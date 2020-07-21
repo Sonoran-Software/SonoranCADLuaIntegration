@@ -51,3 +51,38 @@ function isPluginLoaded(pluginName)
     end
     return false
 end
+
+--[[
+    Checks if either ID causes callback to return a positive (non-falsey) value
+]]
+function CheckIdentifiers(id1, id2, callback, stripPrefix)
+    if stripPrefix then
+        prefix1, id1 = id1:match("^(.+):(.+)$")
+        prefix2, id2 = id2:match("^(.+):(.+)$")
+    end
+    local r1 = callback(id1)
+    if r1 ~= nil and r1 ~= false then
+        return r1
+    else
+        if id2 ~= nil and id2 ~= "" then
+            local r2 = callback(id2)
+            if r2 ~= nil and r1 ~= false then
+                return r2
+            else
+                return r1
+            end
+        else
+            return r1
+        end
+    end
+end
+
+function PerformHttpRequest(url, cb, method, data, headers)
+    if not data then
+        data = ""
+    end
+    if not headers then
+        headers = {["X-User-Agent"] = "SonoranCAD"}
+    end
+    exports["sonorancad"]:HandleHttpRequest(url, cb, method, data, headers)
+end

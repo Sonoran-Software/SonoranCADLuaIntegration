@@ -6,23 +6,36 @@
     Provides logic for checking loaded plugins after startup
 ]]
 
+local function LoadVersionFile(pluginName)
+    local f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/version_%s.json"):format(pluginName, pluginName, pluginName))
+    if f then
+        return f
+    else
+        f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/version_%s.json"):format(pluginName, pluginName)) 
+        if f then
+            return f
+        else
+            return nil
+        end
+    end
+end
+
 CreateThread(function()
     Wait(1)
     for k, v in pairs(Config.plugins) do
-        debugLog(("Checking plugin %s..."):format(k))
         if Config.plugins[k].requiredPlugins ~= nil then
             for _, v in pairs(Config.plugins[k].requiredPlugins) do
                 if Plugins[v] == nil then
-                    warningLog(("Plugin %s requires %s, which is not loaded!"):format(k, v))
+                    errorLog(("Plugin %s requires %s, which is not loaded!"):format(k, v))
                 end
             end
         end
-        debugLog(("Plugin %s loaded OK"):format(k))
-
         -- Plugin updater system
-        local f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/version_%s.json"):format(k, k, k))
+        local f = LoadVersionFile(k)
         if f ~= nil then
             local version = json.decode(f)
+            debugLog(("Loaded plugin %s (%s)"):format(k, version.version))
+            Config.plugins[k].version = version.version
             if version.check_url ~= "" then
                 PerformHttpRequest(version.check_url, function(code, data, headers)
                     if code == 200 then
@@ -41,13 +54,40 @@ CreateThread(function()
                     end
                 end, "GET")
             end
+            if version.minCoreVersion ~= nil then
+                local coreVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
+                _, _, v1, v2, v3 = string.find( version.minCoreVersion, "(%d+)%.(%d+)%.(%d+)" )
+                _, _, r1, r2, r3 = string.find( coreVersion, "(%d+)%.(%d+)%.(%d+)" )
+                v1 = v1 and tonumber(v1) or 0
+                v2 = v2 and tonumber(v2) or 0
+                v3 = v3 and tonumber(v3) or 0
+                r1 = tonumber(r1)
+                r2 = tonumber(r2)
+                r3 = tonumber(r3)
+                debugLog(("versions: %s.%s.%s - %s.%s.%s"):format(r1, r2, r3, v1, v2, v3))
+                if v1 > r1 or v2 > r2 or v3 > r3 then
+                    errorLog(("PLUGIN ERROR: Plugin %s requires Core Version %s, but you have %s. Please update SonoranCAD to use this plugin. Force disabled."):format(k, version.minCoreVersion, coreVersion))
+                    Config.plugins[k].enabled = false
+                end
+            end
         else
             debugLog("Got an empty version file for "..k)
         end
     end
     local pluginList = {}
+    local loadedPlugins = {}
+    local disabledPlugins = {}
     for name, v in pairs(Config.plugins) do
         table.insert(pluginList, name)
+        if v.enabled then
+            table.insert(loadedPlugins, name)
+        else
+            table.insert(disabledPlugins, name)
+        end
     end
-    infoLog(("Loaded plugins: %s"):format(table.concat(pluginList, ", ")))
+    infoLog(("Available Plugins: %s"):format(table.concat(pluginList, ", ")))
+    infoLog(("Loaded Plugins: %s"):format(table.concat(loadedPlugins, ", ")))
+    if #disabledPlugins > 0 then
+        warnLog(("Disabled Plugins: %s"):format(table.concat(disabledPlugins, ", ")))
+    end
 end)

@@ -13,6 +13,10 @@ Config = {
 }
 
 local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
+if not conf then
+    errorLog("Failed to load core configuration. Ensure config.json is present.")
+    return
+end
 for k, v in pairs(json.decode(conf)) do
     Config[k] = v
 end
@@ -42,6 +46,7 @@ Config.GetPluginConfig = function(pluginName)
         if not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/config_%s.lua"):format(pluginName, pluginName, pluginName)) and not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/config_%s.lua"):format(pluginName, pluginName))  then
             warnLog(("Plugin %s is missing critical configuration. Please check our plugin install guide at https://info.sonorancad.com/integration-plugins/integration-plugins/plugin-installation for steps to properly install."):format(pluginName))
         end
+        Config.plugins[pluginName] = { enabled = false }
         return { enabled = false }
     end
 end
