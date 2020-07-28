@@ -78,21 +78,16 @@ function performApiRequest(postData, type, cb)
     if endpoint == "support" then
         apiUrl = "https://api.sonoransoftware.com/"
     end
-    if EndpointsRequireId[type] and postData.apiId == nil then
-        debugLog(("ID is required for %s call but was not given. Ignoring request."):format(type))
-        cb(res, false)
-    else
-        PerformHttpRequest(apiUrl..tostring(endpoint), function(statusCode, res, headers)
-            debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(payload), Config.apiUrl..tostring(endpoint)))
-            if statusCode == 200 and res ~= nil then
-                debugPrint("result: "..tostring(res))
-                cb(res, true)
-            elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
-                cb(res, false)
-            else
-                errorLog(("CAD API ERROR: %s %s"):format(statusCode, res))
-            end
-        end, "POST", json.encode(payload), {["Content-Type"]="application/json"})
-    end
+    PerformHttpRequest(apiUrl..tostring(endpoint), function(statusCode, res, headers)
+        debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(payload), Config.apiUrl..tostring(endpoint)))
+        if statusCode == 200 and res ~= nil then
+            debugPrint("result: "..tostring(res))
+            cb(res, true)
+        elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
+            cb(res, false)
+        else
+            errorLog(("CAD API ERROR: %s %s"):format(statusCode, res))
+        end
+    end, "POST", json.encode(payload), {["Content-Type"]="application/json"})
     
 end
