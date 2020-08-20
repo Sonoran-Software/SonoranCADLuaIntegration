@@ -79,9 +79,9 @@ function performApiRequest(postData, type, cb)
         apiUrl = "https://api.sonoransoftware.com/"
     end
     PerformHttpRequest(apiUrl..tostring(endpoint), function(statusCode, res, headers)
-        debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(payload), Config.apiUrl..tostring(endpoint)))
+        --debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(payload), Config.apiUrl..tostring(endpoint)))
         if statusCode == 200 and res ~= nil then
-            debugPrint("result: "..tostring(res))
+            --debugPrint("result: "..tostring(res))
             cb(res, true)
         elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
             cb(res, false)
