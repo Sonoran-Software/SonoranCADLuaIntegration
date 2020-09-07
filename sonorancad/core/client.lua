@@ -33,3 +33,15 @@ AddEventHandler("SonoranCAD::core:recvClientConfig", function(config)
     end
     Config.inited = true
 end)
+
+Citizen.CreateThread(function()
+    SetDiscordAppId(747991263172755528)
+    SetDiscordRichPresenceAsset("cad_logo")
+    SetDiscordRichPresenceAssetSmall("sonoran_logo")
+    while true do
+        SetRichPresence("Developing SonoranCAD!")
+        Wait(5000)
+        SetRichPresence("sonorancad.com")
+        Wait(5000)
+    end
+end)

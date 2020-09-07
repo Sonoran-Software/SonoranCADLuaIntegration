@@ -15,7 +15,7 @@
     update - attempt to auto-update
 ]]
 
-local function dumpInfo()
+function dumpInfo()
     local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
     local pluginList, loadedPlugins, disabledPlugins = GetPluginLists()
     local pluginVersions = {}
@@ -36,7 +36,7 @@ Disabled Plugins
     ]]):format(version, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "))
 end
 
-local function dumpPlugin(name)
+function dumpPlugin(name)
     local pluginDetail = {}
     if not Config.plugins[name] then
         print("Bad plugin: "..name)

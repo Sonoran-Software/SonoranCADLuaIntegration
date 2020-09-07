@@ -56,7 +56,8 @@ EndpointsRequireId = {
     ["GET_CHARACTERS"] = true,
     ["CHECK_APIID"] = true,
     ["APPLY_PERMISSION_KEY"] = true,
-    ["BAN_USER"] = true
+    ["BAN_USER"] = true,
+    ["KICK_USER"] = true
 }
 
 function registerApiType(type, endpoint)
@@ -68,8 +69,8 @@ function performApiRequest(postData, type, cb)
     local payload = {}
     payload["id"] = Config.communityID
     payload["key"] = Config.apiKey
-    payload["type"] = type
     payload["data"] = postData
+    payload["type"] = type
     local endpoint = nil
     local apiUrl = Config.apiUrl
     if ApiEndpoints[type] ~= nil then
@@ -78,10 +79,11 @@ function performApiRequest(postData, type, cb)
     if endpoint == "support" then
         apiUrl = "https://api.sonoransoftware.com/"
     end
-    PerformHttpRequest(apiUrl..tostring(endpoint), function(statusCode, res, headers)
-        --debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(payload), Config.apiUrl..tostring(endpoint)))
+    assert(type ~= nil, "No type specified, invalid request.")
+    PerformHttpRequest(apiUrl..tostring(endpoint).."/"..tostring(type:lower()), function(statusCode, res, headers)
+        debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(payload), Config.apiUrl..tostring(endpoint).."/"..tostring(type:lower())))
         if statusCode == 200 and res ~= nil then
-            --debugPrint("result: "..tostring(res))
+            debugPrint("result: "..tostring(res))
             cb(res, true)
         elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
             cb(res, false)
