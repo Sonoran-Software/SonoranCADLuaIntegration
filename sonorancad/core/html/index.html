@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SonoranCAD Info Page</title>
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+<body>
+    <div id="passwordDiv">
+        <form>
+            API Key: <input type="text" id="password" name="password"/><input type="button" id="apisubmit" value="Submit"/>
+        </form>
+    </div>
+    <div id="infoDiv"></div>
+
+    <script type="text/javascript">
+        const api = document.getElementById("apisubmit")
+        api.addEventListener('click', e => {
+            fetch('/sonorancad/info', {
+                method: 'post',
+                body: JSON.stringify({
+                    password: document.querySelector("#password").value
+                })
+            }).then(res => res.json()).then(res => {
+                let passDiv = document.getElementById("passwordDiv");
+                let infoDiv = document.getElementById("infoDiv");
+                if (res.error) {
+                    infoDiv.style.color = '#aa0000';
+                    infoDiv.innerHTML = "An error occurred.";
+                    infoDiv.style.display == "none";
+                } else {
+                    infoDiv.style.color = '#000000';
+                    infoDiv.style.display == "block";
+               //     passDiv.style.display == "none";
+                    infoDiv.innerHTML = res.cadInfo
+                    infoDiv.innerHTML += res.config
+                }
+                
+
+            })
+        })
+    </script>
+</body>
+</html>
