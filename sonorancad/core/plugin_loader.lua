@@ -46,6 +46,7 @@ CreateThread(function()
                             warnLog(("Failed to get a valid response for %s. Skipping."):format(k))
                             debugLog(("Raw output for %s: %s"):format(k, data))
                         else
+                            Config.plugins[k].latestVersion = remote.version
                             if remote.version ~= version.version then
                                 local nag = ("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url.."releases/")
                                 warnLog(nag)
