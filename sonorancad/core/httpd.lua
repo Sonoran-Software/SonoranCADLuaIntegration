@@ -22,7 +22,12 @@ SetHttpHandler(function(req, res)
                 res.send(json.encode({["error"] = "bad request"}))
                 return
             end
-            res.send(json.encode({["status"] = "ok", ["cadInfo"] = string.gsub(dumpInfo(), "\n", "<br />"), ["config"] = string.gsub(getConfig(), "\r\n", "<br />")}))
+            res.send(json.encode({
+                ["status"] = "ok", 
+                ["cadInfo"] = string.gsub(dumpInfo(), "\n", "<br />"), 
+                ["config"] = string.gsub(getConfig(), "\r\n", "<br />"),
+                ["console"] = string.gsub(GetConsoleBuffer(), "\n", "<br />")
+            }))
 
         end)
     else

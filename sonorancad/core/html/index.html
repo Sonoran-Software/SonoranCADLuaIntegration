@@ -13,6 +13,7 @@
         </form>
     </div>
     <div id="infoDiv"></div>
+    <div id="consoleDiv"></div>
 
     <script type="text/javascript">
         const api = document.getElementById("apisubmit")
@@ -25,6 +26,7 @@
             }).then(res => res.json()).then(res => {
                 let passDiv = document.getElementById("passwordDiv");
                 let infoDiv = document.getElementById("infoDiv");
+                let consoleDiv = document.getElementById("consoleDiv");
                 if (res.error) {
                     infoDiv.style.color = '#aa0000';
                     infoDiv.innerHTML = "An error occurred.";
@@ -35,6 +37,7 @@
                //     passDiv.style.display == "none";
                     infoDiv.innerHTML = res.cadInfo
                     infoDiv.innerHTML += res.config
+                    consoleDiv.innerHTML = res.console
                 }
                 
 
