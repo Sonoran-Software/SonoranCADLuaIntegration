@@ -22,12 +22,6 @@ SetHttpHandler(function(req, res)
                 res.send(json.encode({["error"] = "bad request"}))
                 return
             end
-            local pluginInfo = {}
-            for k, v in pairs(Config.plugins) do
-                if type(v) ~= "function" then
-                    pluginInfo[k] = v
-                end
-            end
             res.send(json.encode({
                 ["status"] = "ok", 
                 ["cadInfo"] = string.gsub(dumpInfo(), "\n", "<br />"), 

@@ -21,7 +21,7 @@ function dumpInfo()
     local pluginVersions = {}
     for k, v in pairs(pluginList) do
         if Config.plugins[v] then
-            table.insert(pluginVersions, ("%s [%s]"):format(v, Config.plugins[v].version))
+            table.insert(pluginVersions, ("%s [%s/%s]"):format(v, Config.plugins[v].version, Config.plugins[v].latestVersion))
         end
     end
     return ([[
