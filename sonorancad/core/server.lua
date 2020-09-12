@@ -84,6 +84,8 @@ function registerApiType(type, endpoint)
     ApiEndpoints[type] = endpoint
 end
 
+local rateLimitedEndpoints = {}
+
 function performApiRequest(postData, type, cb)
     -- apply required headers 
     local payload = {}
@@ -102,21 +104,33 @@ function performApiRequest(postData, type, cb)
         apiUrl = getApiUrl()
     end
     assert(type ~= nil, "No type specified, invalid request.")
-    PerformHttpRequest(apiUrl..tostring(endpoint).."/"..tostring(type:lower()), function(statusCode, res, headers)
-        debugPrint(("type %s called with post data %s to url %s"):format(type, json.encode(payload), Config.apiUrl..tostring(endpoint).."/"..tostring(type:lower())))
-        if statusCode == 200 and res ~= nil then
-            debugPrint("result: "..tostring(res))
-            if res == "Sonoran CAD: Backend Service Reached" then
-                errorLog(("API ERROR: Invalid endpoint (URL: %s). Ensure you're using a valid endpoint."):format(apiUrl..tostring(endpoint).."/"..tostring(type:lower())))
+    local url = Config.apiUrl..tostring(endpoint).."/"..tostring(type:lower())
+    if rateLimitedEndpoints[type] == nil then
+        PerformHttpRequest(url, function(statusCode, res, headers)
+            debugLog(("type %s called with post data %s to url %s"):format(type, json.encode(payload), url))
+            if statusCode == 200 and res ~= nil then
+                debugLog("result: "..tostring(res))
+                if res == "Sonoran CAD: Backend Service Reached" then
+                    errorLog(("API ERROR: Invalid endpoint (URL: %s). Ensure you're using a valid endpoint."):format(url))
+                else
+                    cb(res, true)
+                end
+            elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
+                cb(res, false)
+            elseif statusCode == 429 then -- rate limited :(
+                rateLimitedEndpoints[type] = true
+                warnLog(("You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 30 seconds."):format(type))
+                SetTimeout(30000, function()
+                    rateLimitedEndpoints[type] = nil
+                    infoLog(("Endpoint %s no longer ignored."):format(type))
+                end)
             else
-                cb(res, true)
+                errorLog(("CAD API ERROR: %s %s"):format(statusCode, res))
             end
-        elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
-            cb(res, false)
-        else
-            errorLog(("CAD API ERROR: %s %s"):format(statusCode, res))
-        end
-    end, "POST", json.encode(payload), {["Content-Type"]="application/json"})
+        end, "POST", json.encode(payload), {["Content-Type"]="application/json"})
+    else
+        debugLog(("Endpoint %s is ratelimited. Dropped request: %s"):format(type, json.encode(payload)))
+    end
     
 end
 
