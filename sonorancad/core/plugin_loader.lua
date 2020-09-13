@@ -20,6 +20,8 @@ local function LoadVersionFile(pluginName)
     end
 end
 
+local NagMessages = {}
+
 CreateThread(function()
     Wait(1)
     for k, v in pairs(Config.plugins) do
@@ -44,8 +46,10 @@ CreateThread(function()
                             warnLog(("Failed to get a valid response for %s. Skipping."):format(k))
                             debugLog(("Raw output for %s: %s"):format(k, data))
                         else
+                            Config.plugins[k].latestVersion = remote.version
                             if remote.version ~= version.version then
-                                infoLog(("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url.."releases/"))
+                                local nag = ("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url.."releases/")
+                                warnLog(nag)
                             end
                             if remote.configVersion ~= nil then
                                 local myversion = version.configVersion ~= nil and version.configVersion or "0.0"
@@ -95,5 +99,14 @@ CreateThread(function()
     infoLog(("Loaded Plugins: %s"):format(table.concat(loadedPlugins, ", ")))
     if #disabledPlugins > 0 then
         warnLog(("Disabled Plugins: %s"):format(table.concat(disabledPlugins, ", ")))
+    end
+end)
+
+CreateThread(function()
+    while true do
+        Wait(1000*60*60)
+        for k, v in ipairs(NagMessages) do
+            warnLog(v)
+        end
     end
 end)

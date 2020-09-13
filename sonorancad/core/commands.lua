@@ -15,13 +15,13 @@
     update - attempt to auto-update
 ]]
 
-local function dumpInfo()
+function dumpInfo()
     local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
     local pluginList, loadedPlugins, disabledPlugins = GetPluginLists()
     local pluginVersions = {}
     for k, v in pairs(pluginList) do
         if Config.plugins[v] then
-            table.insert(pluginVersions, ("%s [%s]"):format(v, Config.plugins[v].version))
+            table.insert(pluginVersions, ("%s [%s/%s]"):format(v, Config.plugins[v].version, Config.plugins[v].latestVersion))
         end
     end
     return ([[
@@ -36,7 +36,7 @@ Disabled Plugins
     ]]):format(version, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "))
 end
 
-local function dumpPlugin(name)
+function dumpPlugin(name)
     local pluginDetail = {}
     if not Config.plugins[name] then
         print("Bad plugin: "..name)
