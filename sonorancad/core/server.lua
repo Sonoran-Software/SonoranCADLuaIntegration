@@ -94,7 +94,6 @@ function performApiRequest(postData, type, cb)
     payload["data"] = postData
     payload["type"] = type
     local endpoint = nil
-    local apiUrl = Config.apiUrl
     if ApiEndpoints[type] ~= nil then
         endpoint = ApiEndpoints[type]
     end
@@ -104,7 +103,7 @@ function performApiRequest(postData, type, cb)
         apiUrl = getApiUrl()
     end
     assert(type ~= nil, "No type specified, invalid request.")
-    local url = Config.apiUrl..tostring(endpoint).."/"..tostring(type:lower())
+    local url = apiUrl..tostring(endpoint).."/"..tostring(type:lower())
     if rateLimitedEndpoints[type] == nil then
         PerformHttpRequest(url, function(statusCode, res, headers)
             debugLog(("type %s called with post data %s to url %s"):format(type, json.encode(payload), url))
@@ -119,7 +118,7 @@ function performApiRequest(postData, type, cb)
                 cb(res, false)
             elseif statusCode == 429 then -- rate limited :(
                 rateLimitedEndpoints[type] = true
-                warnLog(("You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 30 seconds."):format(type))
+                warnLog(("You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 30 seconds. If this is happening frequently, please review your configuration to ensure you're not sending data too quickly."):format(type))
                 SetTimeout(30000, function()
                     rateLimitedEndpoints[type] = nil
                     infoLog(("Endpoint %s no longer ignored."):format(type))
@@ -153,7 +152,7 @@ CreateThread(function()
             plugins = plugins
         }
         debugLog(("Heartbeat: %s"):format(json.encode(payload)))
-        --performApiRequest(payload, "HEARTBEAT", function() end) (purposely commented until endpoint is available)
+        performApiRequest(payload, "HEARTBEAT", function() end)
         Wait(1000*60*60)
     end
 end)
