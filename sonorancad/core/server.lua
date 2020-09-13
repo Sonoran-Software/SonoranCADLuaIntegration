@@ -124,7 +124,7 @@ function performApiRequest(postData, type, cb)
                     infoLog(("Endpoint %s no longer ignored."):format(type))
                 end)
             else
-                errorLog(("CAD API ERROR: %s %s"):format(statusCode, res))
+                errorLog(("CAD API ERROR (from %s): %s %s"):format(url, statusCode, res))
             end
         end, "POST", json.encode(payload), {["Content-Type"]="application/json"})
     else
