@@ -154,6 +154,7 @@ CreateThread(function()
             coreVersion = coreVersion,
             commId = Config.communityID,
             playerCount = playerCount,
+            serverId = Config.serverId,
             plugins = plugins
         }
         debugLog(("Heartbeat: %s"):format(json.encode(payload)))
