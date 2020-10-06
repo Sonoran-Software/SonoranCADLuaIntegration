@@ -114,6 +114,8 @@ function performApiRequest(postData, type, cb)
                 else
                     cb(res, true)
                 end
+            elseif statusCode == 400 then
+                warnLog("Bad request was sent to the API. Enable debug mode and retry your request. Response: "..tostring(res))
             elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
                 cb(res, false)
             elseif statusCode == 429 then -- rate limited :(
@@ -123,6 +125,9 @@ function performApiRequest(postData, type, cb)
                     rateLimitedEndpoints[type] = nil
                     infoLog(("Endpoint %s no longer ignored."):format(type))
                 end)
+            elseif string.match(tostring(statusCode), "50") then
+                errorLog(("API error returned (%s). Check status.sonoransoftware.com or our Discord to see if there's an outage."):format(statusCode))
+                debugLog(("Error returned: %s %s"):format(statusCode, res))
             else
                 errorLog(("CAD API ERROR (from %s): %s %s"):format(url, statusCode, res))
             end
