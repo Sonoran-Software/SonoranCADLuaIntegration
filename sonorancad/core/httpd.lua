@@ -18,7 +18,7 @@ SetHttpHandler(function(req, res)
                 res.send(json.encode({["error"] = "bad request"}))
                 return
             end
-            if data.password ~= Config.apiKey then
+            if string.upper(data.password) ~= string.upper(Config.apiKey) then
                 res.send(json.encode({["error"] = "bad request"}))
                 return
             end
