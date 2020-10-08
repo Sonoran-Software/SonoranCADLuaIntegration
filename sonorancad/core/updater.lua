@@ -1,7 +1,14 @@
+local pendingRestart = false
+
 local function doUnzip(path)
-    local unzipPath = GetResourcePath(GetCurrentResourceName()).."/unzip/"
+    local unzipPath = GetResourcePath(GetCurrentResourceName()).."/../unzip/"
     exports[GetCurrentResourceName()]:UnzipFile(path, unzipPath)
     infoLog("Unzipped to "..unzipPath)
+    if not Config.allowUpdateWithPlayers and GetNumPlayerIndices() > 0 then
+        pendingRestart = true
+        infoLog("Delaying auto-update until server is empty.")
+        return
+    end
     warnLog("Auto-restarting...")
     Wait(5000)
     ExecuteCommand("start sonoran_updatehelper")
@@ -25,13 +32,12 @@ local function doUpdate(latest)
     
 end
 
-function RunAutoUpdater()
+function RunAutoUpdater(manualRun)
     local f = LoadResourceFile(GetCurrentResourceName(), "update.zip")
     if f ~= nil then
         -- remove the update file and stop the helper
         ExecuteCommand("stop sonoran_updatehelper")
         os.remove(GetResourcePath(GetCurrentResourceName()).."/update.zip")
-        return
     end
     local versionFile = Config.autoUpdateUrl
     if versionFile == nil then
@@ -54,8 +60,12 @@ function RunAutoUpdater()
                 assert(latestVersion ~= nil, "Failed to parse remote version. "..tostring(latestVersion))
 
                 if latestVersion > localVersion then
-                    infoLog("Might do an auto-update later, idk")
+                    infoLog("Running auto-update now...")
                     doUpdate(remote.resource)
+                else
+                    if manualRun then
+                        infoLog("No updates available.")
+                    end
                 end
             end
         end
@@ -64,5 +74,19 @@ end
 
 
 CreateThread(function()
-    RunAutoUpdater()
+    if Config.allowAutoUpdate or Config.allowAutoUpdate == nil then
+        while true do
+            if pendingRestart then
+                if GetNumPlayerIndices() > 0 then
+                    warnLog("An update has been applied to SonoranCAD but requires a resource restart. Restart delayed until server is empty.")
+                else
+                    infoLog("Server is empty, restarting resources...")
+                    ExecuteCommand("start sonoran_updatehelper")
+                end
+            else
+                RunAutoUpdater()
+            end
+            Wait(60000*60)
+        end
+    end
 end)

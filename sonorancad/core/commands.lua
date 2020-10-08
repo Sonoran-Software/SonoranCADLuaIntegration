@@ -109,6 +109,7 @@ SonoranCAD Help
     info - dump version info, configuration
     support - dump useful data for support staff 
     plugin <name> - show info about a plugin (config)
+    update - Run auto-updater
 ]])
     elseif args[1] == "debugmode" then
         Config.debugMode = not Config.debugMode
@@ -126,7 +127,8 @@ SonoranCAD Help
             errorLog("Invalid plugin")
         end
     elseif args[1] == "update" then --update - attempt to auto-update
-        return
+        infoLog("Checking for core update...")
+        RunAutoUpdater(true)
     else
         print("Missing command. Try \"sonoran help\" for help.")
     end

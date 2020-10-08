@@ -1,3 +1,5 @@
 config.json
 update.zip
 unzip/
+.vscode
+.git
