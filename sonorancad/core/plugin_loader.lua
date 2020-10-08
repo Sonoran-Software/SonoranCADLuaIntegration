@@ -39,7 +39,7 @@ CreateThread(function()
             debugLog(("Loaded plugin %s (%s)"):format(k, version.version))
             Config.plugins[k].version = version.version
             if version.check_url ~= "" then
-                PerformHttpRequest(version.check_url, function(code, data, headers)
+                PerformHttpRequestS(version.check_url, function(code, data, headers)
                     if code == 200 then
                         local remote = json.decode(data)
                         if remote == nil then

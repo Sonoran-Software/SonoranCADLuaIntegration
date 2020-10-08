@@ -25,7 +25,7 @@ local url = "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaInt
 local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
 
 function checkForUpdate()
-    PerformHttpRequest(url, function(err, data, headers)
+    PerformHttpRequestS(url, function(err, data, headers)
         local parsed = json.decode(data)
         _, _, r1, r2, r3 = string.find( version, "(%d+)%.(%d+)%.(%d+)" )
         _, _, v1, v2, v3 = string.find( parsed["resource"], "(%d+)%.(%d+)%.(%d+)" )
