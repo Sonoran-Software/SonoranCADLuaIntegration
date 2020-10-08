@@ -105,7 +105,7 @@ function performApiRequest(postData, type, cb)
     assert(type ~= nil, "No type specified, invalid request.")
     local url = apiUrl..tostring(endpoint).."/"..tostring(type:lower())
     if rateLimitedEndpoints[type] == nil then
-        PerformHttpRequest(url, function(statusCode, res, headers)
+        PerformHttpRequestS(url, function(statusCode, res, headers)
             debugLog(("type %s called with post data %s to url %s"):format(type, json.encode(payload), url))
             if statusCode == 200 and res ~= nil then
                 debugLog("result: "..tostring(res))
@@ -141,7 +141,7 @@ end
 -- Metrics
 CreateThread(function()
     registerApiType("HEARTBEAT", "general")
-    while true do
+    while false do
         -- Wait a few seconds for server startup
         Wait(5000)
         local coreVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)

@@ -20,7 +20,6 @@ exports('HandleHttpRequest', (dest, callback, method, data, headers) => {
         return;
     }
     options.headers['X-SonoranCAD-Version'] = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
-
     const req = https.request(options, (res) => {
         let output = "";
         res.on('data', (d) => {

@@ -1,3 +1,14 @@
+// this method will proxy your custom method with the original one
+function proxy(context, method, message) { 
+  return function() {
+    method.apply(context, [message].concat(Array.prototype.slice.apply(arguments)))
+  }
+}
+
+// let's do the actual proxying over originals
+console.log = proxy(console, console.log, 'Log:')
+console.error = proxy(console, console.error, 'Error:')
+console.warn = proxy(console, console.warn, 'Warning:')
 
 $(function() {
     window.addEventListener('message', function(event) {
