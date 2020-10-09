@@ -60,8 +60,17 @@ function RunAutoUpdater(manualRun)
                 assert(latestVersion ~= nil, "Failed to parse remote version. "..tostring(latestVersion))
 
                 if latestVersion > localVersion then
-                    infoLog("Running auto-update now...")
-                    doUpdate(remote.resource)
+                    if Config.allowAutoUpdate or Config.allowAutoUpdate == nil then
+                        print("^3|===========================================================================|")
+                        print("^3|                        ^5SonoranCAD Update Available                        ^3|")
+                        print("^3|                             ^8Current : " .. localVersion .. "                               ^3|")
+                        print("^3|                             ^2Latest  : " .. latestVersion .. "                               ^3|")
+                        print("^3| Download at: ^4https://github.com/Sonoran-Software/SonoranCADLuaIntegration ^3|")
+                        print("^3|===========================================================================|^7")
+                    else
+                        infoLog("Running auto-update now...")
+                        doUpdate(remote.resource)
+                    end
                 else
                     if manualRun then
                         infoLog("No updates available.")
@@ -74,19 +83,17 @@ end
 
 
 CreateThread(function()
-    if Config.allowAutoUpdate or Config.allowAutoUpdate == nil then
-        while true do
-            if pendingRestart then
-                if GetNumPlayerIndices() > 0 then
-                    warnLog("An update has been applied to SonoranCAD but requires a resource restart. Restart delayed until server is empty.")
-                else
-                    infoLog("Server is empty, restarting resources...")
-                    ExecuteCommand("start sonoran_updatehelper")
-                end
+    while true do
+        if pendingRestart then
+            if GetNumPlayerIndices() > 0 then
+                warnLog("An update has been applied to SonoranCAD but requires a resource restart. Restart delayed until server is empty.")
             else
-                RunAutoUpdater()
+                infoLog("Server is empty, restarting resources...")
+                ExecuteCommand("start sonoran_updatehelper")
             end
-            Wait(60000*60)
+        else
+            RunAutoUpdater()
         end
+        Wait(60000*60)
     end
 end)
