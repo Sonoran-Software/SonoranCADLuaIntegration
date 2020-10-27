@@ -60,7 +60,7 @@ function RunAutoUpdater(manualRun)
                 assert(latestVersion ~= nil, "Failed to parse remote version. "..tostring(latestVersion))
 
                 if latestVersion > localVersion then
-                    if Config.allowAutoUpdate or Config.allowAutoUpdate == nil then
+                    if not Config.allowAutoUpdate then
                         print("^3|===========================================================================|")
                         print("^3|                        ^5SonoranCAD Update Available                        ^3|")
                         print("^3|                             ^8Current : " .. localVersion .. "                               ^3|")
