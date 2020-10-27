@@ -162,3 +162,7 @@ CreateThread(function()
         Wait(1000*60*60)
     end
 end)
+
+RegisterCommand("cc", function()
+    TriggerClientEvent("chat:clear", -1)
+end)
