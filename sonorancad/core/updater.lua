@@ -1,7 +1,7 @@
 local pendingRestart = false
 
 local function doUnzip(path)
-    local unzipPath = GetResourcePath(GetCurrentResourceName()).."/../"
+    local unzipPath = GetResourcePath(GetCurrentResourceName()).."/../../"
     exports[GetCurrentResourceName()]:UnzipFile(path, unzipPath)
     infoLog("Unzipped to "..unzipPath)
     if not Config.allowUpdateWithPlayers and GetNumPlayerIndices() > 0 then
