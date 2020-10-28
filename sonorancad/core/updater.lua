@@ -36,7 +36,7 @@ local function doUpdate(latest)
 end
 
 function RunAutoUpdater(manualRun)
-    local f = LoadResourceFile(GetCurrentResourceName(), "update.zip")
+    local f = LoadResourceFile(GetCurrentResourceName(), "/update.zip")
     if f ~= nil then
         -- remove the update file and stop the helper
         ExecuteCommand("stop sonoran_updatehelper")
@@ -71,6 +71,9 @@ function RunAutoUpdater(manualRun)
                         print("^3|                             ^2Latest  : " .. latestVersion .. "                               ^3|")
                         print("^3| Download at: ^4https://github.com/Sonoran-Software/SonoranCADLuaIntegration ^3|")
                         print("^3|===========================================================================|^7")
+                        if Config.allowAutoUpdate == nil then
+                            warnLog("You have not configured the automatic updater. Please set allowAutoUpdate in config.json to allow updates.")
+                        end
                     else
                         infoLog("Running auto-update now...")
                         doUpdate(remote.resource)
