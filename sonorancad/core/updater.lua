@@ -1,7 +1,7 @@
 local pendingRestart = false
 
 local function doUnzip(path)
-    local unzipPath = GetResourcePath(GetCurrentResourceName()).."/../unzip/"
+    local unzipPath = GetResourcePath(GetCurrentResourceName()).."/../"
     exports[GetCurrentResourceName()]:UnzipFile(path, unzipPath)
     infoLog("Unzipped to "..unzipPath)
     if not Config.allowUpdateWithPlayers and GetNumPlayerIndices() > 0 then
@@ -10,8 +10,11 @@ local function doUnzip(path)
         return
     end
     warnLog("Auto-restarting...")
+    local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock", "w+"))
+    f:write("1")
+    f:close()
     Wait(5000)
-    ExecuteCommand("start sonoran_updatehelper")
+    ExecuteCommand("ensure sonoran_updatehelper")
 end
 
 local function doUpdate(latest)
@@ -38,6 +41,7 @@ function RunAutoUpdater(manualRun)
         -- remove the update file and stop the helper
         ExecuteCommand("stop sonoran_updatehelper")
         os.remove(GetResourcePath(GetCurrentResourceName()).."/update.zip")
+        os.remove(GetResourcePath("sonoran_updatehelper").."/run.lock")
     end
     local versionFile = Config.autoUpdateUrl
     if versionFile == nil then
@@ -89,7 +93,10 @@ CreateThread(function()
                 warnLog("An update has been applied to SonoranCAD but requires a resource restart. Restart delayed until server is empty.")
             else
                 infoLog("Server is empty, restarting resources...")
-                ExecuteCommand("start sonoran_updatehelper")
+                local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock"))
+                f:write("1")
+                f:close()
+                ExecuteCommand("ensure sonoran_updatehelper")
             end
         else
             RunAutoUpdater()
