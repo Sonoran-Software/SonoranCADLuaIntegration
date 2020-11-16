@@ -77,7 +77,7 @@ function CheckIdentifiers(id1, id2, callback, stripPrefix)
     end
 end
 
-function PerformHttpRequest(url, cb, method, data, headers)
+function PerformHttpRequestS(url, cb, method, data, headers)
     if not data then
         data = ""
     end

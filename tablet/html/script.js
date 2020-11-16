@@ -1,36 +1,36 @@
+$(function () {
+  window.addEventListener('message', function (event) {
+    if (event.data.type == "enableui") {
+      if (event.data.enable) {
+        $("body").show();
+      }
+      else {
+        $("body").hide();
+      }
+    }
+    else if (event.data.type == "backHome") {
+      document.body.style.display = "block";
 
-$(function() {
-    window.addEventListener('message', function(event) {
-        if (event.data.type == "enableui") {
-            if (event.data.enable) {
-              $("body").show();
-            }
-            else{
-              $("body").hide();
-            }
-		} 
-		else if (event.data.type == "backHome") {
-            document.body.style.display = "block";
-		
     }
     else if (event.data.type == "seturl") {
       document.getElementById("mdtFrame").src = event.data.url;
     }
-    });
-
-    document.onkeyup = function (data) {
-      if (data.which == 27) { // Escape key
-          $.post('http://tablet/NUIFocusOff', JSON.stringify({}));
-          
-      }
-    }; 
-    
-    dragElement(document.getElementById("tablet"));
   });
 
-	function backHome() {
-		document.body.style.display = "block";
-	};
+  document.onkeyup = function (data) {
+    if (data.which == 27) { // Escape key
+      $.post('https://tablet/NUIFocusOff', JSON.stringify({}));
+
+    }
+  };
+
+  dragElement(document.getElementById("tablet"));
+});
+
+
+function backHome() {
+  document.body.style.display = "block";
+};
 function dragElement(elmnt) {
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
   if (document.getElementById(elmnt.id + "header")) {
@@ -71,4 +71,3 @@ function dragElement(elmnt) {
     document.onmousemove = null;
   }
 }
-	

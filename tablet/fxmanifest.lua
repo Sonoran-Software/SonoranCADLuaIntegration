@@ -1,4 +1,4 @@
-fx_version 'adamant'
+fx_version 'bodacious'
 
 games {'gta5'}
 
@@ -13,5 +13,6 @@ files {
     'html/index.html',
     'html/style.css',
     'html/reset.css',
+    'html/config.js',
     "html/script.js"
 }
