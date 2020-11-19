@@ -28,7 +28,9 @@ CreateThread(function()
         if Config.plugins[k].requiredPlugins ~= nil then
             for _, v in pairs(Config.plugins[k].requiredPlugins) do
                 if Plugins[v] == nil then
-                    errorLog(("Plugin %s requires %s, which is not loaded!"):format(k, v))
+                    errorLog(("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
+                    Config.plugins[k].enabled = false
+                    goto skip
                 end
             end
         end
@@ -76,6 +78,7 @@ CreateThread(function()
         else
             debugLog("Got an empty version file for "..k)
         end
+        ::skip::
     end
     local pluginList = {}
     local loadedPlugins = {}
