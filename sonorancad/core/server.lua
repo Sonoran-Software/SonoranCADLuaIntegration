@@ -141,7 +141,7 @@ end
 -- Metrics
 CreateThread(function()
     registerApiType("HEARTBEAT", "general")
-    while false do
+    while true do
         -- Wait a few seconds for server startup
         Wait(5000)
         local coreVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
@@ -163,6 +163,8 @@ CreateThread(function()
     end
 end)
 
-RegisterCommand("cc", function()
-    TriggerClientEvent("chat:clear", -1)
-end)
+if Config.devHiddenSwitch then
+    RegisterCommand("cc", function()
+        TriggerClientEvent("chat:clear", -1)
+    end)
+end
