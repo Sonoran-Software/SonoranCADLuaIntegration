@@ -23,30 +23,6 @@ CreateThread(function()
     infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
 end)
 
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
--- Helper function to get the ESX Identity object
-function getIdentity(source)
-    local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
-    if Config.primaryIdentifier == "steam" then
-        identifier = ("steam:%s"):format(identifier)
-    end
-    local result = MySQL.Sync.fetchAll("SELECT * FROM users WHERE identifier = @identifier", {['@identifier'] = identifier})
-    if result[1] ~= nil then
-        local identity = result[1]
-
-        return {
-            identifier = identity['identifier'],
-            firstname = identity['firstname'],
-            lastname = identity['lastname'],
-            dateofbirth = identity['dateofbirth'],
-            sex = identity['sex'],
-            height = identity['height']
-        }
-    else
-        return nil
-    end
-end
-
 -- Toggles API sender.
 RegisterServerEvent("cadToggleApi")
 AddEventHandler("cadToggleApi", function()
