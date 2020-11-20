@@ -25,10 +25,13 @@ local NagMessages = {}
 CreateThread(function()
     Wait(1)
     for k, v in pairs(Config.plugins) do
-        if Config.plugins[k].requiredPlugins ~= nil then
-            for _, v in pairs(Config.plugins[k].requiredPlugins) do
-                if Plugins[v] == nil then
-                    errorLog(("Plugin %s requires %s, which is not loaded!"):format(k, v))
+        if Config.plugins[k].requiresPlugins ~= nil then
+            for _, v in pairs(Config.plugins[k].requiresPlugins) do
+                debugLog(("Checking %s dependency %s"):format(k, v))
+                if not Config.plugins[v].enabled then
+                    errorLog(("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
+                    Config.plugins[k].enabled = false
+                    goto skip
                 end
             end
         end
@@ -48,8 +51,9 @@ CreateThread(function()
                         else
                             Config.plugins[k].latestVersion = remote.version
                             if remote.version ~= version.version then
-                                local nag = ("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url.."releases/")
+                                local nag = ("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url)
                                 warnLog(nag)
+                                table.insert(NagMessages, nag)
                             end
                             if remote.configVersion ~= nil then
                                 local myversion = version.configVersion ~= nil and version.configVersion or "0.0"
@@ -76,6 +80,7 @@ CreateThread(function()
         else
             debugLog("Got an empty version file for "..k)
         end
+        ::skip::
     end
     local pluginList = {}
     local loadedPlugins = {}

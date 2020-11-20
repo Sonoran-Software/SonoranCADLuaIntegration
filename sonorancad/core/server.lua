@@ -23,30 +23,6 @@ CreateThread(function()
     infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
 end)
 
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
--- Helper function to get the ESX Identity object
-function getIdentity(source)
-    local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
-    if Config.primaryIdentifier == "steam" then
-        identifier = ("steam:%s"):format(identifier)
-    end
-    local result = MySQL.Sync.fetchAll("SELECT * FROM users WHERE identifier = @identifier", {['@identifier'] = identifier})
-    if result[1] ~= nil then
-        local identity = result[1]
-
-        return {
-            identifier = identity['identifier'],
-            firstname = identity['firstname'],
-            lastname = identity['lastname'],
-            dateofbirth = identity['dateofbirth'],
-            sex = identity['sex'],
-            height = identity['height']
-        }
-    else
-        return nil
-    end
-end
-
 -- Toggles API sender.
 RegisterServerEvent("cadToggleApi")
 AddEventHandler("cadToggleApi", function()
@@ -141,7 +117,7 @@ end
 -- Metrics
 CreateThread(function()
     registerApiType("HEARTBEAT", "general")
-    while false do
+    while true do
         -- Wait a few seconds for server startup
         Wait(5000)
         local coreVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
@@ -163,6 +139,8 @@ CreateThread(function()
     end
 end)
 
-RegisterCommand("cc", function()
-    TriggerClientEvent("chat:clear", -1)
-end)
+if Config.devHiddenSwitch then
+    RegisterCommand("cc", function()
+        TriggerClientEvent("chat:clear", -1)
+    end)
+end

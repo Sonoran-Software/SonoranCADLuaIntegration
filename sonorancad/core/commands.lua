@@ -19,6 +19,11 @@ function dumpInfo()
     local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
     local pluginList, loadedPlugins, disabledPlugins = GetPluginLists()
     local pluginVersions = {}
+    local cadVariables = { ["socket_port"] = GetConvar("socket_port", "NONE"), ["SonoranListenPort"] = GetConvar("SonoranListenPort", "NONE")}
+    local variableList = ""
+    for k, v in pairs(cadVariables) do
+        variableList = ("%s%s = %s\n"):format(variableList, k, v)
+    end
     for k, v in pairs(pluginList) do
         if Config.plugins[v] then
             table.insert(pluginVersions, ("%s [%s/%s]"):format(v, Config.plugins[v].version, Config.plugins[v].latestVersion))
@@ -33,7 +38,9 @@ Loaded Plugins
 %s
 Disabled Plugins
 %s
-    ]]):format(version, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "))
+Relevant Variables
+%s
+    ]]):format(version, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "), variableList)
 end
 
 function dumpPlugin(name)

@@ -1,5 +1,6 @@
 local function sendConsole(level, color, message)
-    print(("[SonoranCAD:%s%s^7]%s %s^0"):format(color, level, color, message))
+    local time = os.date("%X")
+    print(("[%s][SonoranCAD:%s%s^7]%s %s^0"):format(time, color, level, color, message))
 end
 
 function debugLog(message)
