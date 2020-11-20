@@ -392,8 +392,8 @@ SetHttpHandler(function(req, res)
     if path == "/blips" or path == "/blips.json" then
         return sendBlips(res)
     end
-
-    return res.send(json.encode({
+    return "hello"
+    --[[return res.send(json.encode({
         error = "path \"" .. path .."\" not found"
-    }))
+    }))--]]
 end)

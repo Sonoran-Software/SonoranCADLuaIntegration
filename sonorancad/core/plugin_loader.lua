@@ -25,9 +25,10 @@ local NagMessages = {}
 CreateThread(function()
     Wait(1)
     for k, v in pairs(Config.plugins) do
-        if Config.plugins[k].requiredPlugins ~= nil then
-            for _, v in pairs(Config.plugins[k].requiredPlugins) do
-                if Plugins[v] == nil then
+        if Config.plugins[k].requiresPlugins ~= nil then
+            for _, v in pairs(Config.plugins[k].requiresPlugins) do
+                debugLog(("Checking %s dependency %s"):format(k, v))
+                if not Config.plugins[v].enabled then
                     errorLog(("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
                     Config.plugins[k].enabled = false
                     goto skip
