@@ -51,8 +51,9 @@ CreateThread(function()
                         else
                             Config.plugins[k].latestVersion = remote.version
                             if remote.version ~= version.version then
-                                local nag = ("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url.."releases/")
+                                local nag = ("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url)
                                 warnLog(nag)
+                                table.insert(NagMessages, nag)
                             end
                             if remote.configVersion ~= nil then
                                 local myversion = version.configVersion ~= nil and version.configVersion or "0.0"
