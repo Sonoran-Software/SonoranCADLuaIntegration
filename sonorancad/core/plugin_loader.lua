@@ -28,7 +28,7 @@ CreateThread(function()
         if Config.plugins[k].requiresPlugins ~= nil then
             for _, v in pairs(Config.plugins[k].requiresPlugins) do
                 debugLog(("Checking %s dependency %s"):format(k, v))
-                if not Config.plugins[v].enabled then
+                if Config.plugins[v] == nil or not Config.plugins[v].enabled then
                     errorLog(("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
                     Config.plugins[k].enabled = false
                     goto skip
