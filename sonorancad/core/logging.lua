@@ -1,5 +1,10 @@
+local function LocalTime()
+	local _, _, _, h, m, s = GetLocalTime()
+	return '' .. h .. ':' .. m .. ':' .. s
+end
+
 local function sendConsole(level, color, message)
-    local time = os.date("%X")
+    local time = os and os.date("%X") or LocalTime()
     print(("[%s][SonoranCAD:%s%s^7]%s %s^0"):format(time, color, level, color, message))
 end
 

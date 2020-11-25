@@ -5,6 +5,8 @@ ApiUrls = {
     development = "https://cadapi.dev.sonoransoftware.com/"
 }
 
+ApiVersion = nil
+
 function getApiUrl()
     if Config.mode == nil then
         return ApiUrls.production
@@ -20,7 +22,15 @@ end
 CreateThread(function()
     Wait(1)
     Config.apiUrl = getApiUrl()
-    infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
+    performApiRequest({}, "GET_VERSION", function(result)
+        ApiVersion = tonumber(string.sub(result, 1, 1))
+        if ApiVersion < 2 then
+            errorLog("ERROR: Your community cannot use any plugins requiring the API. Please purchase a subscription of Standard or higher.")
+            assert(false)
+        end
+        debugLog(("Set version %s from response %s"):format(ApiVersion, result))
+        infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
+    end)
 end)
 
 -- Toggles API sender.
@@ -36,7 +46,8 @@ end)
 ApiEndpoints = {
     ["UNIT_LOCATION"] = "emergency",
     ["CALL_911"] = "emergency",
-    ["UNIT_PANIC"] = "emergency"
+    ["UNIT_PANIC"] = "emergency",
+    ["GET_VERSION"] = "general"
 }
 
 EndpointsRequireId = {
