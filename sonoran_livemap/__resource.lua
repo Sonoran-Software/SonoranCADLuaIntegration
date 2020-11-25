@@ -1,6 +1,6 @@
 resource_manifest_version "44febabe-d386-4d18-afbe-5e627f4af937"
 
-webpack_config "webpack.config.js"
+--webpack_config "webpack.config.js"
 
 client_scripts{
     -- "client/client.lua", -- No longer used, sonorancad_livemap plugin replaces functionality
@@ -19,6 +19,5 @@ exports {
 }
 
 server_scripts{
-    "dist/livemap.js",
-    "server/update_check.lua"
+    "dist/livemap.js"
 }
