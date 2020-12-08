@@ -87,7 +87,7 @@ CreateThread(function()
     local isPushEventsRunning = isPluginLoaded("pushevents")
     local serverId = Config.serverId
 
-    print(("r: %s %s %s %s"):format(detectedMapPort, detectedPushPort, isMapRunning, isPushEventsRunning))
+    debugLog(("r: %s %s %s %s"):format(detectedMapPort, detectedPushPort, isMapRunning, isPushEventsRunning))
 
     if isMapRunning or isPushEventsRunning then
         performApiRequest({}, "GET_SERVERS", function(response)
