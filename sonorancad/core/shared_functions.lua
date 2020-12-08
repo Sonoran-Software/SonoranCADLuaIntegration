@@ -40,6 +40,7 @@ function GetIdentifiers(player)
         local split = stringsplit(id, ":")
         ids[split[1]] = split[2]
     end
+    debugLog("Returning "..json.encode(ids))
     return ids
 end
 
