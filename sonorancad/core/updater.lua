@@ -102,7 +102,7 @@ CreateThread(function()
                 warnLog("An update has been applied to SonoranCAD but requires a resource restart. Restart delayed until server is empty.")
             else
                 infoLog("Server is empty, restarting resources...")
-                local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock"))
+                local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock", "w+"))
                 f:write("1")
                 f:close()
                 ExecuteCommand("ensure sonoran_updatehelper")
