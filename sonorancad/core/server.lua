@@ -50,7 +50,8 @@ ApiEndpoints = {
     ["UNIT_LOCATION"] = "emergency",
     ["CALL_911"] = "emergency",
     ["UNIT_PANIC"] = "emergency",
-    ["GET_VERSION"] = "general"
+    ["GET_VERSION"] = "general",
+    ["GET_SERVERS"] = "general"
 }
 
 EndpointsRequireId = {
