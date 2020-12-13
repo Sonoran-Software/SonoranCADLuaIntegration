@@ -50,12 +50,6 @@ function RunAutoUpdater(manualRun)
     versionFile = string.gsub(versionFile, "{branch}", Config.updateBranch)
     local myVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
 
-    local osType = os.getenv("OS")
-    if osType ~= "Windows_NT" and Config.allowAutoUpdate then
-        warnLog("Auto update functionality is currently only available on Windows. Force disabled.")
-        Config.allowAutoUpdate = false
-    end
-
     PerformHttpRequestS(versionFile, function(code, data, headers)
         if code == 200 then
             local remote = json.decode(data)
