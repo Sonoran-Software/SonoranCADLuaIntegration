@@ -13,9 +13,15 @@ Config = {
 }
 
 local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
-if not conf or conf == nil then
+if conf == nil then
     errorLog("Failed to load core configuration. Ensure config.json is present.")
     assert(false, "Invalid configuration file.")
+    return
+end
+local parsedConfig = json.decode(conf)
+if parsedConfig == nil then
+    errorLog("Failed to parse your config file. Make sure it is valid JSON.")
+    assert(false "Invalid configuration file format")
     return
 end
 for k, v in pairs(json.decode(conf)) do
