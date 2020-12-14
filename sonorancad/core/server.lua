@@ -31,6 +31,9 @@ CreateThread(function()
         debugLog(("Set version %s from response %s"):format(ApiVersion, result))
         infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
     end)
+    if Config.primaryIdentifier == "steam" and GetConvar("steam_webapiKey", "none") == "none" then
+        errorLog("You have set SonoranCAD to Steam mode, but have not configured a Steam Web API key. Please see FXServer documentation. SonoranCAD will not function in Steam mode without this set.")
+    end
 end)
 
 -- Toggles API sender.
@@ -47,7 +50,8 @@ ApiEndpoints = {
     ["UNIT_LOCATION"] = "emergency",
     ["CALL_911"] = "emergency",
     ["UNIT_PANIC"] = "emergency",
-    ["GET_VERSION"] = "general"
+    ["GET_VERSION"] = "general",
+    ["GET_SERVERS"] = "general"
 }
 
 EndpointsRequireId = {
@@ -103,12 +107,17 @@ function performApiRequest(postData, type, cb)
                 end
             elseif statusCode == 400 then
                 warnLog("Bad request was sent to the API. Enable debug mode and retry your request. Response: "..tostring(res))
+                -- additional safeguards
+                assert(res ~= "INVALID COMMUNITY ID", "Your community ID is invalid!")
+                assert(res ~= "API IS NOT ENABLED FOR THIS COMMUNITY", "You do not have access to the API.")
+                assert(res ~= "INVALID API KEY", "Your API Key is invalid. Please verify the configuration.")
             elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
+                debugLog("404 response found")
                 cb(res, false)
             elseif statusCode == 429 then -- rate limited :(
                 rateLimitedEndpoints[type] = true
-                warnLog(("You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 30 seconds. If this is happening frequently, please review your configuration to ensure you're not sending data too quickly."):format(type))
-                SetTimeout(30000, function()
+                warnLog(("You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 60 seconds. If this is happening frequently, please review your configuration to ensure you're not sending data too quickly."):format(type))
+                SetTimeout(60000, function()
                     rateLimitedEndpoints[type] = nil
                     infoLog(("Endpoint %s no longer ignored."):format(type))
                 end)
@@ -155,3 +164,13 @@ if Config.devHiddenSwitch then
         TriggerClientEvent("chat:clear", -1)
     end)
 end
+
+-- Missing identifier detection
+RegisterNetEvent("SonoranCAD::core:PlayerReady")
+AddEventHandler("SonoranCAD::core:PlayerReady", function()
+    local ids = GetIdentifiers(source)
+    if ids[Config.primaryIdentifier] == nil then
+        warnLog(("Player %s connected, but did not have an %s ID."):format(Config.primaryIdentifier))
+        
+    end
+end)
