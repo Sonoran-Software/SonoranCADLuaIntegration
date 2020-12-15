@@ -136,12 +136,6 @@ SonoranCAD Help
     elseif args[1] == "update" then --update - attempt to auto-update
         infoLog("Checking for core update...")
         RunAutoUpdater(true)
-    elseif args[1] == "dumpconsole" then
-        local savePath = GetResourcePath(GetCurrentResourceName()).."/buffer.log"
-        local f = assert(io.open(savePath, 'wb'))
-        f:write(GetConsoleBuffer())
-        f:close()
-        infoLog("Wrote buffer to "..savePath)
     else
         print("Missing command. Try \"sonoran help\" for help.")
     end

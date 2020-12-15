@@ -50,6 +50,12 @@ function RunAutoUpdater(manualRun)
     versionFile = string.gsub(versionFile, "{branch}", Config.updateBranch)
     local myVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
 
+    local osType = os.getenv("OS")
+    if osType ~= "Windows_NT" and Config.allowAutoUpdate then
+        warnLog("Auto update functionality is currently only available on Windows. Force disabled.")
+        Config.allowAutoUpdate = false
+    end
+
     PerformHttpRequestS(versionFile, function(code, data, headers)
         if code == 200 then
             local remote = json.decode(data)
@@ -96,7 +102,7 @@ CreateThread(function()
                 warnLog("An update has been applied to SonoranCAD but requires a resource restart. Restart delayed until server is empty.")
             else
                 infoLog("Server is empty, restarting resources...")
-                local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock", "w+"))
+                local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock"))
                 f:write("1")
                 f:close()
                 ExecuteCommand("ensure sonoran_updatehelper")

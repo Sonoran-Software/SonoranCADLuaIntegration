@@ -19,7 +19,7 @@ function debugPrint(message)
 end
 
 function errorLog(message)
-    sendConsole("ERROR", "^1", message)
+    sendConsole("ERROR", "^8", message)
 end
 
 function warnLog(message)

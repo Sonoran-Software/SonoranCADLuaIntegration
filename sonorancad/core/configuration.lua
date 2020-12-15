@@ -13,15 +13,9 @@ Config = {
 }
 
 local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
-if conf == nil then
+if not conf or conf == nil then
     errorLog("Failed to load core configuration. Ensure config.json is present.")
     assert(false, "Invalid configuration file.")
-    return
-end
-local parsedConfig = json.decode(conf)
-if parsedConfig == nil then
-    errorLog("Failed to parse your config file. Make sure it is valid JSON.")
-    assert(false "Invalid configuration file format")
     return
 end
 for k, v in pairs(json.decode(conf)) do
@@ -83,39 +77,4 @@ AddEventHandler("SonoranCAD::core:sendClientConfig", function()
         statusLabels = Config.statusLabels
     }
     TriggerClientEvent("SonoranCAD::core:recvClientConfig", source, config)
-end)
-
-CreateThread(function()
-    Wait(2000) -- wait for server to settle
-    local detectedMapPort = GetConvar("socket_port", "30121")
-    local detectedPushPort = GetConvar("SonoranListenPort", "3232")
-    local isMapRunning = (isPluginLoaded("livemap") and GetResourceState("sonoran_livemap") == "started")
-    local isPushEventsRunning = isPluginLoaded("pushevents")
-    local serverId = Config.serverId
-
-    debugLog(("r: %s %s %s %s"):format(detectedMapPort, detectedPushPort, isMapRunning, isPushEventsRunning))
-
-    if isMapRunning or isPushEventsRunning then
-        performApiRequest({}, "GET_SERVERS", function(response)
-            local info = json.decode(response)
-            for k, v in pairs(info.servers) do
-                print(("Check %s = %s"):format(v.id, serverId))
-                if tostring(v.id) == tostring(serverId) then
-                    ServerInfo = v
-                    break
-                end
-            end
-            if ServerInfo == nil then
-                errorLog(("Could not find valid server information for server ID %s. Ensure you have configured your server in the CAD before using the map or push events."):format(serverId))
-                return
-            end
-            if ServerInfo.mapPort ~= tostring(detectedMapPort) and isMapRunning then
-                errorLog(("CONFIGURATION PROBLEM: Map port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedMapPort, ServerInfo.mapPort, serverId))
-            end
-            if ServerInfo.listenerPort ~= tostring(detectedPushPort) and isPushEventsRunning then
-                errorLog(("CONFIGURATION PROBLEM: Listener port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedPushPort, ServerInfo.listenerPort, serverId))
-            end
-
-        end)
-    end
 end)

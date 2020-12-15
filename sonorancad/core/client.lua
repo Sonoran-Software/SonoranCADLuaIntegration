@@ -47,9 +47,3 @@ if Config.devHiddenSwitch then
         end
     end)
 end
-
-local inited = false
-AddEventHandler("playerSpawned", function()
-    TriggerServerEvent("SonoranCAD::core:PlayerReady")
-    inited = true
-end)
