@@ -16,19 +16,18 @@ SetHttpHandler(function(req, res)
             local data = json.decode(body)
             if not data then
                 res.send(json.encode({["error"] = "bad request"}))
-                return
-            end
-            if string.upper(data.password) ~= string.upper(Config.apiKey) then
+            elseif Config.critError then
+                res.send(json.encode({["error"] = "critical config error"}))
+            elseif string.upper(data.password) ~= string.upper(Config.apiKey) then
                 res.send(json.encode({["error"] = "bad request"}))
-                return
+            else
+                res.send(json.encode({
+                    ["status"] = "ok", 
+                    ["cadInfo"] = string.gsub(dumpInfo(), "\n", "<br />"), 
+                    ["config"] = string.gsub(getConfig(), "\r\n", "<br />")..string.gsub(json.encode(Config.plugins), "}", "} <br />"),
+                    ["console"] = string.gsub(GetConsoleBuffer(), "\n", "<br />")
+                }))
             end
-            res.send(json.encode({
-                ["status"] = "ok", 
-                ["cadInfo"] = string.gsub(dumpInfo(), "\n", "<br />"), 
-                ["config"] = string.gsub(getConfig(), "\r\n", "<br />")..string.gsub(json.encode(Config.plugins), "}", "} <br />"),
-                ["console"] = string.gsub(GetConsoleBuffer(), "\n", "<br />")
-            }))
-
         end)
     else
         if path == '/' then

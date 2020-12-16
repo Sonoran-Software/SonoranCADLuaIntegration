@@ -95,6 +95,12 @@ function performApiRequest(postData, type, cb)
     end
     assert(type ~= nil, "No type specified, invalid request.")
     local url = apiUrl..tostring(endpoint).."/"..tostring(type:lower())
+    if Config.critError then
+        return
+    elseif not Config.apiSendEnabled then
+        warnLog("API sending is disabled, ignoring request.")
+        return
+    end
     if rateLimitedEndpoints[type] == nil then
         PerformHttpRequestS(url, function(statusCode, res, headers)
             debugLog(("type %s called with post data %s to url %s"):format(type, json.encode(payload), url))

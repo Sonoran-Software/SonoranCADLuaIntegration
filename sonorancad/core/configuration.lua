@@ -12,26 +12,6 @@ Config = {
     plugins = {}
 }
 
-local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
-if conf == nil then
-    errorLog("Failed to load core configuration. Ensure config.json is present.")
-    assert(false, "Invalid configuration file.")
-    return
-end
-local parsedConfig = json.decode(conf)
-if parsedConfig == nil then
-    errorLog("Failed to parse your config file. Make sure it is valid JSON.")
-    assert(false "Invalid configuration file format")
-    return
-end
-for k, v in pairs(json.decode(conf)) do
-    Config[k] = v
-end
-
-if Config.updateBranch == nil then
-    Config.updateBranch = "master"
-end
-
 Config.RegisterPluginConfig = function(pluginName, configs)
     Config.plugins[pluginName] = {}
     for k, v in pairs(configs) do
@@ -40,9 +20,12 @@ Config.RegisterPluginConfig = function(pluginName, configs)
     end 
     table.insert(Plugins, pluginName)
 end
+
 Config.GetPluginConfig = function(pluginName) 
     if Config.plugins[pluginName] ~= nil then
-        if Config.plugins[pluginName].enabled == nil then
+        if Config.critError then
+            Config.plugins[pluginName].enabled = false
+        elseif Config.plugins[pluginName].enabled == nil then
             Config.plugins[pluginName].enabled = true
         end
         return Config.plugins[pluginName]
@@ -56,6 +39,28 @@ Config.GetPluginConfig = function(pluginName)
         Config.plugins[pluginName] = { enabled = false }
         return { enabled = false }
     end
+end
+
+local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
+if conf == nil then
+    errorLog("Failed to load core configuration. Ensure config.json is present.")
+    Config.critError = true
+    Config.apiSendEnabled = false
+    return
+end
+local parsedConfig = json.decode(conf)
+if parsedConfig == nil then
+    errorLog("Failed to parse your config file. Make sure it is valid JSON.")
+    Config.critError = true
+    Config.apiSendEnabled = false
+    return
+end
+for k, v in pairs(json.decode(conf)) do
+    Config[k] = v
+end
+
+if Config.updateBranch == nil then
+    Config.updateBranch = "master"
 end
 
 RegisterServerEvent("SonoranCAD::core::getConfig")
@@ -87,6 +92,9 @@ end)
 
 CreateThread(function()
     Wait(2000) -- wait for server to settle
+    if Config.critError then
+        return
+    end
     local detectedMapPort = GetConvar("socket_port", "30121")
     local detectedPushPort = GetConvar("SonoranListenPort", "3232")
     local isMapRunning = (isPluginLoaded("livemap") and GetResourceState("sonoran_livemap") == "started")

@@ -36,6 +36,9 @@ local function doUpdate(latest)
 end
 
 function RunAutoUpdater(manualRun)
+    if Config.updateBranch == nil then
+        return
+    end
     local f = LoadResourceFile(GetCurrentResourceName(), "/update.zip")
     if f ~= nil then
         -- remove the update file and stop the helper

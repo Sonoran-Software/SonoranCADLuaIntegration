@@ -9,7 +9,9 @@ local function sendConsole(level, color, message)
 end
 
 function debugLog(message)
-    if Config.debugMode then
+    if Config == nil then
+        return
+    elseif Config.debugMode then
         sendConsole("DEBUG", "^7", message)
     end
 end

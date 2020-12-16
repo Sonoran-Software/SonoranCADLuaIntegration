@@ -29,7 +29,7 @@
                 let consoleDiv = document.getElementById("consoleDiv");
                 if (res.error) {
                     infoDiv.style.color = '#aa0000';
-                    infoDiv.innerHTML = "An error occurred.";
+                    infoDiv.innerHTML = "An error occurred: " + res.error;
                     infoDiv.style.display == "none";
                 } else {
                     infoDiv.style.color = '#000000';
