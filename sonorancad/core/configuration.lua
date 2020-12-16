@@ -107,7 +107,6 @@ CreateThread(function()
         performApiRequest({}, "GET_SERVERS", function(response)
             local info = json.decode(response)
             for k, v in pairs(info.servers) do
-                print(("Check %s = %s"):format(v.id, serverId))
                 if tostring(v.id) == tostring(serverId) then
                     ServerInfo = v
                     break
