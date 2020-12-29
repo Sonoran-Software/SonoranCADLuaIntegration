@@ -31,3 +31,6 @@
 [submodule "sonorancad/plugins/dispatchnotify"]
 	path = sonorancad/plugins/dispatchnotify
 	url = https://github.com/Sonoran-Software/sonoran_dispatchnotify.git
+[submodule "wk_wars2x"]
+	path = wk_wars2x
+	url = https://github.com/Sonoran-Software/wk_wars2x.git
