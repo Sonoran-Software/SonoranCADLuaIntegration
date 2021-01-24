@@ -168,5 +168,8 @@ CreateThread(function()
             doRestart()
         end
         Wait(60000*10)
+        for k, v in pairs(Config.plugins) do
+            CheckForPluginUpdate(k)
+        end
     end
 end)
