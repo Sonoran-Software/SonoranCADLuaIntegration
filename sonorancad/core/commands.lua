@@ -15,6 +15,8 @@
     update - attempt to auto-update
 ]]
 
+registerApiType("UPLOAD_LOGS", "support")
+
 function dumpInfo()
     local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
     local pluginList, loadedPlugins, disabledPlugins = GetPluginLists()
@@ -98,8 +100,6 @@ Console Buffer
         end
     end)
 end
-
-registerApiType("UPLOAD_LOGS", "support")
 RegisterCommand("sonoran", function(source, args, rawCommand)
     if source ~= 0 then
         print("Console only command")
