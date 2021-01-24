@@ -20,7 +20,27 @@ local function LoadVersionFile(pluginName)
     end
 end
 
-local NagMessages = {}
+--https://github.com/Sonoran-Software/sonoran_pushevents/archive/latest.zip
+
+local function downloadPlugin(name, url)
+    local releaseUrl = ("%s/archive/latest.zip"):format(url)
+    PerformHttpRequest(releaseUrl, function(code, data, headers)
+        if code == 200 then
+            local savePath = GetResourcePath(GetCurrentResourceName()).."/pluginupdates/"..name..".zip"
+            local f = assert(io.open(savePath, 'wb'))
+            f:write(data)
+            f:close()
+            infoLog("Saved file...")
+            local unzipPath = GetResourcePath(GetCurrentResourceName()).."/plugins/"..name.."/"
+            infoLog("Unzipping to: "..unzipPath)
+            exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
+
+        else
+            errorLog(("Failed to download from %s: %s %s"):format(realUrl, code, data))
+        end
+    end, "GET")
+    
+end
 
 CreateThread(function()
     Wait(1)
@@ -50,10 +70,16 @@ CreateThread(function()
                             debugLog(("Raw output for %s: %s"):format(k, data))
                         else
                             Config.plugins[k].latestVersion = remote.version
-                            if remote.version ~= version.version then
-                                local nag = ("Plugin Updater: %s has an available update! %s -> %s - Download at: %s"):format(k, version.version, remote.version, remote.download_url)
-                                warnLog(nag)
-                                table.insert(NagMessages, nag)
+                            Config.plugins[k].download_url = remote.download_url
+                            local latestVersion = string.gsub(remote.version, "%.","")
+                            local localVersion = string.gsub(version.version, "%.", "")
+                            if localVersion < latestVersion then
+                                warnLog(("Plugin Updater: %s has an available update! %s -> %s"):format(k, version.version, remote.version))
+                                if remote.download_url ~= nil then
+                                    if Config.allowAutoUpdate then
+                                        downloadPlugin(k, remote.download_url)
+                                    end
+                                end
                             end
                             if remote.configVersion ~= nil then
                                 local myversion = version.configVersion ~= nil and version.configVersion or "0.0"
