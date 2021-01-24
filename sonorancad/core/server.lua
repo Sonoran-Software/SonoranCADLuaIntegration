@@ -88,13 +88,15 @@ function performApiRequest(postData, type, cb)
     if ApiEndpoints[type] ~= nil then
         endpoint = ApiEndpoints[type]
     end
+    local url = ""
     if endpoint == "support" then
         apiUrl = "https://api.sonoransoftware.com/"
+        url = apiUrl..tostring(endpoint).."/"
     else
         apiUrl = getApiUrl()
+        url = apiUrl..tostring(endpoint).."/"..tostring(type:lower())
     end
     assert(type ~= nil, "No type specified, invalid request.")
-    local url = apiUrl..tostring(endpoint).."/"..tostring(type:lower())
     if Config.critError then
         return
     elseif not Config.apiSendEnabled then
