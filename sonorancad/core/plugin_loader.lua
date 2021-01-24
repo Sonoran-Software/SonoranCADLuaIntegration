@@ -6,6 +6,8 @@
     Provides logic for checking loaded plugins after startup
 ]]
 
+local PluginsWereUpdated = false
+
 local function LoadVersionFile(pluginName)
     local f = LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/version_%s.json"):format(pluginName, pluginName, pluginName))
     if f then
@@ -20,8 +22,6 @@ local function LoadVersionFile(pluginName)
     end
 end
 
---https://github.com/Sonoran-Software/sonoran_pushevents/archive/latest.zip
-
 local function downloadPlugin(name, url)
     local releaseUrl = ("%s/archive/latest.zip"):format(url)
     PerformHttpRequest(releaseUrl, function(code, data, headers)
@@ -30,11 +30,10 @@ local function downloadPlugin(name, url)
             local f = assert(io.open(savePath, 'wb'))
             f:write(data)
             f:close()
-            infoLog("Saved file...")
             local unzipPath = GetResourcePath(GetCurrentResourceName()).."/plugins/"..name.."/"
-            infoLog("Unzipping to: "..unzipPath)
+            debugLog("Unzipping to: "..unzipPath)
             exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
-
+            os.remove(savePath)
         else
             errorLog(("Failed to download from %s: %s %s"):format(realUrl, code, data))
         end
@@ -78,6 +77,7 @@ CreateThread(function()
                                 if remote.download_url ~= nil then
                                     if Config.allowAutoUpdate then
                                         downloadPlugin(k, remote.download_url)
+                                        PluginsWereUpdated = true
                                     end
                                 end
                             end
@@ -128,9 +128,9 @@ end)
 
 CreateThread(function()
     while true do
-        Wait(1000*60*60)
-        for k, v in ipairs(NagMessages) do
-            warnLog(v)
+        if PluginsWereUpdated then
+            warnLog("Some plugins have been updated for you. Please restart sonorancad to apply them.")
         end
+        Wait(60000*10)
     end
 end)
