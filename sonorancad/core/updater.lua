@@ -11,7 +11,7 @@ local function doUnzip(path)
     end
     warnLog("Auto-restarting...")
     local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock", "w+"))
-    f:write("1")
+    f:write("core")
     f:close()
     Wait(5000)
     ExecuteCommand("ensure sonoran_updatehelper")
@@ -100,7 +100,7 @@ CreateThread(function()
             else
                 infoLog("Server is empty, restarting resources...")
                 local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock", "w+"))
-                f:write("1")
+                f:write("core")
                 f:close()
                 ExecuteCommand("ensure sonoran_updatehelper")
             end
