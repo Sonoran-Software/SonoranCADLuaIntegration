@@ -4,7 +4,6 @@ Config = {
     apiUrl = nil,
     postTime = nil,
     serverId = nil,
-    serverType = nil,
     primaryIdentifier = nil,
     apiSendEnabled = nil,
     debugMode = nil,
@@ -69,7 +68,6 @@ AddEventHandler("SonoranCAD::core::getConfig", function()
         communityID = Config.communityID,
         apiKey = Config.apiKey,
         postTime = Config.postTime,
-        serverType = Config.serverType,
         apiSendEnabled = Config.apiSendEnabled
     })
     TriggerEvent("SonoranCAD::core:configData", config)
@@ -81,7 +79,6 @@ AddEventHandler("SonoranCAD::core:sendClientConfig", function()
         communityID = Config.communityID,
         postTime = Config.postTime,
         serverId = Config.serverId,
-        serverType = Config.serverType,
         primaryIdentifier = Config.primaryIdentifier,
         apiSendEnabled = Config.apiSendEnabled,
         debugMode = Config.debugMode,
