@@ -124,6 +124,9 @@ CreateThread(function()
     if #disabledPlugins > 0 then
         warnLog(("Disabled Plugins: %s"):format(table.concat(disabledPlugins, ", ")))
     end
+    if PluginsWereUpdated then
+        warnLog("Some plugins were updated. Please restart the sonorancad resource to apply the updates!")
+    end
 end)
 
 CreateThread(function()
