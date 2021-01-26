@@ -179,7 +179,7 @@ RegisterNetEvent("SonoranCAD::core:PlayerReady")
 AddEventHandler("SonoranCAD::core:PlayerReady", function()
     local ids = GetIdentifiers(source)
     if ids[Config.primaryIdentifier] == nil then
-        warnLog(("Player %s connected, but did not have an %s ID."):format(Config.primaryIdentifier))
+        warnLog(("Player %s connected, but did not have an %s ID."):format(source, Config.primaryIdentifier))
         
     end
 end)
