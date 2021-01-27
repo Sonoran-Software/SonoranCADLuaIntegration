@@ -14,6 +14,7 @@ function getApiUrl()
         if ApiUrls[Config.mode] ~= nil then
             return ApiUrls[Config.mode]
         else
+            Config.critError = true
             assert(false, "Invalid mode. Valid values are production, development")
         end
     end
@@ -26,13 +27,14 @@ CreateThread(function()
         ApiVersion = tonumber(string.sub(result, 1, 1))
         if ApiVersion < 2 then
             errorLog("ERROR: Your community cannot use any plugins requiring the API. Please purchase a subscription of Standard or higher.")
-            assert(false)
+            Config.critError = true
         end
         debugLog(("Set version %s from response %s"):format(ApiVersion, result))
         infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
     end)
     if Config.primaryIdentifier == "steam" and GetConvar("steam_webapiKey", "none") == "none" then
         errorLog("You have set SonoranCAD to Steam mode, but have not configured a Steam Web API key. Please see FXServer documentation. SonoranCAD will not function in Steam mode without this set.")
+        Config.critError = true
     end
 end)
 
@@ -88,13 +90,15 @@ function performApiRequest(postData, type, cb)
     if ApiEndpoints[type] ~= nil then
         endpoint = ApiEndpoints[type]
     end
+    local url = ""
     if endpoint == "support" then
         apiUrl = "https://api.sonoransoftware.com/"
+        url = apiUrl..tostring(endpoint).."/"
     else
         apiUrl = getApiUrl()
+        url = apiUrl..tostring(endpoint).."/"..tostring(type:lower())
     end
     assert(type ~= nil, "No type specified, invalid request.")
-    local url = apiUrl..tostring(endpoint).."/"..tostring(type:lower())
     if Config.critError then
         return
     elseif not Config.apiSendEnabled then
@@ -106,7 +110,7 @@ function performApiRequest(postData, type, cb)
             debugLog(("type %s called with post data %s to url %s"):format(type, json.encode(payload), url))
             if statusCode == 200 and res ~= nil then
                 debugLog("result: "..tostring(res))
-                if res == "Sonoran CAD: Backend Service Reached" then
+                if res == "Sonoran CAD: Backend Service Reached" or res == "Backend Service Reached" then
                     errorLog(("API ERROR: Invalid endpoint (URL: %s). Ensure you're using a valid endpoint."):format(url))
                 else
                     cb(res, true)
@@ -159,7 +163,6 @@ CreateThread(function()
             serverId = Config.serverId,
             plugins = plugins
         }
-        debugLog(("Heartbeat: %s"):format(json.encode(payload)))
         performApiRequest(payload, "HEARTBEAT", function() end)
         Wait(1000*60*60)
     end
@@ -176,7 +179,7 @@ RegisterNetEvent("SonoranCAD::core:PlayerReady")
 AddEventHandler("SonoranCAD::core:PlayerReady", function()
     local ids = GetIdentifiers(source)
     if ids[Config.primaryIdentifier] == nil then
-        warnLog(("Player %s connected, but did not have an %s ID."):format(Config.primaryIdentifier))
+        warnLog(("Player %s connected, but did not have an %s ID."):format(source, Config.primaryIdentifier))
         
     end
 end)

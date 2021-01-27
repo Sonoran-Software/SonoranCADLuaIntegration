@@ -15,6 +15,8 @@
     update - attempt to auto-update
 ]]
 
+registerApiType("UPLOAD_LOGS", "support")
+
 function dumpInfo()
     local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
     local pluginList, loadedPlugins, disabledPlugins = GetPluginLists()
@@ -98,8 +100,6 @@ Console Buffer
         end
     end)
 end
-
-registerApiType("UPLOAD_LOGS", "support")
 RegisterCommand("sonoran", function(source, args, rawCommand)
     if source ~= 0 then
         print("Console only command")
@@ -116,7 +116,8 @@ SonoranCAD Help
     info - dump version info, configuration
     support - dump useful data for support staff 
     plugin <name> - show info about a plugin (config)
-    update - Run auto-updater
+    update - Run core updater
+    pluginupdate - Run plugin updater
 ]])
     elseif args[1] == "debugmode" then
         Config.debugMode = not Config.debugMode
@@ -125,8 +126,6 @@ SonoranCAD Help
         print(dumpInfo())
     elseif args[1] == "support" and args[2] ~= nil then
         sendSupportLogs(args[2])
-    elseif args[1] == "verify" then --verify - run hash checks to confirm all files are untampered
-        return
     elseif args[1] == "plugin" and args[2] then
         if Config.plugins[args[2]] then
             print(dumpPlugin(args[2]))
@@ -142,6 +141,11 @@ SonoranCAD Help
         f:write(GetConsoleBuffer())
         f:close()
         infoLog("Wrote buffer to "..savePath)
+    elseif args[1] == "pluginupdate" then
+        infoLog("Scanning for plugin updates...")
+        for k, v in pairs(Config.plugins) do
+            CheckForPluginUpdate(k)
+        end
     else
         print("Missing command. Try \"sonoran help\" for help.")
     end

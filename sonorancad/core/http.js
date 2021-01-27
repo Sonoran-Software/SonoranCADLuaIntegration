@@ -11,8 +11,7 @@ exports('HandleHttpRequest', (dest, callback, method, data, headers) => {
         headers: headers
     }
     if (method == "POST") {
-        options.headers['Content-Type'] = 'application/json',
-        options.headers['Content-Length'] = byteCount(data)
+        options.headers['Content-Type'] = 'application/json'
     }
     else if (method != "GET") {
         console.error("Invalid request. Only GET/POST supported. Method: " + method);
