@@ -63,7 +63,7 @@ function CheckForPluginUpdate(name, checkUrl)
         errorLog(("Plugin %s not found."):format(name))
         return
     elseif plugin.check_url == nil then
-        errorLog("no check url")
+        warnLog(("Plugin %s does not have check_url set. Please update it manually."):format(name))
         return
     end
     PerformHttpRequestS(plugin.check_url, function(code, data, headers)
