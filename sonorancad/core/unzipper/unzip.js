@@ -24,3 +24,9 @@ exports('UnzipFolder', (file, name, dest) => {
         }
     })
 });
+
+exports('CreateFolderIfNotExisting', (path) => {
+    if (!fs.existsSync(path)) {
+        fs.mkdirSync(path);
+    }
+});
