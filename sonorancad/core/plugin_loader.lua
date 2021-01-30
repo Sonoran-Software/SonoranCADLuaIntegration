@@ -41,6 +41,7 @@ local function downloadPlugin(name, url)
     local releaseUrl = ("%s/archive/latest.zip"):format(url)
     PerformHttpRequest(releaseUrl, function(code, data, headers)
         if code == 200 then
+            exports[GetCurrentResourceName()]:CreateFolderIfNotExisting(GetResourcePath(GetCurrentResourceName()).."/pluginupdates/")
             local savePath = GetResourcePath(GetCurrentResourceName()).."/pluginupdates/"..name..".zip"
             local f = assert(io.open(savePath, 'wb'))
             f:write(data)
@@ -62,7 +63,7 @@ function CheckForPluginUpdate(name, checkUrl)
     if plugin == nil then
         errorLog(("Plugin %s not found."):format(name))
         return
-    elseif plugin.check_url == nil then
+    elseif plugin.check_url == nil or plugin.check_url == "" then
         warnLog(("Plugin %s does not have check_url set. Please update it manually."):format(name))
         return
     end
@@ -79,7 +80,7 @@ function CheckForPluginUpdate(name, checkUrl)
                 local localVersion = string.gsub(plugin.version, "%.", "")
                 if localVersion < latestVersion then
                     warnLog(("Plugin Updater: %s has an available update! %s -> %s"):format(name, plugin.version, remote.version))
-                    if remote.download_url ~= nil then
+                    if remote.download_url ~= nil and remote.download_url ~= "" then
                         if Config.allowAutoUpdate then
                             infoLog(("Attempting to automatically update %s..."):format(name))
                             downloadPlugin(name, remote.download_url)
@@ -87,6 +88,8 @@ function CheckForPluginUpdate(name, checkUrl)
                         else
                             warnLog("Automatic updates are disabled. Please update this plugin ASAP.")
                         end
+                    else
+                        warnLog(("Plugin %s does not have download_url set. Please update it manually."):format(name))
                     end
                 end
                 if remote.configVersion ~= nil then
