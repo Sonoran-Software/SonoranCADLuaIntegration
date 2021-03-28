@@ -40,3 +40,6 @@
 [submodule "plugins/esxsupport"]
 	path = sonorancad/plugins/esxsupport
 	url = https://github.com/Sonoran-Software/sonoran_esxsupport.git
+[submodule "plugins/forcereg"]
+	path = sonorancad/plugins/forcereg
+	url = https://github.com/Sonoran-Software/sonoran_forcereg.git
