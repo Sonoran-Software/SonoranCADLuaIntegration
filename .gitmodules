@@ -37,3 +37,6 @@
 [submodule "plugins/civintegration"]
 	path = sonorancad/plugins/civintegration
 	url = https://github.com/Sonoran-Software/sonoran_civintegration.git
+[submodule "plugins/esxsupport"]
+	path = sonorancad/plugins/esxsupport
+	url = https://github.com/Sonoran-Software/sonoran_esxsupport.git
