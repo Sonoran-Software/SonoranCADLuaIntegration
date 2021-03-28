@@ -43,3 +43,6 @@
 [submodule "plugins/forcereg"]
 	path = sonorancad/plugins/forcereg
 	url = https://github.com/Sonoran-Software/sonoran_forcereg.git
+[submodule "plugins/kick"]
+	path = sonorancad/plugins/kick
+	url = https://github.com/Sonoran-Software/sonoran_kick.git
