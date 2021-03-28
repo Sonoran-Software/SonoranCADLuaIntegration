@@ -34,3 +34,6 @@
 [submodule "wk_wars2x"]
 	path = wk_wars2x
 	url = https://github.com/Sonoran-Software/wk_wars2x.git
+[submodule "plugins/civintegration"]
+	path = sonorancad/plugins/civintegration
+	url = https://github.com/Sonoran-Software/sonoran_civintegration.git
