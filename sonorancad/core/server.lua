@@ -118,6 +118,12 @@ function performApiRequest(postData, type, cb)
             elseif statusCode == 400 then
                 warnLog("Bad request was sent to the API. Enable debug mode and retry your request. Response: "..tostring(res))
                 -- additional safeguards
+                if res == "INVALID COMMUNITY ID"
+                        or res == "API IS NOT ENABLED FOR THIS COMMUNITY"
+                        or res == "INVALID API KEY" then
+                    errorLog("Fatal: Disabling API - an error was encountered that must be resolved. Please restart the resource after resolving.")
+                    Config.apiSendEnabled = false
+                end
                 assert(res ~= "INVALID COMMUNITY ID", "Your community ID is invalid!")
                 assert(res ~= "API IS NOT ENABLED FOR THIS COMMUNITY", "You do not have access to the API.")
                 assert(res ~= "INVALID API KEY", "Your API Key is invalid. Please verify the configuration.")
@@ -180,6 +186,5 @@ AddEventHandler("SonoranCAD::core:PlayerReady", function()
     local ids = GetIdentifiers(source)
     if ids[Config.primaryIdentifier] == nil then
         warnLog(("Player %s connected, but did not have an %s ID."):format(source, Config.primaryIdentifier))
-        
     end
 end)
