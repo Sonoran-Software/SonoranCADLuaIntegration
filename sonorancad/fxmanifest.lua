@@ -1,9 +1,9 @@
-fx_version 'bodacious'
+fx_version 'cerulean'
 games {'gta5'}
 
 author 'Sonoran CAD'
 description 'Sonoran CAD FiveM Integration'
-version '2.4.1'
+version '2.4.2'
 
 server_scripts {
     'core/http.js'
