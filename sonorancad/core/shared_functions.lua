@@ -53,29 +53,21 @@ function isPluginLoaded(pluginName)
     return false
 end
 
---[[
-    Checks if either ID causes callback to return a positive (non-falsey) value
-]]
-function CheckIdentifiers(id1, id2, callback, stripPrefix)
-    if stripPrefix then
-        prefix1, id1 = id1:match("^(.+):(.+)$")
-        prefix2, id2 = id2:match("^(.+):(.+)$")
-    end
-    local r1 = callback(id1)
-    if r1 ~= nil and r1 ~= false then
-        return r1
-    else
-        if id2 ~= nil and id2 ~= "" then
-            local r2 = callback(id2)
-            if r2 ~= nil and r1 ~= false then
-                return r2
-            else
-                return r1
+function GetSourceByApiId(apiIds)
+    for x=1, #apiIds do
+        for i=0, GetNumPlayerIndices()-1 do
+            local player = GetPlayerFromIndex(i)
+            if player then
+                local identifiers = GetIdentifiers(player)
+                for type, id in pairs(identifiers) do
+                    if id == apiIds[x] then
+                        return player
+                    end
+                end
             end
-        else
-            return r1
         end
     end
+    return nil
 end
 
 function PerformHttpRequestS(url, cb, method, data, headers)
@@ -86,4 +78,14 @@ function PerformHttpRequestS(url, cb, method, data, headers)
         headers = {["X-User-Agent"] = "SonoranCAD"}
     end
     exports["sonorancad"]:HandleHttpRequest(url, cb, method, data, headers)
+end
+
+function has_value(tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
 end

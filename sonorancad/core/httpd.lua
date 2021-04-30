@@ -3,20 +3,50 @@ local function getConfig()
     return config
 end
 
+local UnitCache = {}
+local CallCache = {}
+
+function GetUnitCache() return UnitCache end
+function GetCallCache() return CallCache end
+
+local function findUnitIdByIdentifier(identIds)
+    for k, v in pairs(UnitCache) do
+        if v.data ~= nil and v.data.apidIds ~= nil then
+            for x=1, #v.data.apiIds do
+                if has_value(identIds, v.data.apiIds[x]) then
+                    return x
+                end
+            end
+        end
+    end
+    return nil
+end
+
+
+
+
 -- Event Handlers
 local PushEventHandler = {
     EVENT_UNIT_STATUS = function(body)
         if (not body.data.identIds) then
             return false, "missing identIds"
         end
-        TriggerEvent('SonoranCAD::pushevents:UnitUpdate', identIds, status)
+        local i = findUnitIdByIdentifier(body.data.identIds)
+        if i then
+            UnitCache[i].status = body.data.status
+            TriggerEvent('SonoranCAD::pushevents:UnitUpdate', UnitCache[i], status)
+        else
+            debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s - status: %s"):format(json.encode(body.data.identIds), status))
+        end
         return true
     end,
     EVENT_UNIT_LOGIN = function(body)
         if (not body.data.id) then
             return false, "missing ID"
         end
-        TriggerEvent('SonoranCAD::pushevents:UnitLogin', body.data.unit, body.data.isDispatch)
+        UnitCache[body.data.id] = body.data.unit
+        UnitCache[body.data.id].isDispatch = body.data.isDispatch
+        TriggerEvent('SonoranCAD::pushevents:UnitLogin', UnitCache[body.data.id])
         return true
     end,
     EVENT_UNIT_LOGOUT = function(body)
@@ -25,23 +55,66 @@ local PushEventHandler = {
         end
         TriggerEvent('SonoranCAD::pushevents:UnitLogout', body.data.identId)
     end,
+
+    --[[
+        RegisterServerEvent("SonoranCAD::pushevents:DispatchEvent")
+    AddEventHandler("SonoranCAD::pushevents:DispatchEvent", function(data)
+        local dispatchType = data.dispatch_type
+        local dispatchData = data.dispatch
+        local metaData = data.dispatch.metaData
+]]
     EVENT_DISPATCH_NEW = function(body)
-        TriggerEvent('SonoranCAD::pushevents:DispatchAddEdit', body.data, true)
+        CallCache[body.data.dispatch.callId] = { dispatch_type = "CALL_NEW", dispatch = body.data }
+        TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_EDIT = function(body)
-        TriggerEvent('SonoranCAD::pushevents:DispatchAddEdit', body.data, false)
+        CallCache[body.data.dispatch.callId] = { dispatch_type = "CALL_EDIT", dispatch = body.data }
+        TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_CLOSE = function(body)
-        TriggerEvent('SonoranCAD::pushevents:DispatchClosed', body.data.callId)
+        if CallCache[body.data.callId] ~= nil then
+            local d = { dispatch_type = "CALL_CLOSE", dispatch = CallCache[body.data.callId] }
+            TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
+        else
+            debugLog(("Unknown call close (call ID %s), current cache: %s"):format(body.data.callId, json.encode(CallCache)))
+        end
     end,
     EVENT_DISPATCH_NOTE = function(body)
         TriggerEvent('SonoranCAD::pushevents:DispatchNote', body.data)
     end,
     EVENT_UNIT_ATTACH = function(body)
-        TriggerEvent('SonoranCAD::pushevents:UnitAttach', body.data)
+        -- fetch the call and unit data
+        local call = CallCache[body.data.callId]
+        if body.data.ident ~= nil then
+            local unit = UnitCache[body.data.ident]
+            if call and unit then
+                TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
+            else
+                debugLog("Attach failure, unknown call or unit")
+            end
+        elseif body.data.idents ~= nil then
+            for i=1, #body.data.idents do
+                local unit = UnitCache[body.data.idents[i]]
+                if call and unit then
+                    TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
+                else
+                    debugLog("Attach failure, unknown call or unit")
+                end
+            end
+        else
+            debugLog("No idents in attachment?!")
+        end
     end,
     EVENT_UNIT_DETACH = function(body)
-        TriggerEvent('SonoranCAD::pushevents:UnitDetach', body.data)
+        local call = CallCache[body.data.callId]
+        if body.data.ident ~= nil then
+            local unit = UnitCache[body.data.ident]
+            if call and unit then
+                TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
+            else
+                debugLog("Detach failure, unknown call or unit")
+            end
+        end
     end,
     GET_LOGS = function(body)
         TriggerEvent('SonoranCAD::pushevents:SendSupportLogs', body.logKey)
@@ -50,7 +123,7 @@ local PushEventHandler = {
         TriggerEvent('SonoranCAD::pushevents:IncomingCadCall', body.data.call, body.data.apiIds, body.data.metaData)
     end,
     EVENT_REMOVE_911 = function(body)
-        TriggerEvent('SonoranCAD::pushevents:', body.data.callId)
+        TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callId)
     end
 }
 
