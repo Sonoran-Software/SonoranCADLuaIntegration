@@ -101,7 +101,7 @@ function CheckForPluginUpdate(name, checkUrl)
             end
             
         else
-            errorLog(("Failed to check plugin updates for %s: %s %s"):format(k, code, data))
+            errorLog(("Failed to check plugin updates for %s: %s %s"):format(name, code, data))
         end
     end, "GET")
 end
@@ -109,20 +109,43 @@ end
 CreateThread(function()
     Wait(1)
     for k, v in pairs(Config.plugins) do
-        if Config.plugins[k].requiresPlugins ~= nil then
-            for _, v in pairs(Config.plugins[k].requiresPlugins) do
-                debugLog(("Checking %s dependency %s"):format(k, v))
-                if Config.plugins[v] == nil or not Config.plugins[v].enabled then
-                    errorLog(("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
-                    Config.plugins[k].enabled = false
-                    goto skip
+        local versionFile = json.decode(LoadVersionFile(k))
+        if versionFile.pluginDepends == nil and Config.plugins[k].requiresPlugins ~= nil then
+            -- legacy
+            infoLog(("Plugin %s using legacy dependency detection. This should be corrected in a future version."):format(k))
+            if Config.plugins[k].requiresPlugins ~= nil then
+                for _, v in pairs(Config.plugins[k].requiresPlugins) do
+                    debugLog(("Checking %s dependency %s"):format(k, v))
+                    if Config.plugins[v] == nil or not Config.plugins[v].enabled then
+                        errorLog(("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
+                        Config.plugins[k].enabled = false
+                        goto skip
+                    end
+                end
+            end
+        elseif versionFile.pluginDepends ~= nil then
+            for _, plugin in pairs(versionFile.pluginDepends) do
+                local requiredVersion = string.gsub(plugin.version, "%.","")
+                local isCritical = plugin.critical
+                -- get the depend plugin information
+                local check = json.decode(LoadVersionFile(plugin.name))
+                -- check if its version >= required
+                local checkVersion = string.gsub(check.version, "%.","")
+                if (checkVersion < requiredVersion) then
+                    if isCritical then
+                        errorLog(("PLUGIN ERROR: Plugin %s requires %s at version %s or higher, but only %s was found. Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
+                        Config.plugins[k].enabled = false
+                    else
+                        warnLog(("INCOMPATIBILITY WARNING: Plugin %s requires %s at version %s or higher, but only %s was found. Some features may not work! Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
+                    end
+                else
+                    debugLog(("Plugin %s checked plugin %s version (%s >= %s)"):format(k, plugin.name, check.version, plugin.version))
                 end
             end
         end
         -- Plugin updater system
-        local f = LoadVersionFile(k)
-        if f ~= nil then
-            local version = json.decode(f)
+        if k ~= nil then
+            local version = versionFile
             debugLog(("Loaded plugin %s (%s)"):format(k, version.version))
             Config.plugins[k].version = version.version
             Config.plugins[k].check_url = version.check_url

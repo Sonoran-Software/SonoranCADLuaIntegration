@@ -22,8 +22,8 @@ local function findUnitIdByIdentifier(identIds)
     return nil
 end
 
-
-
+-- Global function wrapper
+function GetUnitByIdentifier(identifiers) return findUnitIdByIdentifier(identifiers) end
 
 -- Event Handlers
 local PushEventHandler = {
