@@ -15,6 +15,7 @@ server_scripts {
     ,'core/server.lua'
     ,'core/commands.lua'
     ,'core/httpd.lua'
+    ,'core/unittracking.lua'
     ,'core/updater.lua'
     ,'plugins/**/config_*.lua'
     ,'plugins/**/sv_*.lua'

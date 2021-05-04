@@ -3,27 +3,7 @@ local function getConfig()
     return config
 end
 
-local UnitCache = {}
-local CallCache = {}
 
-function GetUnitCache() return UnitCache end
-function GetCallCache() return CallCache end
-
-local function findUnitIdByIdentifier(identIds)
-    for k, v in pairs(UnitCache) do
-        if v.data ~= nil and v.data.apidIds ~= nil then
-            for x=1, #v.data.apiIds do
-                if has_value(identIds, v.data.apiIds[x]) then
-                    return x
-                end
-            end
-        end
-    end
-    return nil
-end
-
--- Global function wrapper
-function GetUnitByIdentifier(identifiers) return findUnitIdByIdentifier(identifiers) end
 
 -- Event Handlers
 local PushEventHandler = {
@@ -31,28 +11,35 @@ local PushEventHandler = {
         if (not body.data.identIds) then
             return false, "missing identIds"
         end
-        local i = findUnitIdByIdentifier(body.data.identIds)
+        local i = GetUnitById(body.data.identIds)
         if i then
-            UnitCache[i].status = body.data.status
-            TriggerEvent('SonoranCAD::pushevents:UnitUpdate', UnitCache[i], status)
+            debugLog("Caught UNIT_STATUS update")
+            local unit = UnitCache[i]
+            unit.status = body.data.status
+            SetUnitCache(body.data.identIds, unit)
+            TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, status)
         else
-            debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s - status: %s"):format(json.encode(body.data.identIds), status))
+            debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s - status: %s"):format(json.encode(body.data.identIds), unit.status))
         end
         return true
     end,
     EVENT_UNIT_LOGIN = function(body)
-        if (not body.data.id) then
+        if (not body.data.unit.id) then
             return false, "missing ID"
         end
-        UnitCache[body.data.id] = body.data.unit
-        UnitCache[body.data.id].isDispatch = body.data.isDispatch
-        TriggerEvent('SonoranCAD::pushevents:UnitLogin', UnitCache[body.data.id])
+        local unit = body.data.unit
+        debugLog("Got a unit: "..json.encode(unit))
+        unit.isDispatch = body.data.isDispatch
+        SetUnitCache(unit.id, unit)
+        TriggerEvent('SonoranCAD::pushevents:UnitLogin', unit)
         return true
     end,
     EVENT_UNIT_LOGOUT = function(body)
         if (not body.data.identId) then
             return false, "missing identId"
         end
+        debugLog("UNIT_LOGOUT: "..json.encode(body.data))
+        SetUnitCache(body.data.identId, nil)
         TriggerEvent('SonoranCAD::pushevents:UnitLogout', body.data.identId)
     end,
 
@@ -64,17 +51,19 @@ local PushEventHandler = {
         local metaData = data.dispatch.metaData
 ]]
     EVENT_DISPATCH_NEW = function(body)
-        CallCache[body.data.dispatch.callId] = { dispatch_type = "CALL_NEW", dispatch = body.data }
+        SetCallCache(body.data.dispatch.callId) = { dispatch_type = "CALL_NEW", dispatch = body.data }
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_EDIT = function(body)
-        CallCache[body.data.dispatch.callId] = { dispatch_type = "CALL_EDIT", dispatch = body.data }
+        SetCallCache(body.data.dispatch.callId) = { dispatch_type = "CALL_EDIT", dispatch = body.data }
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_CLOSE = function(body)
-        if CallCache[body.data.callId] ~= nil then
+        local call = GetCallCache()[body.data.callId]
+        if call ~= nil then
             local d = { dispatch_type = "CALL_CLOSE", dispatch = CallCache[body.data.callId] }
-            TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
+            SetCallCache(body.data.callId, body.data)
+            TriggerEvent('SonoranCAD::pushevents:DispatchEvent', d)
         else
             debugLog(("Unknown call close (call ID %s), current cache: %s"):format(body.data.callId, json.encode(CallCache)))
         end
@@ -84,9 +73,9 @@ local PushEventHandler = {
     end,
     EVENT_UNIT_ATTACH = function(body)
         -- fetch the call and unit data
-        local call = CallCache[body.data.callId]
+        local call = GetCallCache()[body.data.callId]
         if body.data.ident ~= nil then
-            local unit = UnitCache[body.data.ident]
+            local unit = GetUnitCache()[body.data.ident]
             if call and unit then
                 TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
             else
@@ -94,7 +83,7 @@ local PushEventHandler = {
             end
         elseif body.data.idents ~= nil then
             for i=1, #body.data.idents do
-                local unit = UnitCache[body.data.idents[i]]
+                local unit = GetUnitCache()[body.data.idents[i]]
                 if call and unit then
                     TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
                 else
@@ -106,9 +95,9 @@ local PushEventHandler = {
         end
     end,
     EVENT_UNIT_DETACH = function(body)
-        local call = CallCache[body.data.callId]
+        local call = GetCallCache()[body.data.callId]
         if body.data.ident ~= nil then
-            local unit = UnitCache[body.data.ident]
+            local unit = GetUnitCache()[body.data.ident]
             if call and unit then
                 TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
             else
@@ -186,27 +175,7 @@ SetHttpHandler(function(req, res)
             local html = LoadResourceFile(GetCurrentResourceName(), '/core/html/index.html')
             res.send(html)
         else
-            res.send("hmm")
-        end
-    end
-end)
-
--- Temporary shim
-RegisterServerEvent("SonoranCAD::pushevents:shim")
-AddEventHandler("SonoranCAD::pushevents:shim", function(data)
-    debugLog("in shim with "..tostring(data))
-    if not data then
-        return
-    end
-    local body = json.decode(data)
-    if not body then
-        debugLog("Invalid event: "..tostring(body))
-        return
-    end
-    --Config.apiKey:upper()
-    if body.key and body.key:upper() == "REPLACEKEY" then
-        if PushEventHandler[body.type:upper()] then
-            PushEventHandler[body.type:upper()](body)
+            res.send("If you're seeing this, sonorancad is loaded.")
         end
     end
 end)
