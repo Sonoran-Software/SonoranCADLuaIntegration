@@ -2,28 +2,18 @@ local UnitCache = {}
 local CallCache = {}
 local PlayerUnitMapping = {}
 
-function GetUnitCache() return UnitCache end
-function GetCallCache() return CallCache end
-function SetUnitCache(k, v) 
-    local key = findUnitById(k)
-    if key ~= nil and UnitCache[key] ~= nil then
-        UnitCache[key] = v
-    else
-        table.insert(UnitCache, v)
-    end
-end
-function SetCallCache(k, v) CallCache[k] = v end
-function GetUnitByPlayerId(player) return PlayerUnitMapping[player] end
-
 local function findUnitById(identIds)
     for k, v in pairs(UnitCache) do
-        if has_value(identIds, v.id) then
+        if type(identIds) == "number" then
+            if identIds == v.id then
+                return k
+            end
+        elseif has_value(identIds, v.id) then
             return k
         end
     end
     return nil
 end
-
 local function GetSourceByApiId(apiIds)
     for x=1, #apiIds do
         for i=0, GetNumPlayerIndices()-1 do
@@ -41,8 +31,28 @@ local function GetSourceByApiId(apiIds)
     return nil
 end 
 
+function GetUnitCache() return UnitCache end
+function GetCallCache() return CallCache end
+function SetUnitCache(k, v) 
+    local key = findUnitById(k)
+    if key ~= nil and UnitCache[key] ~= nil then
+        UnitCache[key] = v
+    else
+        table.insert(UnitCache, v)
+    end
+end
+function SetCallCache(k, v) CallCache[k] = v end
+function GetUnitByPlayerId(player) return PlayerUnitMapping[player] end
+
+
 -- Global function wrapper
 function GetUnitById(ids) return findUnitById(ids) end
+
+exports('GetUnitByPlayerId', GetUnitByPlayerId)
+exports('GetUnitCache', GetUnitCache)
+exports('GetCallCache', GetCallCache)
+exports('GetUnitById', GetUnitById)
+
 
 AddEventHandler("playerDropped", function()
     local id = GetUnitByPlayerId(source)
@@ -57,6 +67,8 @@ end)
 registerApiType("GET_ACTIVE_UNITS", "emergency")
 Citizen.CreateThread(function()
     Wait(500)
+    return
+    --[[
     if not Config.apiSendEnabled then
         debugLog("Disabling active units routine")
         return
@@ -92,5 +104,5 @@ Citizen.CreateThread(function()
             table.insert(UnitCache, v)
         end
         Citizen.Wait(60000)
-    end
+    end--]]
 end)

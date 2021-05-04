@@ -14,7 +14,7 @@ local PushEventHandler = {
         local i = GetUnitById(body.data.identIds)
         if i then
             debugLog("Caught UNIT_STATUS update")
-            local unit = UnitCache[i]
+            local unit = GetUnitCache()[i]
             unit.status = body.data.status
             SetUnitCache(body.data.identIds, unit)
             TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, status)
@@ -39,8 +39,9 @@ local PushEventHandler = {
             return false, "missing identId"
         end
         debugLog("UNIT_LOGOUT: "..json.encode(body.data))
-        SetUnitCache(body.data.identId, nil)
         TriggerEvent('SonoranCAD::pushevents:UnitLogout', body.data.identId)
+        Wait(500)
+        SetUnitCache({body.data.identId}, nil)
     end,
 
     --[[
@@ -51,11 +52,11 @@ local PushEventHandler = {
         local metaData = data.dispatch.metaData
 ]]
     EVENT_DISPATCH_NEW = function(body)
-        SetCallCache(body.data.dispatch.callId) = { dispatch_type = "CALL_NEW", dispatch = body.data }
+        SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_NEW", dispatch = body.data })
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_EDIT = function(body)
-        SetCallCache(body.data.dispatch.callId) = { dispatch_type = "CALL_EDIT", dispatch = body.data }
+        SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_EDIT", dispatch = body.data })
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_CLOSE = function(body)
