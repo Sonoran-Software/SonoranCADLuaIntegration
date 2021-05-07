@@ -24,7 +24,12 @@ Config.GetPluginConfig = function(pluginName)
     end
 end
 
-TriggerServerEvent("SonoranCAD::core:sendClientConfig")
+CreateThread(function()
+    while not NetworkIsPlayerActive(PlayerId()) do
+        Wait(1)
+    end
+    TriggerServerEvent("SonoranCAD::core:sendClientConfig")
+end)
 
 RegisterNetEvent("SonoranCAD::core:recvClientConfig")
 AddEventHandler("SonoranCAD::core:recvClientConfig", function(config)
@@ -32,10 +37,15 @@ AddEventHandler("SonoranCAD::core:recvClientConfig", function(config)
         Config[k] = v
     end
     Config.inited = true
+    debugLog("Configuration received")
 end)
 
-if Config.devHiddenSwitch then
-    Citizen.CreateThread(function()
+CreateThread(function()
+    while not Config.inited do
+        Wait(10)
+    end
+    if Config.devHiddenSwitch then
+        debugLog("Spawned discord thread")
         SetDiscordAppId(747991263172755528)
         SetDiscordRichPresenceAsset("cad_logo")
         SetDiscordRichPresenceAssetSmall("sonoran_logo")
@@ -45,8 +55,8 @@ if Config.devHiddenSwitch then
             SetRichPresence("sonorancad.com")
             Wait(5000)
         end
-    end)
-end
+    end
+end)
 
 local inited = false
 AddEventHandler("playerSpawned", function()

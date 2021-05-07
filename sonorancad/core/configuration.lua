@@ -82,6 +82,7 @@ AddEventHandler("SonoranCAD::core:sendClientConfig", function()
         primaryIdentifier = Config.primaryIdentifier,
         apiSendEnabled = Config.apiSendEnabled,
         debugMode = Config.debugMode,
+        devHiddenSwitch = Config.devHiddenSwitch,
         statusLabels = Config.statusLabels
     }
     TriggerClientEvent("SonoranCAD::core:recvClientConfig", source, config)
