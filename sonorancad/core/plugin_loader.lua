@@ -64,7 +64,7 @@ function CheckForPluginUpdate(name, checkUrl)
         errorLog(("Plugin %s not found."):format(name))
         return
     elseif plugin.check_url == nil or plugin.check_url == "" then
-        warnLog(("Plugin %s does not have check_url set. Please update it manually."):format(name))
+        warnLog(("Plugin %s does not have check_url set. Is it configured correctly?"):format(name))
         return
     end
     PerformHttpRequestS(plugin.check_url, function(code, data, headers)
@@ -89,7 +89,7 @@ function CheckForPluginUpdate(name, checkUrl)
                             warnLog("Automatic updates are disabled. Please update this plugin ASAP.")
                         end
                     else
-                        warnLog(("Plugin %s does not have download_url set. Please update it manually."):format(name))
+                        warnLog(("Plugin %s does not have download_url set. Is it configured correctly?"):format(name))
                     end
                 end
                 if remote.configVersion ~= nil then
@@ -112,7 +112,7 @@ CreateThread(function()
         local versionFile = json.decode(LoadVersionFile(k))
         if versionFile.pluginDepends == nil and Config.plugins[k].requiresPlugins ~= nil then
             -- legacy
-            infoLog(("Plugin %s using legacy dependency detection. This should be corrected in a future version."):format(k))
+            debugLog(("Plugin %s using legacy dependency detection. This should be corrected in a future version."):format(k))
             if Config.plugins[k].requiresPlugins ~= nil then
                 for _, v in pairs(Config.plugins[k].requiresPlugins) do
                     debugLog(("Checking %s dependency %s"):format(k, v))

@@ -40,17 +40,7 @@ local PushEventHandler = {
         end
         debugLog("UNIT_LOGOUT: "..json.encode(body.data))
         TriggerEvent('SonoranCAD::pushevents:UnitLogout', body.data.identId)
-        Wait(500)
-        SetUnitCache({body.data.identId}, nil)
     end,
-
-    --[[
-        RegisterServerEvent("SonoranCAD::pushevents:DispatchEvent")
-    AddEventHandler("SonoranCAD::pushevents:DispatchEvent", function(data)
-        local dispatchType = data.dispatch_type
-        local dispatchData = data.dispatch
-        local metaData = data.dispatch.metaData
-]]
     EVENT_DISPATCH_NEW = function(body)
         SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_NEW", dispatch = body.data })
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])

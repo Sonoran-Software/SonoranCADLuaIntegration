@@ -63,13 +63,27 @@ AddEventHandler("playerDropped", function()
     end
 end)
 
+AddEventHandler("SonoranCAD::pushevents:UnitLogin", function(unit)
+    local playerId = GetSourceByApiId(unit.data.apiIds)
+    if playerId then
+        PlayerUnitMapping[playerId] = unit.id
+        TriggerEvent("SonoranCAD::core:AddPlayer", playerId, unit)
+    end
+end)
+
+AddEventHandler("SonoranCAD::pushevents:UnitLogout", function(id)
+    local key = findUnitById(id)
+    if key then
+        PlayerUnitMapping[key] = nil
+    end
+    SetUnitCache(id, nil)
+end)
+
 
 registerApiType("GET_ACTIVE_UNITS", "emergency")
 Citizen.CreateThread(function()
     Wait(500)
-    return
-    --[[
-    if not Config.apiSendEnabled then
+    if not Config.apiSendEnabled or Config.noUnitTimer then
         debugLog("Disabling active units routine")
         return
     end
@@ -104,5 +118,5 @@ Citizen.CreateThread(function()
             table.insert(UnitCache, v)
         end
         Citizen.Wait(60000)
-    end--]]
+    end
 end)
