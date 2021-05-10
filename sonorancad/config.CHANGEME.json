@@ -11,5 +11,6 @@
     "statusLabels": ["UNAVAILABLE", "BUSY", "AVAILABLE", "ENROUTE", "ON_SCENE"],
     "allowAutoUpdate": true,
     "autoUpdateUrl": "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/{branch}/sonorancad/version.json",
-    "allowUpdateWithPlayers": false
+    "allowUpdateWithPlayers": false,
+    "noUnitTimer": false
 }

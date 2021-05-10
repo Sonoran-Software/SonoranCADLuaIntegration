@@ -5,7 +5,7 @@ function byteCount(s) {
 }
 
 exports('HandleHttpRequest', (dest, callback, method, data, headers) => {
-    emit("SonoranCAD::core:writeLog", "debug", "[http] to: " + dest + " - data: " + dest, JSON.stringify(data));
+    //emit("SonoranCAD::core:writeLog", "debug", "[http] to: " + dest + " - data: " + dest, JSON.stringify(data));
     const urlObj = url.parse(dest)
     const options = {
         hostname: urlObj.hostname,

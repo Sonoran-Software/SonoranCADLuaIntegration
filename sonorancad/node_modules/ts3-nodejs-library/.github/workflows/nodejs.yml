@@ -1,0 +1,60 @@
+name: Node CI
+
+on: [push, pull_request]
+
+jobs:
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10, 12, 14]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install TeamSpeak Server via docker
+      run: |
+        docker run -d --name=teamspeak\
+          -p 10011:10011/tcp -p 10022:10022/tcp -p 30033:30033/tcp\
+          -e TS3SERVER_LICENSE=accept -e TS3SERVER_QUERY_PROTOCOLS=raw,ssh\
+          teamspeak ts3server serveradmin_password=abc123
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install Dependencies
+      run: |
+        npm ci
+    - name: Run Tests
+      run: |
+        npm test     
+    - name: Run TSLINT
+      if: matrix.node-version == 12
+      run: |
+        npm run tslint
+    - name: Coveralls
+      if: matrix.node-version == 12
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12]
+    needs: tests
+    steps:
+    - uses: actions/checkout@v1
+    - name: install dependencies
+      run: |
+        npm ci
+    - name: Generate Docs
+      run: |
+        npm run generate-docs
+    - name: Deploy on Github Pages
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      if: github.ref == 'refs/heads/master'
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: docs

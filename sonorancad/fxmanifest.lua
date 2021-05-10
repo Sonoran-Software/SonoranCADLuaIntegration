@@ -1,9 +1,9 @@
-fx_version 'bodacious'
+fx_version 'cerulean'
 games {'gta5'}
 
 author 'Sonoran CAD'
 description 'Sonoran CAD FiveM Integration'
-version '2.4.1'
+version '2.5.0'
 
 server_scripts {
     'core/http.js'
@@ -15,6 +15,7 @@ server_scripts {
     ,'core/server.lua'
     ,'core/commands.lua'
     ,'core/httpd.lua'
+    ,'core/unittracking.lua'
     ,'core/updater.lua'
     ,'plugins/**/config_*.lua'
     ,'plugins/**/sv_*.lua'

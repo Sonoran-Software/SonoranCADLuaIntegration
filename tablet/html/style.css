@@ -1,29 +1,18 @@
-/*.hidden {
-    overflow: hidden;
-    display: none;
-}*/
-
 /* The device with borders */
 
 #tablet {
 	position: absolute;
 	top: 25%;
+	left: 50%;
+	transform: translate(-50%, 0);
 	width: 1100px;
 	height: 525px;
-	margin: auto;
-	border: 15px black solid;
-	border-top-width: 15px;
-	border-bottom-width: 15px;
+
+	border: 20px black solid;
+	border-top-width: 25px;
+	border-bottom-width: 25px;
 	border-radius: 15px;
-	display: flex;
-	flex-direction: column;
-}
-.tablet .content {
-	width: 1100px;
-	height: 525px;
-	background: white;
-	flex-grow: 1;
-	
+	background: black;
 }
 .tablet .content {
 	margin-left: 37%;
@@ -53,4 +42,3 @@
 	font-weight: bolder;
 	text-align:center;
 }
-

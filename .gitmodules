@@ -34,3 +34,15 @@
 [submodule "wk_wars2x"]
 	path = wk_wars2x
 	url = https://github.com/Sonoran-Software/wk_wars2x.git
+[submodule "plugins/civintegration"]
+	path = sonorancad/plugins/civintegration
+	url = https://github.com/Sonoran-Software/sonoran_civintegration.git
+[submodule "plugins/esxsupport"]
+	path = sonorancad/plugins/esxsupport
+	url = https://github.com/Sonoran-Software/sonoran_esxsupport.git
+[submodule "plugins/forcereg"]
+	path = sonorancad/plugins/forcereg
+	url = https://github.com/Sonoran-Software/sonoran_forcereg.git
+[submodule "plugins/kick"]
+	path = sonorancad/plugins/kick
+	url = https://github.com/Sonoran-Software/sonoran_kick.git
