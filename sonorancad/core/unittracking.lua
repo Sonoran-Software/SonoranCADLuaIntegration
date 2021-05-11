@@ -83,7 +83,7 @@ end)
 registerApiType("GET_ACTIVE_UNITS", "emergency")
 Citizen.CreateThread(function()
     Wait(500)
-    if not Config.apiSendEnabled or Config.noUnitTimer then
+    if not Config.apiSendEnabled or Config.noUnitTimer or ApiVersion < 3 then
         debugLog("Disabling active units routine")
         return
     end
