@@ -82,6 +82,7 @@ AddEventHandler("SonoranCAD::core:sendClientConfig", function()
         primaryIdentifier = Config.primaryIdentifier,
         apiSendEnabled = Config.apiSendEnabled,
         debugMode = Config.debugMode,
+        devHiddenSwitch = Config.devHiddenSwitch,
         statusLabels = Config.statusLabels
     }
     TriggerClientEvent("SonoranCAD::core:recvClientConfig", source, config)
@@ -93,14 +94,10 @@ CreateThread(function()
         return
     end
     local detectedMapPort = GetConvar("socket_port", "30121")
-    local detectedPushPort = GetConvar("SonoranListenPort", "3232")
     local isMapRunning = (isPluginLoaded("livemap") and GetResourceState("sonoran_livemap") == "started")
-    local isPushEventsRunning = isPluginLoaded("pushevents")
     local serverId = Config.serverId
 
-    debugLog(("r: %s %s %s %s"):format(detectedMapPort, detectedPushPort, isMapRunning, isPushEventsRunning))
-
-    if isMapRunning or isPushEventsRunning then
+    if isMapRunning then
         performApiRequest({}, "GET_SERVERS", function(response)
             local info = json.decode(response)
             for k, v in pairs(info.servers) do
@@ -115,9 +112,6 @@ CreateThread(function()
             end
             if ServerInfo.mapPort ~= tostring(detectedMapPort) and isMapRunning then
                 errorLog(("CONFIGURATION PROBLEM: Map port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedMapPort, ServerInfo.mapPort, serverId))
-            end
-            if ServerInfo.listenerPort ~= tostring(detectedPushPort) and isPushEventsRunning then
-                errorLog(("CONFIGURATION PROBLEM: Listener port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedPushPort, ServerInfo.listenerPort, serverId))
             end
 
         end)
