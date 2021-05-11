@@ -118,6 +118,7 @@ SonoranCAD Help
     plugin <name> - show info about a plugin (config)
     update - Run core updater
     pluginupdate - Run plugin updater
+    viewcaches - View the current unit and call cache, for troubleshooting
 ]])
     elseif args[1] == "debugmode" then
         Config.debugMode = not Config.debugMode
@@ -146,6 +147,11 @@ SonoranCAD Help
         for k, v in pairs(Config.plugins) do
             CheckForPluginUpdate(k)
         end
+    elseif args[1] == "viewcaches" then
+        local units = GetUnitCache()
+        local calls = GetCallCache()
+        print(("Units: %s\r\nCalls: %s"):format(json.encode(units), json.encode(calls)))
+        print("Done")
     else
         print("Missing command. Try \"sonoran help\" for help.")
     end
