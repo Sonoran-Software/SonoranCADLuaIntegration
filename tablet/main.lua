@@ -1,4 +1,4 @@
-guiEnabled = false
+ guiEnabled = false
 Citizen.CreateThread(function()
   while true do
       if guiEnabled then
@@ -24,10 +24,6 @@ end)
 
 RegisterCommand("showcad", function(source, args, rawCommand)
 	Gui(not guiEnabled)
-end, false)
-
-RegisterCommand("test", function(source,args,rawCommand)
-	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 end, false)
 
 
@@ -66,27 +62,4 @@ AddEventHandler('onClientResourceStart', function(resourceName) --When resource 
       return
     end
     Gui(false)
-	
-	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
-	
-end)
-
-RegisterNetEvent("sonoran:tablet:apiIdNotFound")
-AddEventHandler('sonoran:tablet:apiIdNotFound', function()
-
-	SetNuiFocus(true, true)
-
-	SendNUIMessage({
-      type = "enableui",
-      enable = true,
-	  apiCheck = true
-	})
-
-end)
-
-RegisterNUICallback('SetAPIData', function(data,cb)
-	
-	TriggerServerEvent("sonoran:tablet:setApiId", data.session, data.username)
-	
-	cb(true)
 end)

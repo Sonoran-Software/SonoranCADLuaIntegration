@@ -1,14 +1,8 @@
-var isApiBeingChecked=false;
-
 $(function () {
   window.addEventListener('message', function (event) {
     if (event.data.type == "enableui") {
       if (event.data.enable) {
         $("body").show();
-		if(event.data.apiCheck){
-			isApiBeingChecked=true;
-			$("#check-api-data").show();
-		}
       }
       else {
         $("body").hide();
@@ -31,8 +25,6 @@ $(function () {
   };
 
   dragElement(document.getElementById("tablet"));
-  
-  window.addEventListener("message", receiveMessage, false);
 });
 
 
@@ -78,16 +70,4 @@ function dragElement(elmnt) {
     document.onmouseup = null;
     document.onmousemove = null;
   }
-}
-
-function receiveMessage(event){
-	
-	let mdtframe = document.getElementById("mdtFrame");
-	let frameorigin=new URL(mdtframe.src).origin;
-	
-	if(isApiBeingChecked && event.origin==frameorigin){
-		$.post('https://tablet/SetAPIData', JSON.stringify(event.data));	
-		$("#check-api-data").hide();		
-		$("body").hide();		
-	}
 }
