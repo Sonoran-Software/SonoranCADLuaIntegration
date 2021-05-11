@@ -19,7 +19,7 @@ local PushEventHandler = {
             SetUnitCache(body.data.identIds, unit)
             TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, status)
         else
-            debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s - status: %s"):format(json.encode(body.data.identIds), unit.status))
+            debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s"):format(json.encode(body.data.identIds)))
         end
         return true
     end,
@@ -43,16 +43,16 @@ local PushEventHandler = {
     end,
     EVENT_DISPATCH_NEW = function(body)
         SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_NEW", dispatch = body.data })
-        TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
+        TriggerEvent('SonoranCAD::pushevents:DispatchEvent', GetCallCache()[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_EDIT = function(body)
         SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_EDIT", dispatch = body.data })
-        TriggerEvent('SonoranCAD::pushevents:DispatchEvent', CallCache[body.data.dispatch.callId])
+        TriggerEvent('SonoranCAD::pushevents:DispatchEvent', GetCallCache()[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_CLOSE = function(body)
         local call = GetCallCache()[body.data.callId]
         if call ~= nil then
-            local d = { dispatch_type = "CALL_CLOSE", dispatch = CallCache[body.data.callId] }
+            local d = { dispatch_type = "CALL_CLOSE", dispatch = call }
             SetCallCache(body.data.callId, body.data)
             TriggerEvent('SonoranCAD::pushevents:DispatchEvent', d)
         else
