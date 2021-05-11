@@ -15,6 +15,7 @@ local function findUnitById(identIds)
     return nil
 end
 local function GetSourceByApiId(apiIds)
+    if apiIds == nil then return nil end
     for x=1, #apiIds do
         for i=0, GetNumPlayerIndices()-1 do
             local player = GetPlayerFromIndex(i)
@@ -87,12 +88,12 @@ Citizen.CreateThread(function()
         debugLog("Disabling active units routine")
         return
     end
-    local OldUnits = {}
-    local NewUnits = {}
-    for k, v in pairs(UnitCache) do
-        OldUnits[k] = v
-    end
     while true do
+        local OldUnits = {}
+        local NewUnits = {}
+        for k, v in pairs(UnitCache) do
+            OldUnits[k] = v
+        end
         if GetNumPlayerIndices() > 0 then
             local payload = { serverId = Config.serverId}
             performApiRequest({payload}, "GET_ACTIVE_UNITS", function(runits)
