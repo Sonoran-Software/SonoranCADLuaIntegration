@@ -116,4 +116,9 @@ CreateThread(function()
 
         end)
     end
+
+    if isPluginLoaded("pushevents") then
+        warnLog("Since 2.5.0, SonoranCAD now uses your game port for push events. While the old method will work, this is deprecated. Please change your game port settings under Admin -> Advanced -> In-Game Integration to reflect this server's game port.")
+        warnLog("After changing this information, please remove or disable the pushevents plugin to remove this message.")
+    end
 end)
