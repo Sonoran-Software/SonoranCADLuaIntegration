@@ -170,3 +170,19 @@ SetHttpHandler(function(req, res)
         end
     end
 end)
+
+AddEventHandler("SonoranCAD::pushevents:shim", function(chunk)
+    local body = json.decode(chunk)
+    if not body then
+        debugLog("Invalid event: "..tostring(chunk))
+        return
+    end
+    if body.key and body.key:upper() == Config.apiKey:upper() then
+        if PushEventHandler[body.type:upper()] then
+            CreateThread(function()
+                body.res = res 
+                local success, result = PushEventHandler[body.type:upper()](body)
+            end)
+        end
+    end
+end)
