@@ -36,6 +36,7 @@
                     document.getElementById("errorDiv").innerHTML = res.error;
                 } else {
                     consoleDiv.innerHTML = res.output;
+                    document.getElementById("errorDiv").innerHTML = "";
                 }
                 document.getElementById("#consoleinput").innerHTML = "";
             })
