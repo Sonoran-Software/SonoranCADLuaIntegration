@@ -38,6 +38,14 @@ CreateThread(function()
         errorLog("You have set SonoranCAD to Steam mode, but have not configured a Steam Web API key. Please see FXServer documentation. SonoranCAD will not function in Steam mode without this set.")
         Config.critError = true
     end
+    local versionfile = json.decode(LoadResourceFile(GetCurrentResourceName(), "/version.json"))
+    local fxversion = versionfile.testedFxServerVersion
+    local s = GetConvar("version", "")
+    local v = s:find("v1.0.0.")
+    local i = string.gsub(s:sub(v),"v1.0.0.",""):sub(1,4)
+    if tonumber(i) < tonumber(fxversion) then
+        warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
+    end
 end)
 
 -- Toggles API sender.

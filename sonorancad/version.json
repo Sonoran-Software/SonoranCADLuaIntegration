@@ -1,3 +1,4 @@
 {
-  "resource" : "2.5.4"
+  "resource" : "2.5.5",
+  "testedFxServerVersion": "3922"
 }
