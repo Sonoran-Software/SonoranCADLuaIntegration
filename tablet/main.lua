@@ -26,7 +26,7 @@ RegisterCommand("showcad", function(source, args, rawCommand)
 	Gui(not guiEnabled)
 end, false)
 
-RegisterCommand("test", function(source,args,rawCommand)
+RegisterCommand("checkapiid", function(source,args,rawCommand)
 	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 end, false)
 
@@ -87,6 +87,15 @@ end)
 RegisterNUICallback('SetAPIData', function(data,cb)
 	
 	TriggerServerEvent("sonoran:tablet:setApiId", data.session, data.username)
-	
+	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 	cb(true)
+end)
+
+RegisterNUICallback('runApiCheck', function()
+  TriggerServerEvent("sonoran:tablet:forceCheckApiId")
+end)
+
+RegisterNetEvent("sonoran:tablet:failed")
+AddEventHandler("sonoran:tablet:failed", function(message)
+  errorLog("Failed to set API ID: "..tostring(message))
 end)
