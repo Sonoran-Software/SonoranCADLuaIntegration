@@ -60,6 +60,7 @@ function RunAutoUpdater(manualRun)
                 warnLog(("Failed to get a valid response for %s. Skipping."):format(k))
                 debugLog(("Raw output for %s: %s"):format(k, data))
             else
+                Config.latestVersion = remote.resource
                 local latestVersion = string.gsub(remote.resource, "%.","")
                 local localVersion = string.gsub(myVersion, "%.", "")
 

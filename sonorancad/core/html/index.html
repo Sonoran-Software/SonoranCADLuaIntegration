@@ -9,14 +9,37 @@
 <body>
     <div id="passwordDiv">
         <form>
-            API Key: <input type="text" id="password" name="password"/><input type="button" id="apisubmit" value="Submit"/>
+            <p>API Key: <input type="text" id="password" name="password"/></p>
+                <input type="button" id="apisubmit" value="Get Configuration"/> <br/><br/>
+                Console Input: <input type="text" id="consoleinput" name="consoleinput" width="150"/> <input type="button" id="consolesubmit" value="Send Command"/>
+            </p>
         </form>
     </div>
+    <div id="errorDiv"></div>
     <div id="infoDiv"></div>
     <div id="consoleDiv"></div>
 
     <script type="text/javascript">
         const api = document.getElementById("apisubmit")
+        const console = document.getElementById("consolesubmit")
+        
+        console.addEventListener('click', e => {
+            fetch('/sonorancad/console', {
+                method: 'post',
+                body: JSON.stringify({
+                    password: document.querySelector("#password").value,
+                    command: document.querySelector("#consoleinput").value
+                })
+            }).then(res => res.json()).then(res => {
+                let consoleDiv = document.getElementById("consoleDiv");
+                if (res.error) {
+                    document.getElementById("errorDiv").innerHTML = res.error;
+                } else {
+                    consoleDiv.innerHTML = res.output;
+                }
+                document.getElementById("#consoleinput").innerHTML = "";
+            })
+        });
         api.addEventListener('click', e => {
             fetch('/sonorancad/info', {
                 method: 'post',
@@ -39,8 +62,6 @@
                     infoDiv.innerHTML += res.config
                     consoleDiv.innerHTML = res.console
                 }
-                
-
             })
         })
     </script>

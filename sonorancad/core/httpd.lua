@@ -133,6 +133,30 @@ SetHttpHandler(function(req, res)
                 }))
             end
         end)
+    elseif method == "POST" and path == '/console' then
+        req.setDataHandler(function(body)
+            if not body then
+                res.send(json.encode({["error"] = "bad request"}))
+                return
+            end
+            local data = json.decode(body)
+            if not data then
+                res.send(json.encode({["error"] = "bad request"}))
+            elseif Config.critError then
+                res.send(json.encode({["error"] = "critical config error"}))
+            elseif string.upper(data.password) ~= string.upper(Config.apiKey) then
+                res.send(json.encode({["error"] = "bad request"}))
+            else
+                if not string.find(data.command, "sonoran") then
+                    res.send(json.encode({["error"] = "not allowed"}))
+                end
+                ExecuteCommand(data.command)
+                res.send(json.encode({
+                    ["status"] = "ok", 
+                    ["output"] = string.gsub(GetConsoleBuffer(), "\n", "<br />")
+                }))
+            end
+        end)
     elseif method == "POST" and path == '/event' then
         req.setDataHandler(function(data)
             if not data then

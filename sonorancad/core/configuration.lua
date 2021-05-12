@@ -8,6 +8,7 @@ Config = {
     apiSendEnabled = nil,
     debugMode = nil,
     updateBranch = nil,
+    latestVersion = "",
     plugins = {}
 }
 
