@@ -23,8 +23,10 @@ end
 CreateThread(function()
     Wait(1)
     Config.apiUrl = getApiUrl()
+    Config.ApiVersion = -1
     performApiRequest({}, "GET_VERSION", function(result)
         ApiVersion = tonumber(string.sub(result, 1, 1))
+        Config.ApiVersion = ApiVersion
         if ApiVersion < 2 then
             errorLog("ERROR: Your community cannot use any plugins requiring the API. Please purchase a subscription of Standard or higher.")
             Config.critError = true
