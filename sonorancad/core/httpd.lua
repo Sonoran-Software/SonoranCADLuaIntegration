@@ -125,10 +125,14 @@ SetHttpHandler(function(req, res)
             elseif string.upper(data.password) ~= string.upper(Config.apiKey) then
                 res.send(json.encode({["error"] = "bad request"}))
             else
+                local pluginsFormatted = {}
+                for name, plugin in pairs(Config.plugins) do
+                    table.insert(pluginsFormatted, name..": "..json.encode(plugin))
+                end
                 res.send(json.encode({
                     ["status"] = "ok", 
                     ["cadInfo"] = string.gsub(dumpInfo(), "\n", "<br />"), 
-                    ["config"] = string.gsub(getConfig(), "\r\n", "<br />")..string.gsub(json.encode(Config.plugins), "}", "} <br />"),
+                    ["config"] = table.concat(pluginsFormatted, "<br /><br/>"),
                     ["console"] = string.gsub(GetConsoleBuffer(), "\n", "<br />")
                 }))
             end
