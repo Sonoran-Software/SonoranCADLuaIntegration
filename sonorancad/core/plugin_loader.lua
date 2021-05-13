@@ -185,7 +185,6 @@ CreateThread(function()
             disabledPlugins[name] = v.disableReason
         end
     end
-    print(json.encode(disabledPlugins))
     infoLog(("Available Plugins: %s"):format(table.concat(pluginList, ", ")))
     infoLog(("Loaded Plugins: %s"):format(table.concat(loadedPlugins, ", ")))
     for name, reason in pairs(disabledPlugins) do

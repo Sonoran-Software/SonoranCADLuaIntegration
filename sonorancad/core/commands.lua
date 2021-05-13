@@ -31,6 +31,7 @@ function dumpInfo()
             table.insert(pluginVersions, ("%s [%s/%s]"):format(v, Config.plugins[v].version, Config.plugins[v].latestVersion))
         end
     end
+    local coreConfig = LoadResourceFile(GetCurrentResourceName(), "config.json")
     return ([[
 SonoranCAD
 Version: %s - Latest: %s
@@ -42,7 +43,9 @@ Disabled Plugins
 %s
 Relevant Variables
 %s
-    ]]):format(version, Config.latestVersion, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "), variableList)
+Core Configuration
+%s
+    ]]):format(version, Config.latestVersion, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "), variableList, coreConfig)
 end
 
 function dumpPlugin(name)
