@@ -3,6 +3,9 @@ local CallCache = {}
 local PlayerUnitMapping = {}
 
 local function findUnitById(identIds)
+    if identIds == nil then
+        return nil
+    end
     for k, v in pairs(UnitCache) do
         if type(identIds) == "number" then
             if identIds == v.id then

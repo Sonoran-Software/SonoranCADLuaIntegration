@@ -81,6 +81,10 @@ function PerformHttpRequestS(url, cb, method, data, headers)
 end
 
 function has_value(tab, val)
+    if tab == nil then
+        debugLog("nil passed to has_value, ignore")
+        return false
+    end
     for index, value in ipairs(tab) do
         if value == val then
             return true
