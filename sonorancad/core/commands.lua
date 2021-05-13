@@ -21,7 +21,7 @@ function dumpInfo()
     local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
     local pluginList, loadedPlugins, disabledPlugins = GetPluginLists()
     local pluginVersions = {}
-    local cadVariables = { ["socket_port"] = GetConvar("socket_port", "NONE"), ["SonoranListenPort"] = GetConvar("SonoranListenPort", "NONE")}
+    local cadVariables = { ["socket_port"] = GetConvar("socket_port", "30121 (default)")}
     local variableList = ""
     for k, v in pairs(cadVariables) do
         variableList = ("%s%s = %s\n"):format(variableList, k, v)
@@ -161,15 +161,22 @@ function GetPluginLists()
     local pluginList = {}
     local loadedPlugins = {}
     local disabledPlugins = {}
+    local disableFormatted = {}
     for name, v in pairs(Config.plugins) do
         table.insert(pluginList, name)
         if v.enabled then
             table.insert(loadedPlugins, name)
         else
-            table.insert(disabledPlugins, name)
+            if v.disableReason == nil then
+                v.disableReason = "disabled in config"
+            end
+            disabledPlugins[name] = v.disableReason
         end
     end
-    return pluginList, loadedPlugins, disabledPlugins
+    for name, reason in pairs(disabledPlugins) do
+        table.insert(disableFormatted, ("%s (%s)"):format(name, reason))
+    end
+    return pluginList, loadedPlugins, disableFormatted
 end
 
 -- Support Push Event

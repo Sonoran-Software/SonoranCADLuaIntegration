@@ -25,6 +25,7 @@ Config.GetPluginConfig = function(pluginName)
     if Config.plugins[pluginName] ~= nil then
         if Config.critError then
             Config.plugins[pluginName].enabled = false
+            Config.plugins[pluginName].disableReason = "startup aborted"
         elseif Config.plugins[pluginName].enabled == nil then
             Config.plugins[pluginName].enabled = true
         end
