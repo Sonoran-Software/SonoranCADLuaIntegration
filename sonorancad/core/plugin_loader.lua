@@ -17,6 +17,7 @@ local function LoadVersionFile(pluginName)
         if f then
             return f
         else
+            warnLog(("Failed to load version file from either %s or %s. Check to see if the file exists."):format(("plugins/%s/%s/version_%s.json"):format(pluginName, pluginName, pluginName), ("plugins/%s/version_%s.json"):format(pluginName, pluginName)))
             return nil
         end
     end
@@ -119,6 +120,7 @@ CreateThread(function()
                     if Config.plugins[v] == nil or not Config.plugins[v].enabled then
                         errorLog(("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
                         Config.plugins[k].enabled = false
+                        Config.plugins[k].disableReason = ("Missing dependency %s"):format(v)
                         goto skip
                     end
                 end
@@ -135,6 +137,7 @@ CreateThread(function()
                     if isCritical then
                         errorLog(("PLUGIN ERROR: Plugin %s requires %s at version %s or higher, but only %s was found. Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
                         Config.plugins[k].enabled = false
+                        Config.plugins[k].disableReason = ("Wrong version for dependency %s (%s)"):format(plugin.name, plugin.version)
                     else
                         warnLog(("INCOMPATIBILITY WARNING: Plugin %s requires %s at version %s or higher, but only %s was found. Some features may not work! Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
                     end
@@ -159,6 +162,7 @@ CreateThread(function()
                 if minVersion > coreVersion then
                     errorLog(("PLUGIN ERROR: Plugin %s requires Core Version %s, but you have %s. Please update SonoranCAD to use this plugin. Force disabled."):format(k, version.minCoreVersion, coreVersion))
                     Config.plugins[k].enabled = false
+                    Config.plugins[k].disableReason = "Outdated core version"
                 end
             end
         else
@@ -169,18 +173,26 @@ CreateThread(function()
     local pluginList = {}
     local loadedPlugins = {}
     local disabledPlugins = {}
+    local disableFormatted = {}
     for name, v in pairs(Config.plugins) do
         table.insert(pluginList, name)
         if v.enabled then
             table.insert(loadedPlugins, name)
         else
-            table.insert(disabledPlugins, name)
+            if v.disableReason == nil then
+                v.disableReason = "disabled in config"
+            end
+            disabledPlugins[name] = v.disableReason
         end
     end
+    print(json.encode(disabledPlugins))
     infoLog(("Available Plugins: %s"):format(table.concat(pluginList, ", ")))
     infoLog(("Loaded Plugins: %s"):format(table.concat(loadedPlugins, ", ")))
-    if #disabledPlugins > 0 then
-        warnLog(("Disabled Plugins: %s"):format(table.concat(disabledPlugins, ", ")))
+    for name, reason in pairs(disabledPlugins) do
+        table.insert(disableFormatted, ("%s (%s)"):format(name, reason))
+    end
+    if #disableFormatted > 0 then
+        warnLog(("Disabled Plugins: %s"):format(table.concat(disableFormatted, ", ")))
     end
     if PluginsWereUpdated then
         doRestart()

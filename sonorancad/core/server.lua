@@ -43,10 +43,10 @@ CreateThread(function()
     local s = GetConvar("version", "")
     local v = s:find("v1.0.0.")
     local i = string.gsub(s:sub(v),"v1.0.0.",""):sub(1,4)
-    if (i == nil or fxversion == nil) then
-        debugLog(("skip version detection, %s < %s"):format(i, fxversion))
-    else tonumber(i) < tonumber(fxversion) then
-        warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
+    if i ~= nil and fxversion ~= nil then
+        if tonumber(i) < tonumber(fxversion) then
+            warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
+        end
     end
 end)
 
