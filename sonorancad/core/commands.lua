@@ -122,10 +122,12 @@ SonoranCAD Help
     update - Run core updater
     pluginupdate - Run plugin updater
     viewcaches - View the current unit and call cache, for troubleshooting
+    getclientlog <playerId> - Get a log buffer from a given client
 ]])
     elseif args[1] == "debugmode" then
         Config.debugMode = not Config.debugMode
         infoLog(("Debug mode toggled to %s"):format(Config.debugMode))
+        TriggerClientEvent("SonoranCAD::core:debugModeToggle", -1, Config.debugMode)
     elseif args[1] == "info" then
         print(dumpInfo())
     elseif args[1] == "support" and args[2] ~= nil then
@@ -155,6 +157,17 @@ SonoranCAD Help
         local calls = GetCallCache()
         print(("Units: %s\r\nCalls: %s"):format(json.encode(units), json.encode(calls)))
         print("Done")
+    elseif args[1] == "getclientlog" then
+        if args[2] then
+            if GetPlayerName(args[2]) ~= nil then
+                TriggerClientEvent("SonoranCAD::core:RequestLogBuffer", args[2])
+                infoLog("Requested log buffer. Please wait...")
+            else
+                errorLog("Invalid player ID")
+            end
+        else
+            errorLog("Invalid argument.")
+        end
     else
         print("Missing command. Try \"sonoran help\" for help.")
     end
@@ -187,4 +200,13 @@ end
 AddEventHandler("SonoranCAD::pushevents:SendSupportLogs", function(key)
     infoLog("Support has requested logs to be uploaded. Collecting now...")
     sendSupportLogs(key)
+end)
+
+RegisterNetEvent("SonoranCAD::core:LogBuffer")
+AddEventHandler("SonoranCAD::core:LogBuffer", function(buffer)
+    infoLog(("Incoming log buffer from player %s"):format(source))
+    for i=1, #buffer do
+        print((": %s"):format(buffer[i]))
+    end
+    infoLog("End of buffer")
 end)
