@@ -13,11 +13,10 @@ local PushEventHandler = {
         end
         local i = GetUnitById(body.data.identIds)
         if i then
-            debugLog("Caught UNIT_STATUS update")
             local unit = GetUnitCache()[i]
             unit.status = body.data.status
             SetUnitCache(body.data.identIds, unit)
-            TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, status)
+            TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, unit.status)
         else
             debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s"):format(json.encode(body.data.identIds)))
         end

@@ -111,19 +111,30 @@ Citizen.CreateThread(function()
                             PlayerUnitMapping[playerId] = v.id
                             table.insert(NewUnits, v)
                             TriggerEvent("SonoranCAD::core:AddPlayer", playerId, v)
+                        else
+                            warnLog(("Couldn't find unit, not adding %s (%s)"):format(playerId, json.encode(v.data.apiIds)))
                         end
                     end
                 end
                 for k, v in pairs(OldUnits) do
-                    debugLog(("Removing player %s, not on units list"):format(k))
-                    TriggerEvent("SonoranCAD::core:RemovePlayer", k, v)
+                    local exists = false
+                    for _, n in pairs(NewUnits) do
+                        if n.id == v.id then
+                            exists = true
+                        end
+                    end
+                    if not exists then
+                        debugLog(("Removing player %s, not on units list"):format(k))
+                        TriggerEvent("SonoranCAD::core:RemovePlayer", k, v)
+                    end
+                end
+                UnitCache = {}
+                for k, v in pairs(NewUnits) do
+                    debugLog("Insert unit "..json.encode(v))
+                    table.insert(UnitCache, v)
                 end
             end)
-        end
-        UnitCache = {}
-        for k, v in pairs(NewUnits) do
-            table.insert(UnitCache, v)
-        end
+        end        
         Citizen.Wait(60000)
     end
 end)
