@@ -1,5 +1,6 @@
 local UnitCache = {}
 local CallCache = {}
+local EmergencyCache = {}
 local PlayerUnitMapping = {}
 
 local function findUnitById(identIds)
@@ -37,6 +38,7 @@ end
 
 function GetUnitCache() return UnitCache end
 function GetCallCache() return CallCache end
+function GetEmergencyCache() return EmergencyCache end
 function SetUnitCache(k, v) 
     local key = findUnitById(k)
     if key ~= nil and UnitCache[key] ~= nil then
@@ -46,6 +48,7 @@ function SetUnitCache(k, v)
     end
 end
 function SetCallCache(k, v) CallCache[k] = v end
+function SetEmergencyCache(k, v) EmergencyCache[k] = v end
 function GetUnitByPlayerId(player) return PlayerUnitMapping[player] end
 
 
@@ -137,4 +140,25 @@ Citizen.CreateThread(function()
         end        
         Citizen.Wait(60000)
     end
+end)
+
+registerApiType("GET_CALLS", "emergency")
+CreateThread(function()
+    Wait(1000)
+    while Config.ApiVersion == -1 do
+        Wait(10)
+    end
+    if not Config.apiSendEnabled or Config.ApiVersion < 3 then
+        debugLog("Too low version or API disabled, skip call caching")
+        return
+    end
+    local payload = { serverId = Config.serverId}
+    performApiRequest({payload},"GET_CALLS",function(calls)
+        for k, v in pairs(calls.activeCalls) do
+            table.insert(CallCache, v)
+        end
+        for k, v in pairs(calls.emergencyCalls) do
+            table.insert(EmergencyCache, v)
+        end
+    end)
 end)
