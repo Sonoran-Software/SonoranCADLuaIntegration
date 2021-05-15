@@ -1,17 +1,33 @@
+ConsoleDebugChannels = {
+    ["http"] = false,
+    ["plugins"] = true,
+    ["api"] = true,
+    plugins = {
+
+    }
+}
+
 local function LocalTime()
 	local _, _, _, h, m, s = GetLocalTime()
 	return '' .. h .. ':' .. m .. ':' .. s
 end
 
 local function sendConsole(level, color, message)
+    local debugging = true
+    if Config ~= nil then
+        debugging = Config.debugMode
+    end
     local time = os and os.date("%X") or LocalTime()
-    print(("[%s][SonoranCAD:%s%s^7]%s %s^0"):format(time, color, level, color, message))
+    local info = debug.getinfo(3, 'S')
+    local source = info.source:gsub("@@sonorancad/","")..":"..info.linedefined
+    print(("[%s][%s:%s%s^7]%s %s^0"):format(time, debugging and source or "SonoranCAD", color, level, color, message))
 end
 
 function debugLog(message)
     if Config == nil then
         return
     elseif Config.debugMode then
+        
         sendConsole("DEBUG", "^7", message)
     end
 end
