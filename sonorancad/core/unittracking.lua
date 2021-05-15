@@ -18,7 +18,8 @@ local function findUnitById(identIds)
     end
     return nil
 end
-local function GetSourceByApiId(apiIds)
+
+function GetSourceByApiId(apiIds)
     if apiIds == nil then return nil end
     for x=1, #apiIds do
         for i=0, GetNumPlayerIndices()-1 do
