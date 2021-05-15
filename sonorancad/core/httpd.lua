@@ -197,6 +197,7 @@ SetHttpHandler(function(req, res)
                 return
             end
             if body.key and body.key:upper() == Config.apiKey:upper() then
+                debugLog(("EVENT: %s - %s"):format(body.type, json.encode(body)))
                 if PushEventHandler[body.type:upper()] then
                     CreateThread(function()
                         body.res = res 
