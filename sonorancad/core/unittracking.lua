@@ -156,10 +156,10 @@ CreateThread(function()
     performApiRequest({payload},"GET_CALLS",function(response)
         local calls = json.decode(response)
         for k, v in pairs(calls.activeCalls) do
-            table.insert(CallCache, v)
+            CallCache[v.callId] = { dispatch = v }
         end
         for k, v in pairs(calls.emergencyCalls) do
-            table.insert(EmergencyCache, v)
+            EmergencyCache[v.callId] = v
         end
     end)
 end)

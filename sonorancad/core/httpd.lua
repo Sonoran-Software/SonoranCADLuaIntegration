@@ -76,6 +76,16 @@ local PushEventHandler = {
                 local unit = GetUnitCache()[body.data.idents[i]]
                 if call and unit then
                     TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
+                    local idx = nil
+                    for i, u in pairs(call.units) do
+                        if u.id == unit.id then
+                            idx = i
+                        end
+                    end
+                    if idx == nil then
+                        table.insert(call.units, unit)
+                        SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
+                    end
                 else
                     debugLog("Attach failure, unknown call or unit")
                 end
@@ -90,6 +100,16 @@ local PushEventHandler = {
             local unit = GetUnitCache()[body.data.ident]
             if call and unit then
                 TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
+                local idx = nil
+                for i, u in pairs(call.units) do
+                    if u.id == unit.id then
+                        idx = i
+                    end
+                end
+                if idx ~= nil then
+                    table.remove(call.units, idx)
+                    SetCallCache(body.data.callId, {dispatch_type = "CALL_EDIT", dispatch = call })
+                end
             else
                 debugLog("Detach failure, unknown call or unit")
             end
@@ -99,9 +119,11 @@ local PushEventHandler = {
         TriggerEvent('SonoranCAD::pushevents:SendSupportLogs', body.logKey)
     end,
     EVENT_911 = function(body)
+        SetEmergencyCache(body.data.call.callId, body.data.call)
         TriggerEvent('SonoranCAD::pushevents:IncomingCadCall', body.data.call, body.data.apiIds, body.data.metaData)
     end,
     EVENT_REMOVE_911 = function(body)
+        SetEmergencyCache(body.data.call.callId, nil)
         TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callId)
     end
 }
