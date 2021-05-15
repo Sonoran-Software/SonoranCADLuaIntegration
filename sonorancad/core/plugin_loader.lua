@@ -130,19 +130,30 @@ CreateThread(function()
                 local requiredVersion = string.gsub(plugin.version, "%.","")
                 local isCritical = plugin.critical
                 -- get the depend plugin information
-                local check = json.decode(LoadVersionFile(plugin.name))
-                -- check if its version >= required
-                local checkVersion = string.gsub(check.version, "%.","")
-                if (checkVersion < requiredVersion) then
+                local vFile = LoadVersionFile(plugin.name)
+                if vFile == nil then
                     if isCritical then
-                        errorLog(("PLUGIN ERROR: Plugin %s requires %s at version %s or higher, but only %s was found. Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
+                        errorLog(("PLUGIN ERROR: Plugin %s requires the %s plugin, but it is not installed."):format(k, plugin.name))
                         Config.plugins[k].enabled = false
-                        Config.plugins[k].disableReason = ("Wrong version for dependency %s (%s)"):format(plugin.name, plugin.version)
-                    else
-                        warnLog(("INCOMPATIBILITY WARNING: Plugin %s requires %s at version %s or higher, but only %s was found. Some features may not work! Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
+                        Config.plugins[k].disableReason = ("Missing dependency %s"):format(plugin.name)
+                    elseif plugin.name ~= "esxsupport" then
+                        warnLog(("[plugin loader] Plugin %s requires %s, but it is not installed. Some features may not work properly."):format(k, plugin.name))
                     end
                 else
-                    debugLog(("Plugin %s checked plugin %s version (%s >= %s)"):format(k, plugin.name, check.version, plugin.version))
+                    local check = json.decode(vFile)
+                    -- check if its version >= required
+                    local checkVersion = string.gsub(check.version, "%.","")
+                    if (checkVersion < requiredVersion) then
+                        if isCritical then
+                            errorLog(("PLUGIN ERROR: Plugin %s requires %s at version %s or higher, but only %s was found. Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
+                            Config.plugins[k].enabled = false
+                            Config.plugins[k].disableReason = ("Wrong version for dependency %s (%s)"):format(plugin.name, plugin.version)
+                        else
+                            warnLog(("INCOMPATIBILITY WARNING: Plugin %s requires %s at version %s or higher, but only %s was found. Some features may not work! Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
+                        end
+                    else
+                        debugLog(("Plugin %s checked plugin %s version (%s >= %s)"):format(k, plugin.name, check.version, plugin.version))
+                    end
                 end
             end
         end
