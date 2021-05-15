@@ -150,8 +150,10 @@ SetHttpHandler(function(req, res)
             elseif string.upper(data.password) ~= string.upper(Config.apiKey) then
                 res.send(json.encode({["error"] = "bad request"}))
             else
-                if not string.find(data.command, "sonoran") then
+                local s = string.gmatch(data.command, "%S+")()
+                if s ~= "sonoran" then
                     res.send(json.encode({["error"] = "not allowed"}))
+                    return
                 end
                 ExecuteCommand(data.command)
                 res.send(json.encode({

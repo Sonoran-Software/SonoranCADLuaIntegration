@@ -153,7 +153,8 @@ CreateThread(function()
         return
     end
     local payload = { serverId = Config.serverId}
-    performApiRequest({payload},"GET_CALLS",function(calls)
+    performApiRequest({payload},"GET_CALLS",function(response)
+        local calls = json.decode(response)
         for k, v in pairs(calls.activeCalls) do
             table.insert(CallCache, v)
         end
