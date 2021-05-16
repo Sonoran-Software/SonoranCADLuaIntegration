@@ -63,3 +63,8 @@ AddEventHandler("playerSpawned", function()
     TriggerServerEvent("SonoranCAD::core:PlayerReady")
     inited = true
 end)
+
+RegisterNetEvent("SonoranCAD::core:debugModeToggle")
+AddEventHandler("SonoranCAD::core:debugModeToggle", function(toggle)
+    Config.debugMode = toggle
+end)

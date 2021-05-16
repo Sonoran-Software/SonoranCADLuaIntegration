@@ -1,5 +1,6 @@
 local UnitCache = {}
 local CallCache = {}
+local EmergencyCache = {}
 local PlayerUnitMapping = {}
 
 local function findUnitById(identIds)
@@ -17,7 +18,8 @@ local function findUnitById(identIds)
     end
     return nil
 end
-local function GetSourceByApiId(apiIds)
+
+function GetSourceByApiId(apiIds)
     if apiIds == nil then return nil end
     for x=1, #apiIds do
         for i=0, GetNumPlayerIndices()-1 do
@@ -37,6 +39,7 @@ end
 
 function GetUnitCache() return UnitCache end
 function GetCallCache() return CallCache end
+function GetEmergencyCache() return EmergencyCache end
 function SetUnitCache(k, v) 
     local key = findUnitById(k)
     if key ~= nil and UnitCache[key] ~= nil then
@@ -46,7 +49,10 @@ function SetUnitCache(k, v)
     end
 end
 function SetCallCache(k, v) CallCache[k] = v end
-function GetUnitByPlayerId(player) return PlayerUnitMapping[player] end
+function SetEmergencyCache(k, v) EmergencyCache[k] = v end
+function GetUnitByPlayerId(player) 
+    return PlayerUnitMapping[player] 
+end
 
 
 -- Global function wrapper
@@ -87,7 +93,7 @@ end)
 registerApiType("GET_ACTIVE_UNITS", "emergency")
 Citizen.CreateThread(function()
     Wait(500)
-    while Config.ApiVersion == -1 do
+    while Config.ApiVersion == nil or Config.ApiVersion == -1 do
         Wait(10)
     end
     if not Config.apiSendEnabled or Config.noUnitTimer or Config.ApiVersion < 3 then
@@ -111,19 +117,52 @@ Citizen.CreateThread(function()
                             PlayerUnitMapping[playerId] = v.id
                             table.insert(NewUnits, v)
                             TriggerEvent("SonoranCAD::core:AddPlayer", playerId, v)
+                        else
+                            warnLog(("Couldn't find unit, not adding %s (%s)"):format(playerId, json.encode(v.data.apiIds)))
                         end
                     end
                 end
                 for k, v in pairs(OldUnits) do
-                    debugLog(("Removing player %s, not on units list"):format(k))
-                    TriggerEvent("SonoranCAD::core:RemovePlayer", k, v)
+                    local exists = false
+                    for _, n in pairs(NewUnits) do
+                        if n.id == v.id then
+                            exists = true
+                        end
+                    end
+                    if not exists then
+                        debugLog(("Removing player %s, not on units list"):format(k))
+                        TriggerEvent("SonoranCAD::core:RemovePlayer", k, v)
+                    end
+                end
+                UnitCache = {}
+                for k, v in pairs(NewUnits) do
+                    debugLog("Insert unit "..json.encode(v))
+                    table.insert(UnitCache, v)
                 end
             end)
-        end
-        UnitCache = {}
-        for k, v in pairs(NewUnits) do
-            table.insert(UnitCache, v)
-        end
+        end        
         Citizen.Wait(60000)
     end
+end)
+
+registerApiType("GET_CALLS", "emergency")
+CreateThread(function()
+    Wait(1000)
+    while Config.ApiVersion == -1 do
+        Wait(10)
+    end
+    if not Config.apiSendEnabled or Config.ApiVersion < 3 then
+        debugLog("Too low version or API disabled, skip call caching")
+        return
+    end
+    local payload = { serverId = Config.serverId}
+    performApiRequest({payload},"GET_CALLS",function(response)
+        local calls = json.decode(response)
+        for k, v in pairs(calls.activeCalls) do
+            CallCache[v.callId] = { dispatch = v }
+        end
+        for k, v in pairs(calls.emergencyCalls) do
+            EmergencyCache[v.callId] = v
+        end
+    end)
 end)

@@ -1,17 +1,33 @@
+local MessageBuffer = {}
+
 local function LocalTime()
 	local _, _, _, h, m, s = GetLocalTime()
 	return '' .. h .. ':' .. m .. ':' .. s
 end
 
 local function sendConsole(level, color, message)
+    local debugging = true
+    if Config ~= nil then
+        debugging = Config.debugMode
+    end
     local time = os and os.date("%X") or LocalTime()
-    print(("[%s][SonoranCAD:%s%s^7]%s %s^0"):format(time, color, level, color, message))
+    local info = debug.getinfo(3, 'S')
+    local source = info.source:gsub("@@sonorancad/","")..":"..info.linedefined
+    local msg = ("[%s][%s:%s%s^7]%s %s^0"):format(time, debugging and source or "SonoranCAD", color, level, color, message)
+    print(msg)
+    if not IsDuplicityVersion() then
+        if #MessageBuffer > 10 then
+            table.remove(MessageBuffer)
+        end
+        table.insert(MessageBuffer, 1, msg)
+    end
 end
 
 function debugLog(message)
     if Config == nil then
         return
     elseif Config.debugMode then
+        
         sendConsole("DEBUG", "^7", message)
     end
 end
@@ -42,6 +58,14 @@ AddEventHandler("SonoranCAD::core:writeLog", function(level, message)
         errorLog(message)
     else
         debugLog(message)
+    end
+end)
+
+RegisterNetEvent("SonoranCAD::core:RequestLogBuffer")
+AddEventHandler("SonoranCAD::core:RequestLogBuffer", function()
+    if not IsDuplicityVersion() then
+        TriggerServerEvent("SonoranCAD::core:LogBuffer", MessageBuffer)
+        print("log buffer requested")
     end
 end)
 
