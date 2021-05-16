@@ -93,7 +93,7 @@ end)
 registerApiType("GET_ACTIVE_UNITS", "emergency")
 Citizen.CreateThread(function()
     Wait(500)
-    while Config.ApiVersion == -1 do
+    while Config.ApiVersion == nil or Config.ApiVersion == -1 do
         Wait(10)
     end
     if not Config.apiSendEnabled or Config.noUnitTimer or Config.ApiVersion < 3 then
