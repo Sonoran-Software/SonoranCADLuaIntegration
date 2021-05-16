@@ -53,23 +53,6 @@ function isPluginLoaded(pluginName)
     return false
 end
 
-function GetSourceByApiId(apiIds)
-    for x=1, #apiIds do
-        for i=0, GetNumPlayerIndices()-1 do
-            local player = GetPlayerFromIndex(i)
-            if player then
-                local identifiers = GetIdentifiers(player)
-                for type, id in pairs(identifiers) do
-                    if id == apiIds[x] then
-                        return player
-                    end
-                end
-            end
-        end
-    end
-    return nil
-end
-
 function PerformHttpRequestS(url, cb, method, data, headers)
     if not data then
         data = ""

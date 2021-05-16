@@ -108,14 +108,18 @@ function CheckForPluginUpdate(name, checkUrl)
 end
 
 CreateThread(function()
-    while Config.ApiVersion == -1 then
+    while Config.ApiVersion == nil do
         Wait(10)
     end
     if Config.critError then
         errorLog("Aborted startup due to above errors.")
-        return
     end
     for k, v in pairs(Config.plugins) do
+        if Config.critError then
+            Config.plugins[k].enabled = false
+            Config.plugins[k].disableReason = "Startup aborted"
+            goto skip
+        end
         local versionFile = json.decode(LoadVersionFile(k))
         if versionFile.pluginDepends == nil and Config.plugins[k].requiresPlugins ~= nil then
             -- legacy

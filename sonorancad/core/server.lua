@@ -21,9 +21,7 @@ function getApiUrl()
 end
 
 CreateThread(function()
-    Wait(1)
     Config.apiUrl = getApiUrl()
-    Config.ApiVersion = -1
     performApiRequest({}, "GET_VERSION", function(result)
         ApiVersion = tonumber(string.sub(result, 1, 1))
         Config.ApiVersion = ApiVersion

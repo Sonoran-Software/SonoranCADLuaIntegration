@@ -39,13 +39,15 @@ local PushEventHandler = {
         end
         debugLog("UNIT_LOGOUT: "..json.encode(body.data))
         TriggerEvent('SonoranCAD::pushevents:UnitLogout', body.data.identId)
+        SetUnitCache(GetUnitById(body.data.identId), nil)
     end,
     EVENT_DISPATCH_NEW = function(body)
-        SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_NEW", dispatch = body.data })
+        SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_NEW", dispatch = body.data.dispatch ~= nil and body.data.dispatch or body.data })
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', GetCallCache()[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_EDIT = function(body)
-        SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_EDIT", dispatch = body.data })
+        TriggerEvent("SonoranCAD::pushevents:DispatchEdit", GetCallCache()[body.data.dispatch.callId], body.data)
+        SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_EDIT", dispatch = body.data.dispatch ~= nil and body.data.dispatch or body.data })
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', GetCallCache()[body.data.dispatch.callId])
     end,
     EVENT_DISPATCH_CLOSE = function(body)
@@ -61,7 +63,7 @@ local PushEventHandler = {
     EVENT_DISPATCH_NOTE = function(body)
         TriggerEvent('SonoranCAD::pushevents:DispatchNote', body.data)
     end,
-    EVENT_UNIT_ATTACH = function(body)
+    EVENT_DISPATCH_UNIT_ATTACH = function(body)
         -- fetch the call and unit data
         local call = GetCallCache()[body.data.callId]
         if body.data.ident ~= nil then
@@ -94,21 +96,24 @@ local PushEventHandler = {
             debugLog("No idents in attachment?!")
         end
     end,
-    EVENT_UNIT_DETACH = function(body)
+    EVENT_DISPATCH_UNIT_DETACH = function(body)
         local call = GetCallCache()[body.data.callId]
         if body.data.ident ~= nil then
             local unit = GetUnitCache()[body.data.ident]
             if call and unit then
                 TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
                 local idx = nil
-                for i, u in pairs(call.units) do
-                    if u.id == unit.id then
-                        idx = i
+                debugLog("detach call "..json.encode(call))
+                if call.units ~= nil then
+                    for i, u in pairs(call.units) do
+                        if u.id == unit.id then
+                            idx = i
+                        end
                     end
-                end
-                if idx ~= nil then
-                    table.remove(call.units, idx)
-                    SetCallCache(body.data.callId, {dispatch_type = "CALL_EDIT", dispatch = call })
+                    if idx ~= nil then
+                        table.remove(call.units, idx)
+                        SetCallCache(body.data.callId, {dispatch_type = "CALL_EDIT", dispatch = call })
+                    end
                 end
             else
                 debugLog("Detach failure, unknown call or unit")
@@ -120,10 +125,10 @@ local PushEventHandler = {
     end,
     EVENT_911 = function(body)
         SetEmergencyCache(body.data.call.callId, body.data.call)
-        TriggerEvent('SonoranCAD::pushevents:IncomingCadCall', body.data.call, body.data.apiIds, body.data.metaData)
+        TriggerEvent('SonoranCAD::pushevents:IncomingCadCall', body.data.call, body.data.call.metaData, body.data.apiIds)
     end,
     EVENT_REMOVE_911 = function(body)
-        SetEmergencyCache(body.data.call.callId, nil)
+        SetEmergencyCache(body.data.callId, nil)
         TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callId)
     end
 }

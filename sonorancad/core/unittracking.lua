@@ -50,7 +50,9 @@ function SetUnitCache(k, v)
 end
 function SetCallCache(k, v) CallCache[k] = v end
 function SetEmergencyCache(k, v) EmergencyCache[k] = v end
-function GetUnitByPlayerId(player) return PlayerUnitMapping[player] end
+function GetUnitByPlayerId(player) 
+    return PlayerUnitMapping[player] 
+end
 
 
 -- Global function wrapper
