@@ -118,7 +118,7 @@ Citizen.CreateThread(function()
                             table.insert(NewUnits, v)
                             TriggerEvent("SonoranCAD::core:AddPlayer", playerId, v)
                         else
-                            warnLog(("Couldn't find unit, not adding %s (%s)"):format(playerId, json.encode(v.data.apiIds)))
+                            debugLog(("Couldn't find unit, not adding %s (%s)"):format(playerId, json.encode(v.data.apiIds)))
                         end
                     end
                 end
