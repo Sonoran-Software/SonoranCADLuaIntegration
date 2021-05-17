@@ -2,6 +2,7 @@
   "resource" : "2.5.8",
   "testedFxServerVersion": "3922",
   "options": {
-    "configVersionNotFatal": true
+    "configVersionNotFatal": true,
+    "pushEventsDeprecation": true
   }
 }
