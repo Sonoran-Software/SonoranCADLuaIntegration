@@ -9,7 +9,8 @@ Config = {
     debugMode = nil,
     updateBranch = nil,
     latestVersion = "",
-    plugins = {}
+    plugins = {},
+    options = {}
 }
 
 Config.RegisterPluginConfig = function(pluginName, configs)

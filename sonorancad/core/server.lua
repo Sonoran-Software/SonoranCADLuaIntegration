@@ -38,6 +38,7 @@ CreateThread(function()
     end
     local versionfile = json.decode(LoadResourceFile(GetCurrentResourceName(), "/version.json"))
     local fxversion = versionfile.testedFxServerVersion
+    Config.options = versionfile.options
     local s = GetConvar("version", "")
     local v = s:find("v1.0.0.")
     local i = string.gsub(s:sub(v),"v1.0.0.",""):sub(1,4)
@@ -46,6 +47,7 @@ CreateThread(function()
             warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
         end
     end
+    debugLog("Configured options: "..json.encode(Config.Options))
 end)
 
 -- Toggles API sender.
