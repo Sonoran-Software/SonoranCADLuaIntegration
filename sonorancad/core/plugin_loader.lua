@@ -96,7 +96,9 @@ function CheckForPluginUpdate(name, checkUrl)
                 if remote.configVersion ~= nil then
                     local myversion = plugin.configVersion ~= nil and plugin.configVersion or "0.0"
                     if remote.configVersion ~= plugin.configVersion then
-                        infoLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration."):format(name, name))
+                        errorLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(name, name))
+                        Config.plugins[name].enabled = false
+                        Config.plugins[name].disableReason = "outdated config file"
                     end
                 end
             end
@@ -120,7 +122,9 @@ CreateThread(function()
             Config.plugins[k].disableReason = "Startup aborted"
             goto skip
         end
+        
         local versionFile = json.decode(LoadVersionFile(k))
+        
         if versionFile.pluginDepends == nil and Config.plugins[k].requiresPlugins ~= nil then
             -- legacy
             debugLog(("Plugin %s using legacy dependency detection. This should be corrected in a future version."):format(k))
@@ -175,6 +179,11 @@ CreateThread(function()
             Config.plugins[k].check_url = version.check_url
             Config.plugins[k].download_url = version.download_url
             Config.plugins[k].configVersion = version.configVersion or "1.0"
+            if versionFile.configVersion ~= Config.plugins[k].configVersion then
+                errorLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(name, name))
+                Config.plugins[name].enabled = false
+                Config.plugins[name].disableReason = "outdated config file"
+            end
             CheckForPluginUpdate(k)
             if version.minCoreVersion ~= nil then
                 local coreVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
