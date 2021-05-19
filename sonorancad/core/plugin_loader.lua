@@ -65,7 +65,7 @@ local function downloadPlugin(name, url)
     end, "GET")
 end
 
-function CheckForPluginUpdate(name, checkUrl)
+function CheckForPluginUpdate(name, forceUpdate)
     local plugin = Config.plugins[name]
     if plugin == nil then
         errorLog(("Plugin %s not found."):format(name))
@@ -76,6 +76,9 @@ function CheckForPluginUpdate(name, checkUrl)
     end
     if Config.enableCanary then
         plugin.check_url = plugin.check_url:gsub("main", "canary"):gsub("master", "canary")
+    end
+    if forceUpdate then
+        infoLog(("Checking %s for updates..."):format(name))
     end
     PerformHttpRequestS(plugin.check_url, function(code, data, headers)
         if code == 200 then
@@ -91,7 +94,7 @@ function CheckForPluginUpdate(name, checkUrl)
                 if localVersion < latestVersion then
                     warnLog(("Plugin Updater: %s has an available update! %s -> %s"):format(name, plugin.version, remote.version))
                     if remote.download_url ~= nil and remote.download_url ~= "" then
-                        if Config.allowAutoUpdate then
+                        if Config.allowAutoUpdate or forceUpdate then
                             infoLog(("Attempting to automatically update %s..."):format(name))
                             downloadPlugin(name, remote.download_url)
                             PluginsWereUpdated = true
@@ -100,6 +103,10 @@ function CheckForPluginUpdate(name, checkUrl)
                         end
                     else
                         warnLog(("Plugin %s does not have download_url set. Is it configured correctly?"):format(name))
+                    end
+                else
+                    if forceUpdate then
+                        infoLog(("No updates for %s (%s >= %s)"):format(name, plugin.version, remote.version))
                     end
                 end
                 if remote.configVersion ~= nil and plugin.configVersion ~= nil then

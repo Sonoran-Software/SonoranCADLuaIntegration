@@ -150,7 +150,7 @@ SonoranCAD Help
     elseif args[1] == "pluginupdate" then
         infoLog("Scanning for plugin updates...")
         for k, v in pairs(Config.plugins) do
-            CheckForPluginUpdate(k)
+            CheckForPluginUpdate(k, true)
         end
     elseif args[1] == "viewcaches" then
         local units = GetUnitCache()
