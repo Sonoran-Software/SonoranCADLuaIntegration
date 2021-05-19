@@ -20,6 +20,9 @@ end
 local function doUpdate(latest)
     -- best way to do this...
     local releaseUrl = ("https://github.com/Sonoran-Software/SonoranCADLuaIntegration/releases/download/v%s/sonorancad-%s.zip"):format(latest, latest)
+    if Config.enableCanary then
+        releaseUrl = ("https://github.com/Sonoran-Software/SonoranCADLuaIntegration/releases/download/v%s-dev/sonorancad-%s-dev.zip"):format(latest, latest)
+    end
     PerformHttpRequest(releaseUrl, function(code, data, headers)
         if code == 200 then
             local savePath = GetResourcePath(GetCurrentResourceName()).."/update.zip"
@@ -29,7 +32,9 @@ local function doUpdate(latest)
             infoLog("Saved file...")
             doUnzip(savePath)
         else
-            errorLog(("Failed to download from %s: %s %s"):format(realUrl, code, data))
+            if not Config.enableCanary then
+                errorLog(("Failed to download from %s: %s %s"):format(realUrl, code, data))
+            end
         end
     end, "GET")
     
@@ -51,6 +56,9 @@ function RunAutoUpdater(manualRun)
         versionFile = "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/{branch}/sonorancad/version.json"
     end
     versionFile = string.gsub(versionFile, "{branch}", Config.updateBranch)
+    if Config.enableCanary then
+        versionFile = string.gsub(versionFile, "{branch}", "canary")
+    end
     local myVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
 
     PerformHttpRequestS(versionFile, function(code, data, headers)
