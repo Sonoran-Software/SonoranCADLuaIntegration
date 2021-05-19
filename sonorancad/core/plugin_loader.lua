@@ -39,7 +39,11 @@ local function doRestart()
 end
 
 local function downloadPlugin(name, url)
-    local releaseUrl = ("%s/archive/latest.zip"):format(url)
+    local zipname = "latest"
+    if Config.enableCanary then
+        zipname = "canary"
+    end
+    local releaseUrl = ("%s/archive/%s.zip"):format(url, zipname)
     PerformHttpRequest(releaseUrl, function(code, data, headers)
         if code == 200 then
             exports[GetCurrentResourceName()]:CreateFolderIfNotExisting(GetResourcePath(GetCurrentResourceName()).."/pluginupdates/")
@@ -54,7 +58,9 @@ local function downloadPlugin(name, url)
             infoLog(("Plugin %s successfully downloaded."):format(name))
             PluginsWereUpdated = true
         else
-            errorLog(("Failed to download from %s: %s %s"):format(realUrl, code, data))
+            if not Config.enableCanary then
+                errorLog(("Failed to download from %s: %s %s"):format(realUrl, code, data))
+            end
         end
     end, "GET")
 end
@@ -67,6 +73,9 @@ function CheckForPluginUpdate(name, checkUrl)
     elseif plugin.check_url == nil or plugin.check_url == "" then
         warnLog(("Plugin %s does not have check_url set. Is it configured correctly?"):format(name))
         return
+    end
+    if Config.enableCanary then
+        plugin.check_url = plugin.check_url:gsub("main", "canary"):gsub("master", "canary")
     end
     PerformHttpRequestS(plugin.check_url, function(code, data, headers)
         if code == 200 then
@@ -103,7 +112,9 @@ function CheckForPluginUpdate(name, checkUrl)
             end
             
         else
-            errorLog(("Failed to check plugin updates for %s: %s %s"):format(name, code, data))
+            if not Config.enableCanary then
+                errorLog(("Failed to check plugin updates for %s: %s %s"):format(name, code, data))
+            end
         end
     end, "GET")
 end
