@@ -5,8 +5,6 @@ ApiUrls = {
     development = "https://cadapi.dev.sonoransoftware.com/"
 }
 
-ApiVersion = nil
-
 function getApiUrl()
     if Config.mode == nil then
         return ApiUrls.production
@@ -22,14 +20,18 @@ end
 
 CreateThread(function()
     Config.apiUrl = getApiUrl()
-    performApiRequest({}, "GET_VERSION", function(result)
-        ApiVersion = tonumber(string.sub(result, 1, 1))
-        Config.ApiVersion = ApiVersion
-        if ApiVersion < 2 then
+    performApiRequest({}, "GET_VERSION", function(result, ok)
+        if not ok then
+            errorLog("Failed to get version information. Is the API down? Please restart sonorancad.")
+            Config.critError = true
+            return
+        end
+        Config.apiVersion = tonumber(string.sub(result, 1, 1))
+        if Config.apiVersion < 2 then
             errorLog("ERROR: Your community cannot use any plugins requiring the API. Please purchase a subscription of Standard or higher.")
             Config.critError = true
         end
-        debugLog(("Set version %s from response %s"):format(ApiVersion, result))
+        debugLog(("Set version %s from response %s"):format(Config.apiVersion, result))
         infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
     end)
     if Config.primaryIdentifier == "steam" and GetConvar("steam_webapiKey", "none") == "none" then
@@ -38,7 +40,6 @@ CreateThread(function()
     end
     local versionfile = json.decode(LoadResourceFile(GetCurrentResourceName(), "/version.json"))
     local fxversion = versionfile.testedFxServerVersion
-    Config.options = versionfile.options
     local s = GetConvar("version", "")
     local v = s:find("v1.0.0.")
     local i = string.gsub(s:sub(v),"v1.0.0.",""):sub(1,4)
@@ -47,7 +48,6 @@ CreateThread(function()
             warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
         end
     end
-    debugLog("Configured options: "..json.encode(Config.Options))
 end)
 
 -- Toggles API sender.

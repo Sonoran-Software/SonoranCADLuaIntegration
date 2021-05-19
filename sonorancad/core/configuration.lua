@@ -9,8 +9,8 @@ Config = {
     debugMode = nil,
     updateBranch = nil,
     latestVersion = "",
+    apiVersion = -1,
     plugins = {},
-    options = {}
 }
 
 Config.RegisterPluginConfig = function(pluginName, configs)
@@ -44,7 +44,7 @@ Config.GetPluginConfig = function(pluginName)
 end
 
 Config.LoadPlugin = function(pluginName, cb)
-    while ApiVersion == nil do
+    while Config.apiVersion == -1 do
         Wait(1)
     end
     if Config.plugins[pluginName] ~= nil then
@@ -123,9 +123,8 @@ CreateThread(function()
     local detectedMapPort = GetConvar("socket_port", "30121")
     local isMapRunning = (isPluginLoaded("livemap") and GetResourceState("sonoran_livemap") == "started")
     local serverId = Config.serverId
-    local checkPusheventsDeprecated = Config.options["pushEventsDeprecation"]
 
-    if isMapRunning or checkPusheventsDeprecated then
+    if isMapRunning then
         performApiRequest({}, "GET_SERVERS", function(response)
             local info = json.decode(response)
             for k, v in pairs(info.servers) do
@@ -144,10 +143,6 @@ CreateThread(function()
             if ServerInfo.listenerPort == "3232" and checkPusheventsDeprecated then
                 warnLog("CONFIGURATION PROBLEM: Please update the listener port configuration to map your game server port. Pushevents plugin is deprecated.")
             end
-            if checkPusheventsDeprecated and isPluginLoaded("pushevents") then
-                warnLog("Push events plugin is deprecated. Please remove it ASAP and use your game port in the configuration settings.")
-            end
-
         end)
     end
 

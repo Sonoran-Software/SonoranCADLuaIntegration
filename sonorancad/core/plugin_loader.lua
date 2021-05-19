@@ -93,16 +93,11 @@ function CheckForPluginUpdate(name, checkUrl)
                         warnLog(("Plugin %s does not have download_url set. Is it configured correctly?"):format(name))
                     end
                 end
-                if remote.configVersion ~= nil then
-                    local myversion = plugin.configVersion ~= nil and plugin.configVersion or "0.0"
+                if remote.configVersion ~= nil and plugin.configVersion ~= nil then
                     if remote.configVersion ~= plugin.configVersion then
-                        if Config.options["configVersionNotFatal"] then
-                            debugLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(name, name))
-                        else
-                            errorLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(name, name))
-                            Config.plugins[name].enabled = false
-                            Config.plugins[name].disableReason = "outdated config file"
-                        end
+                        errorLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(name, name))
+                        Config.plugins[name].enabled = false
+                        Config.plugins[name].disableReason = "outdated config file"
                     end
                 end
             end
@@ -114,7 +109,7 @@ function CheckForPluginUpdate(name, checkUrl)
 end
 
 CreateThread(function()
-    while Config.ApiVersion == nil do
+    while Config.apiVersion == -1 do
         Wait(10)
     end
     if Config.critError then
@@ -182,15 +177,10 @@ CreateThread(function()
             Config.plugins[k].version = version.version
             Config.plugins[k].check_url = version.check_url
             Config.plugins[k].download_url = version.download_url
-            Config.plugins[k].configVersion = Config.plugins[k].configVersion ~= nil and Config.plugins[k].configVersion or "1.0"
-            if version.configVersion ~= nil and Config.plugins[k].configVersion ~= version.configVersion then
-                if Config.options["configVersionNotFatal"] then
-                    debugLog(("Plugin Updater: %s has a new configuration version (%s ~= %s). You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(k, Config.plugins[k].configVersion, version.configVersion, k))
-                else
-                    errorLog(("Plugin Updater: %s has a new configuration version (%s ~= %s). You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(k, Config.plugins[k].configVersion, version.configVersion, k))
-                    Config.plugins[k].enabled = false
-                    Config.plugins[k].disableReason = "outdated config file"
-                end
+            if version.configVersion ~= nil and Config.plugins[k].configVersion ~= nil and Config.plugins[k].configVersion ~= version.configVersion then
+                errorLog(("Plugin Updater: %s has a new configuration version (%s ~= %s). You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(k, Config.plugins[k].configVersion, version.configVersion, k))
+                Config.plugins[k].enabled = false
+                Config.plugins[k].disableReason = "outdated config file"
             end
             CheckForPluginUpdate(k)
             if version.minCoreVersion ~= nil then

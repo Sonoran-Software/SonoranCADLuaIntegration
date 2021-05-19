@@ -78,6 +78,8 @@ AddEventHandler("SonoranCAD::pushevents:UnitLogin", function(unit)
     if playerId then
         PlayerUnitMapping[playerId] = unit.id
         TriggerEvent("SonoranCAD::core:AddPlayer", playerId, unit)
+    else
+        debugLog(("Unknown unit %s and player %s"):format(json.encode(unit), playerId))
     end
 end)
 
@@ -93,10 +95,10 @@ end)
 registerApiType("GET_ACTIVE_UNITS", "emergency")
 Citizen.CreateThread(function()
     Wait(500)
-    while Config.ApiVersion == nil or Config.ApiVersion == -1 do
+    while Config.apiVersion == -1 do
         Wait(10)
     end
-    if not Config.apiSendEnabled or Config.noUnitTimer or Config.ApiVersion < 3 then
+    if not Config.apiSendEnabled or Config.noUnitTimer or Config.apiVersion < 3 then
         debugLog("Disabling active units routine")
         return
     end
@@ -148,10 +150,10 @@ end)
 registerApiType("GET_CALLS", "emergency")
 CreateThread(function()
     Wait(1000)
-    while Config.ApiVersion == -1 do
+    while Config.apiVersion == -1 do
         Wait(10)
     end
-    if not Config.apiSendEnabled or Config.ApiVersion < 3 then
+    if not Config.apiSendEnabled or Config.apiVersion < 3 then
         debugLog("Too low version or API disabled, skip call caching")
         return
     end
