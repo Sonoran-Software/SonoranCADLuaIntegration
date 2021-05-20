@@ -21,6 +21,10 @@ $(function () {
 		else if (event.data.type == "seturl") {
 			document.getElementById("mdtFrame").src = event.data.url;
 		}
+		else if (event.data.type == "regbar") {
+			isApiBeingChecked = true;
+			$("#check-api-data").show();
+		}
 	});
 
 	document.onkeyup = function (data) {
@@ -88,7 +92,6 @@ function receiveMessage(event) {
 	if (isApiBeingChecked && event.origin == frameorigin) {
 		$.post('https://tablet/SetAPIData', JSON.stringify(event.data));
 		$("#check-api-data").hide();
-		$("body").hide();
 	}
 }
 
