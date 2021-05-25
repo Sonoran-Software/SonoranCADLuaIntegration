@@ -1,4 +1,5 @@
 guiEnabled = false
+isRegistered = false
 Citizen.CreateThread(function()
   while true do
       if guiEnabled then
@@ -55,10 +56,18 @@ function Gui(toggle)
       TaskPlayAnim(GetPlayerPed(-1), "amb@code_human_in_bus_passenger_idles@female@tablet@base", "exit", 3.0, 3.0, -1, 49, 0, 0, 0, 0)
   end
 
-  SendNUIMessage({
+  if not isRegistered then
+    SendNUIMessage({
       type = "enableui",
-      enable = toggle
+      enable = toggle,
+      apiCheck = true
   })
+else
+  SendNUIMessage({
+    type = "enableui",
+    enable = toggle
+})
+end
 end
 
 AddEventHandler('onClientResourceStart', function(resourceName) --When resource starts, stop the GUI showing. 
@@ -73,15 +82,14 @@ end)
 
 RegisterNetEvent("sonoran:tablet:apiIdNotFound")
 AddEventHandler('sonoran:tablet:apiIdNotFound', function()
-
-	SetNuiFocus(true, true)
-
 	SendNUIMessage({
-      type = "enableui",
-      enable = true,
-	  apiCheck = true
+      type = "regbar"
 	})
+end)
 
+RegisterNetEvent("sonoran:tablet:apiIdFound")
+AddEventHandler("sonoran:tablet:apiIdFound", function()
+  isRegistered = true
 end)
 
 RegisterNUICallback('SetAPIData', function(data,cb)
