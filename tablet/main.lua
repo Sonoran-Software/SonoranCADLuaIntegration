@@ -27,6 +27,8 @@ RegisterCommand("showcad", function(source, args, rawCommand)
 	Gui(not guiEnabled)
 end, false)
 
+RegisterKeyMapping('showcad', 'CAD Tablet', 'keyboard', '')
+
 RegisterCommand("checkapiid", function(source,args,rawCommand)
 	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 end, false)
