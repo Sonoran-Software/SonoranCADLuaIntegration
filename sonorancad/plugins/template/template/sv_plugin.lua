@@ -8,10 +8,10 @@
     Put all server-side logic in this file.
 ]]
 
-local pluginConfig = Config.GetPluginConfig("yourpluginname")
+CreateThread(function() Config.LoadPlugin("pluginname", function(pluginConfig)
 
-if pluginConfig.enabled then
+    if pluginConfig.enabled then
 
-    -- put all your code here
+        -- logic here
 
-end
+end) end)
