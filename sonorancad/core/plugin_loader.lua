@@ -71,7 +71,7 @@ function CheckForPluginUpdate(name, forceUpdate)
         errorLog(("Plugin %s not found."):format(name))
         return
     elseif plugin.check_url == nil or plugin.check_url == "" then
-        warnLog(("Plugin %s does not have check_url set. Is it configured correctly?"):format(name))
+        debugLog(("Plugin %s does not have check_url set. Is it configured correctly?"):format(name))
         return
     end
     if Config.enableCanary then
