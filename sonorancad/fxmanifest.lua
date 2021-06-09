@@ -18,6 +18,7 @@ server_scripts {
     ,'core/httpd.lua'
     ,'core/unittracking.lua'
     ,'core/updater.lua'
+    ,'core/apicheck.lua'
     ,'plugins/**/config_*.lua'
     ,'core/plugin_loader.lua'
     ,'plugins/**/sv_*.lua'
