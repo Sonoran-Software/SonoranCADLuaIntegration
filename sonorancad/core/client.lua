@@ -12,15 +12,46 @@ Config.RegisterPluginConfig = function(pluginName, configs)
 end
 Config.GetPluginConfig = function(pluginName) 
     if Config.plugins[pluginName] ~= nil then
-        if Config.plugins[pluginName].enabled == nil then
+        if Config.critError then
+            Config.plugins[pluginName].enabled = false
+            Config.plugins[pluginName].disableReason = "startup aborted"
+        elseif Config.plugins[pluginName].enabled == nil then
             Config.plugins[pluginName].enabled = true
         end
         return Config.plugins[pluginName]
     else
         if pluginName == "yourpluginname" then
-            return { enabled = false }
+            return { enabled = false, disableReason = "Template plugin" }
         end
-        return { enabled = false }
+        if not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/config_%s.lua"):format(pluginName, pluginName, pluginName)) and not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/config_%s.lua"):format(pluginName, pluginName))  then
+            warnLog(("Plugin %s is missing critical configuration. Please check our plugin install guide at https://info.sonorancad.com/integration-plugins/integration-plugins/plugin-installation for steps to properly install."):format(pluginName))
+        end
+        Config.plugins[pluginName] = { enabled = false, disableReason = "Missing configuration file" }
+        return { enabled = false, disableReason = "Missing configuration file" }
+    end
+end
+
+Config.LoadPlugin = function(pluginName, cb)
+    while Config.apiVersion == -1 do
+        Wait(1)
+    end
+    if Config.plugins[pluginName] ~= nil then
+        if Config.critError then
+            Config.plugins[pluginName].enabled = false
+            Config.plugins[pluginName].disableReason = "startup aborted"
+        elseif Config.plugins[pluginName].enabled == nil then
+            Config.plugins[pluginName].enabled = true
+        end
+        return cb(Config.plugins[pluginName])
+    else
+        if pluginName == "yourpluginname" then
+            return cb({ enabled = false, disableReason = "Template plugin" })
+        end
+        if not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/config_%s.lua"):format(pluginName, pluginName, pluginName)) and not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/config_%s.lua"):format(pluginName, pluginName))  then
+            warnLog(("Plugin %s is missing critical configuration. Please check our plugin install guide at https://info.sonorancad.com/integration-plugins/integration-plugins/plugin-installation for steps to properly install."):format(pluginName))
+        end
+        Config.plugins[pluginName] = { enabled = false, disableReason = "Missing configuration file" }
+        return cb({ enabled = false, disableReason = "Missing configuration file" })
     end
 end
 
@@ -68,3 +99,6 @@ RegisterNetEvent("SonoranCAD::core:debugModeToggle")
 AddEventHandler("SonoranCAD::core:debugModeToggle", function(toggle)
     Config.debugMode = toggle
 end)
+
+RegisterNetEvent("SonoranCAD::core:AddPlayer")
+RegisterNetEvent("SonoranCAD::core:RemovePlayer")

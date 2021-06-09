@@ -8,10 +8,11 @@
     Put all client-side logic in this file.
 ]]
 
-CreateThread(function() Config.LoadPlugin("pluginname", function(pluginConfig)
+CreateThread(function() 
+    Config.LoadPlugin("yourpluginname", function(pluginConfig)
 
-    if pluginConfig.enabled then
-
-        -- logic here
+        if pluginConfig.enabled then
+            -- logic here
+        end
 
 end) end)
