@@ -51,7 +51,9 @@ RegisterCommand("apiid", function(source, args, rawCommand)
     end
 end)
 
-if pluginConfig.forceSetApiId then
+if Config.forceSetApiId == nil then Config.forceSetApiId = false end
+
+if Config.forceSetApiId then
     debugLog("forceSetApiId enabled")
     RegisterNetEvent("sonoran:tablet:forceCheckApiId")
     AddEventHandler("sonoran:tablet:forceCheckApiId", function()
