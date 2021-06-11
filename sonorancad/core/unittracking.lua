@@ -12,8 +12,18 @@ local function findUnitById(identIds)
             if identIds == v.id then
                 return k
             end
-        elseif has_value(identIds, v.id) then
-            return k
+        else
+            local ids = nil
+            if v.data ~= nil then
+                ids = v.data.apiIds
+            else
+                ids = v.apiIds
+            end
+            for _, id in pairs(ids) do
+                if has_value(identIds, id) then
+                    return k
+                end
+            end
         end
     end
     return nil
@@ -50,13 +60,23 @@ function SetUnitCache(k, v)
 end
 function SetCallCache(k, v) CallCache[k] = v end
 function SetEmergencyCache(k, v) EmergencyCache[k] = v end
-function GetUnitByPlayerId(player) 
-    return PlayerUnitMapping[player] 
-end
 
 
 -- Global function wrapper
 function GetUnitById(ids) return findUnitById(ids) end
+
+function GetUnitByPlayerId(player)
+    local identifiers = GetIdentifiers(player)
+    local ids = {}
+    for k, v in pairs(identifiers) do
+        table.insert(ids, v)
+    end
+    local index = findUnitById(ids)
+    if index then
+        return UnitCache[index].data
+    end
+    return nil
+end
 
 exports('GetUnitByPlayerId', GetUnitByPlayerId)
 exports('GetUnitCache', GetUnitCache)
@@ -78,6 +98,7 @@ AddEventHandler("SonoranCAD::pushevents:UnitLogin", function(unit)
     if playerId then
         PlayerUnitMapping[playerId] = unit.id
         TriggerEvent("SonoranCAD::core:AddPlayer", playerId, unit)
+        TriggerClientEvent("SonoranCAD::core:AddPlayer", playerId, unit)
     else
         debugLog(("Unknown unit %s and player %s"):format(json.encode(unit), playerId))
     end
@@ -85,8 +106,15 @@ end)
 
 AddEventHandler("SonoranCAD::pushevents:UnitLogout", function(id)
     local key = findUnitById(id)
+    debugLog(("unitlogout key %s"):format(key))
     if key then
-        PlayerUnitMapping[key] = nil
+        local playerId = GetSourceByApiId(UnitCache[key].data.apiIds)
+        if playerId then
+            debugLog(("Triggering RemovePlayer on ID %s"):format(playerId))
+            TriggerEvent("SonoranCAD::core:RemovePlayer", playerId, UnitCache[key])
+            TriggerClientEvent("SonoranCAD::core:RemovePlayer", playerId)
+            PlayerUnitMapping[playerId] = nil
+        end
     end
     SetUnitCache(id, nil)
 end)
@@ -134,6 +162,7 @@ Citizen.CreateThread(function()
                     if not exists then
                         debugLog(("Removing player %s, not on units list"):format(k))
                         TriggerEvent("SonoranCAD::core:RemovePlayer", k, v)
+                        TriggerClientEvent("SonoranCAD::core:RemovePlayer", k, v)
                     end
                 end
                 UnitCache = {}

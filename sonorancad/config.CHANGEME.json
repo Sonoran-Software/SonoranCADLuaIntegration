@@ -13,5 +13,6 @@
     "autoUpdateUrl": "https://raw.githubusercontent.com/Sonoran-Software/SonoranCADLuaIntegration/{branch}/sonorancad/version.json",
     "allowUpdateWithPlayers": false,
     "noUnitTimer": false,
-    "enableCanary": false
+    "enableCanary": false,
+    "forceSetApiId": false
 }
