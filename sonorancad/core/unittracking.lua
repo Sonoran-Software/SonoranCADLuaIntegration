@@ -73,7 +73,7 @@ function GetUnitByPlayerId(player)
     end
     local index = findUnitById(ids)
     if index then
-        return UnitCache[index].data
+        return UnitCache[index]
     end
     return nil
 end
