@@ -105,18 +105,20 @@ AddEventHandler("SonoranCAD::pushevents:UnitLogin", function(unit)
 end)
 
 AddEventHandler("SonoranCAD::pushevents:UnitLogout", function(id)
-    local key = findUnitById(id)
-    debugLog(("unitlogout key %s"):format(key))
-    if key then
-        local playerId = GetSourceByApiId(UnitCache[key].data.apiIds)
-        if playerId then
-            debugLog(("Triggering RemovePlayer on ID %s"):format(playerId))
-            TriggerEvent("SonoranCAD::core:RemovePlayer", playerId, UnitCache[key])
-            TriggerClientEvent("SonoranCAD::core:RemovePlayer", playerId)
-            PlayerUnitMapping[playerId] = nil
+    if Config.noUnitTimer then
+        local key = findUnitById(id)
+        debugLog(("unitlogout key %s"):format(key))
+        if key then
+            local playerId = GetSourceByApiId(UnitCache[key].data.apiIds)
+            if playerId then
+                debugLog(("Triggering RemovePlayer on ID %s"):format(playerId))
+                TriggerEvent("SonoranCAD::core:RemovePlayer", playerId, UnitCache[key])
+                TriggerClientEvent("SonoranCAD::core:RemovePlayer", playerId)
+                PlayerUnitMapping[playerId] = nil
+            end
         end
+        SetUnitCache(id, nil)
     end
-    SetUnitCache(id, nil)
 end)
 
 
@@ -161,6 +163,7 @@ Citizen.CreateThread(function()
                     end
                     if not exists then
                         debugLog(("Removing player %s, not on units list"):format(k))
+                        PlayerUnitMapping[k] = nil
                         TriggerEvent("SonoranCAD::core:RemovePlayer", k, v)
                         TriggerClientEvent("SonoranCAD::core:RemovePlayer", k, v)
                     end
