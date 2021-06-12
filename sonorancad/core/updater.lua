@@ -69,8 +69,13 @@ function RunAutoUpdater(manualRun)
                 debugLog(("Raw output for %s: %s"):format(k, data))
             else
                 Config.latestVersion = remote.resource
-                local latestVersion = string.gsub(remote.resource, "%.","")
-                local localVersion = string.gsub(myVersion, "%.", "")
+                _, _, v1, v2, v3 = string.find( myVersion, "(%d+)%.(%d+)%.(%d+)" )
+                _, _, r1, r2, r3 = string.find( remote.resource, "(%d+)%.(%d+)%.(%d+)" )
+                if (string.find(myVersion, "-beta")) then
+                    v3 = v3 - 0.5
+                end
+                local latestVersion = r3+(r2*2)+(r1*4)
+                local localVersion = v3+(v2*2)+(v1*4)
 
                 assert(localVersion ~= nil, "Failed to parse local version. "..tostring(localVersion))
                 assert(latestVersion ~= nil, "Failed to parse remote version. "..tostring(latestVersion))

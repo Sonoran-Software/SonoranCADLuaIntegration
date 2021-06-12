@@ -88,7 +88,7 @@ end
 for k, v in pairs(json.decode(conf)) do
     local cvar = GetConvar("sonoran_"..k, "NONE")
     if cvar ~= "NONE" then
-        debugLog("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+        debugLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
         Config[k] = cvar
     else
         Config[k] = v
