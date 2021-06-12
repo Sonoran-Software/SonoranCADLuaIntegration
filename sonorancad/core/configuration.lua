@@ -86,7 +86,13 @@ if parsedConfig == nil then
     return
 end
 for k, v in pairs(json.decode(conf)) do
-    Config[k] = v
+    local cvar = GetConvar("sonoran_"..k, "NONE")
+    if cvar ~= "NONE" then
+        debugLog("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+        Config[k] = cvar
+    else
+        Config[k] = v
+    end
 end
 
 if Config.updateBranch == nil then
