@@ -3,9 +3,7 @@ games {'gta5'}
 
 author 'Sonoran CAD'
 description 'Sonoran CAD FiveM Integration'
-version '2.6.2'
-
-lua54 'yes'
+version '2.6.3'
 
 server_scripts {
     'core/http.js'
@@ -32,3 +30,9 @@ client_scripts {
     ,'plugins/**/cl_*.lua'
     ,'plugins/**/cl_*.js'
 } 
+
+files {
+    'stream/data/*.ytyp',
+}
+
+data_file 'DLC_ITYP_REQUEST' 'stream/data/*.ytyp'

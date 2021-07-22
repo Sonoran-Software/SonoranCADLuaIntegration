@@ -17,6 +17,8 @@ Config.GetPluginConfig = function(pluginName)
             Config.plugins[pluginName].disableReason = "startup aborted"
         elseif Config.plugins[pluginName].enabled == nil then
             Config.plugins[pluginName].enabled = true
+        elseif Config.plugins[pluginName].enabled == false then
+            Config.plugins[pluginName].disableReason = "Disabled"
         end
         return Config.plugins[pluginName]
     else
@@ -41,6 +43,8 @@ Config.LoadPlugin = function(pluginName, cb)
             Config.plugins[pluginName].disableReason = "startup aborted"
         elseif Config.plugins[pluginName].enabled == nil then
             Config.plugins[pluginName].enabled = true
+        elseif Config.plugins[pluginName].enabled == false then
+            Config.plugins[pluginName].disableReason = "Disabled"
         end
         return cb(Config.plugins[pluginName])
     else

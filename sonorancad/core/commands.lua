@@ -35,8 +35,12 @@ function dumpInfo()
     for k, v in pairs(Config) do
         if (k == "plugins") then goto continue end
         if type(v) == "function" then goto continue end
-        if type(v) == "table" then coreConfig[k] = json.encode(v) end
+        if type(v) == "table" then 
+            table.insert(coreConfig, ("%s = %s"):format(k, json.encode(v)))
+            goto continue
+        end
         if type(v) == "thread" then goto continue end
+        table.insert(coreConfig, ("%s = %s"):format(k, v))
         coreConfig[k] = v
         ::continue::
     end
@@ -53,7 +57,7 @@ Relevant Variables
 %s
 Core Configuration
 %s
-    ]]):format(version, Config.latestVersion, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "), variableList, table.concat(coreConfig, ", "))
+    ]]):format(version, Config.latestVersion, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "), variableList, table.concat(coreConfig, "\n"))
 end
 
 function dumpPlugin(name)
