@@ -130,6 +130,18 @@ local PushEventHandler = {
     EVENT_REMOVE_911 = function(body)
         SetEmergencyCache(body.data.callId, nil)
         TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callId)
+    end,
+    EVENT_STREETSIGN_UPDATED = function(body)
+        TriggerEvent('SonoranCAD::pushevents:SmartSignUpdate', body.data.signData)
+    end,
+    EVENT_RECORD_ADD = function(body)
+        TriggerEvent('SonoranCAD::pushevents:RecordAdded', body.data.record)
+    end,
+    EVENT_RECORD_EDIT = function(body)
+        TriggerEvent('SonoranCAD::pushevents:RecordEdited', body.data.record)
+    end,
+    EVENT_RECORD_REMOVE = function(body)
+        TriggerEvent('SonoranCAD::pushevents:RecordRemoved', body.data.record)
     end
 }
 

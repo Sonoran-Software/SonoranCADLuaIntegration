@@ -1,3 +1,5 @@
 .vscode
 *.zip
 wk_wars2x/config.lua
+sonorancad/stream/*.ydr
+sonorancad/stream/data/*.ytyp
