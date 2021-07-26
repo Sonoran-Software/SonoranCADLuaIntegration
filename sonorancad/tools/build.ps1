@@ -10,7 +10,7 @@ $WorkPath = $PSScriptRoot + "\release\[sonorancad]"
 Write-Host $ResourcePath
 Write-Host $WorkPath
 
-Robocopy.exe $ResourcePath $WorkPath /s /MIR /XD plugins .git .vscode /XF config.json config_*.lua .gitignore config.js
+Robocopy.exe $ResourcePath $WorkPath /s /MIR /XD plugins .git .vscode /XF config.json config_*.lua .gitignore config.js config.lua
 New-Item -ItemType Directory "$WorkPath\sonorancad\plugins" -ErrorAction Ignore
 Robocopy.exe "$ResourcePath\sonorancad\plugins\template" "$WorkPath\sonorancad\plugins\template" /s
 
