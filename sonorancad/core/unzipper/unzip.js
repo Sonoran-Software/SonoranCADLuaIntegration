@@ -30,3 +30,13 @@ exports('CreateFolderIfNotExisting', (path) => {
         fs.mkdirSync(path);
     }
 });
+
+exports('DeleteDirectoryRecursively', (dir) => {
+    fs.rmdir(dir, {recursive:true}, (err) => {
+        if (err) {
+            console.log(err)
+            return false, err;
+        }
+    });
+    return true
+});
