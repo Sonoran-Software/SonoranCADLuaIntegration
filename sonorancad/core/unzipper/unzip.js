@@ -6,23 +6,36 @@ exports('UnzipFile', (file, dest) => {
 });
 
 exports('UnzipFolder', (file, name, dest) => {
-    fs.createReadStream(file).pipe(unzipper.Parse())
-    .on('entry', function(entry) {
-        var fileName = entry.path;
-        const type = entry.type;
-        const fprefix = "sonoran_" + name + "-latest/" + name + "/"
-        const file = fileName.replace(/^.*[/]/, '');
-        if (fileName.indexOf(fprefix) > -1 && type == "File") {
-            if (fs.existsSync(dest + "/" + name)) {
-                entry.pipe(fs.createWriteStream(dest + "/" + name + "/" + file));
-            } else {
-                entry.pipe(fs.createWriteStream(dest + "/" + file));
+    let firstDir = null;
+	fs.createReadStream(file).pipe(unzipper.Parse())
+	.on('entry', function(entry) {
+		var fileName = entry.path;
+		const type = entry.type;
+		if (type == "Directory") {
+			if (firstDir == null) {
+				firstDir = fileName;
+			}
+			else {
+				fileName = fileName.replace(firstDir, "");
+				if (!fs.existsSync(dest + fileName)) {
+					fs.mkdirSync(dest + fileName);
+				}
+			}
+		}
+		if (type == "File") {
+			fileName = fileName.replace(firstDir, "");
+			let finalPath = dest + fileName;
+			if (fileName.includes("stream")) {
+                finalPath = fileName.replace(`${name}/stream/${name}`,`${GetResourcePath(GetCurrentResourceName())}/stream/${name}/`);
+				if (!fs.existsSync(path.dirname(finalPath))) {
+					fs.mkdirSync(path.dirname(finalPath));
+				}
             }
-            
-        } else {
-            entry.autodrain();
-        }
-    })
+			entry.pipe(fs.createWriteStream(finalPath));
+		} else {
+			entry.autodrain();
+		}
+	})
 });
 
 exports('CreateFolderIfNotExisting', (path) => {

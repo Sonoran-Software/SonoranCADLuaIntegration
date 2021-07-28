@@ -62,36 +62,12 @@ local function downloadPlugin(name, url)
             local f = assert(io.open(savePath, 'wb'))
             f:write(data)
             f:close()
-            local unzipPath = GetResourcePath(GetCurrentResourceName()).."/plugins/"..name.."/"
+            local unzipPath = GetResourcePath(GetCurrentResourceName()).."/plugins/"
             debugLog("Unzipping to: "..unzipPath)
-            exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
+             exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
+            -- move contents of actual plugin folder to proper place
             os.remove(savePath)
             infoLog(("Plugin %s successfully downloaded."):format(name))
-            local streamPath = unzipPath.."stream/"
-            debugLog(("Checking %s plugin update for stream folder"):format(name))
-            if exists(streamPath) then
-                debugLog(("Found stream folder in %s, checking if it is nested properly."):format(name))
-                if exists(streamPath..name.."/") then
-                    debugLog(("Plugin %s is nested properly. Moving to sonorancad resource folder."):format(name))
-                    local movePath = GetResourcePath(GetCurrentResourceName()).."/stream/"..name.."/"
-                    if exists(movePath) then
-                        debugLog("Found plugin stream folder removing before move.")
-                        local result = exports[GetCurrentResourceName()]:DeleteDirectoryRecursively(movePath)
-                        if not result then
-                            errorLog("Failed to delete plugin stream folder before moving updated version.")
-                        end
-                    else
-                        debugLog("Did not find plugin stream folder.")
-                    end
-                    Wait(3000) --needs to wait for OS to finish
-                    os.rename(streamPath..name.."/", movePath)
-                    Wait(2000) --needs to wait for OS to finish
-                    exports[GetCurrentResourceName()]:DeleteDirectoryRecursively(streamPath)
-                    infoLog(("%s plugin's updated stream folder moved to sonorancad resource folder. %s plugin update completed successfully!"):format(name,name))
-                else
-                    warnLog(("plugin %s has a stream folder but is not nested properly (plugins/%s/stream/%s/{streamed assets}). Please Contact Sonoran Support."):format(name,name,name))
-                end
-            end
             PluginsWereUpdated = true
         else
             if not Config.enableCanary then
