@@ -18,8 +18,6 @@ local function sendConsole(level, color, message)
     end
     local msg = ("[%s][%s:%s%s^7]%s %s^0"):format(time, debugging and source or "SonoranCAD", color, level, color, message)
     print(msg)
-    local msg = ("[%s][%s:%s%s^7]%s %s^0"):format(time, debugging and source or "SonoranCAD", color, level, color, message)
-    print(msg)
     if not IsDuplicityVersion() then
         if #MessageBuffer > 10 then
             table.remove(MessageBuffer)
