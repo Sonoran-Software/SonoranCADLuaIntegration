@@ -118,6 +118,25 @@ local PushEventHandler = {
             else
                 debugLog("Detach failure, unknown call or unit")
             end
+        elseif body.data.idents ~= nil then
+            for i=1, #body.data.idents do
+                local unit = GetUnitCache()[body.data.idents[i]]
+                if call and unit then
+                    TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
+                    local idx = nil
+                    for i, u in pairs(call.units) do
+                        if u.id == unit.id then
+                            idx = i
+                        end
+                    end
+                    if idx ~= nil then
+                        table.remove(call.units, idx)
+                        SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
+                    end
+                else
+                    debugLog("Detach failure, unknown call or unit")
+                end
+            end
         end
     end,
     GET_LOGS = function(body)
