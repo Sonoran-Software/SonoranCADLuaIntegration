@@ -12,7 +12,12 @@ local function sendConsole(level, color, message)
     end
     local time = os and os.date("%X") or LocalTime()
     local info = debug.getinfo(3, 'S')
-    local source = info.source:gsub("@@sonorancad/","")..":"..info.linedefined
+    local source = "."
+    if info.source:find("@@sonorancad") then
+        source = info.source:gsub("@@sonorancad/","")..":"..info.linedefined
+    end
+    local msg = ("[%s][%s:%s%s^7]%s %s^0"):format(time, debugging and source or "SonoranCAD", color, level, color, message)
+    print(msg)
     local msg = ("[%s][%s:%s%s^7]%s %s^0"):format(time, debugging and source or "SonoranCAD", color, level, color, message)
     print(msg)
     if not IsDuplicityVersion() then
