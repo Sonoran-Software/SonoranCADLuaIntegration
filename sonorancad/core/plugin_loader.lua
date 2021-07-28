@@ -67,10 +67,6 @@ local function downloadPlugin(name, url)
             exports[GetCurrentResourceName()]:UnzipFolder(savePath, unzipPath)
             os.remove(savePath)
             infoLog(("Plugin %s successfully downloaded."):format(name))
-            local result = exports[GetCurrentResourceName()]:DeleteDirectoryRecursively(movePath)
-            if not result then
-                errorLog("Failed to delete plugin stream folder before moving updated version.")
-            end
             PluginsWereUpdated = true
         else
             if not Config.enableCanary then

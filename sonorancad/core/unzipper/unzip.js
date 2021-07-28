@@ -5,13 +5,28 @@ exports('UnzipFile', (file, dest) => {
     fs.createReadStream(file).pipe(unzipper.Extract({ path: dest}));
 });
 
+function deleteDirR(dir) {
+	fs.rmdir(dir, {recursive:true}, (err) => {
+        if (err) {
+            console.log(err)
+            return false, err;
+        }
+    });
+    return true;
+}
+
 exports('UnzipFolder', (file, name, dest) => {
     let firstDir = null;
+	let hasStreamFolder = false;
 	fs.createReadStream(file).pipe(unzipper.Parse())
 	.on('entry', function(entry) {
 		var fileName = entry.path;
 		const type = entry.type;
 		if (type == "Directory") {
+			if (fileName.contains("stream")) {
+				hasStreamFolder = true;
+				deleteDirR(`${GetResourcePath(GetCurrentResourceName())}/stream/${name}/`);
+			}
 			if (firstDir == null) {
 				firstDir = fileName;
 			}
