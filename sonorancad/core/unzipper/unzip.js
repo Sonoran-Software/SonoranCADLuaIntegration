@@ -23,7 +23,7 @@ exports('UnzipFolder', (file, name, dest) => {
 		var fileName = entry.path;
 		const type = entry.type;
 		if (type == "Directory") {
-			if (fileName.contains("stream")) {
+			if (fileName.includes("stream") && !hasStreamFolder) {
 				hasStreamFolder = true;
 				deleteDirR(`${GetResourcePath(GetCurrentResourceName())}/stream/${name}/`);
 			}

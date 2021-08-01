@@ -40,15 +40,18 @@ local PushEventHandler = {
         debugLog("UNIT_LOGOUT: "..json.encode(body.data))
         TriggerEvent('SonoranCAD::pushevents:UnitLogout', body.data.identId)
         SetUnitCache(GetUnitById(body.data.identId), nil)
+        return true
     end,
     EVENT_DISPATCH_NEW = function(body)
         SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_NEW", dispatch = body.data.dispatch ~= nil and body.data.dispatch or body.data })
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', GetCallCache()[body.data.dispatch.callId])
+        return true
     end,
     EVENT_DISPATCH_EDIT = function(body)
         TriggerEvent("SonoranCAD::pushevents:DispatchEdit", GetCallCache()[body.data.dispatch.callId], body.data)
         SetCallCache(body.data.dispatch.callId, { dispatch_type = "CALL_EDIT", dispatch = body.data.dispatch ~= nil and body.data.dispatch or body.data })
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', GetCallCache()[body.data.dispatch.callId])
+        return true
     end,
     EVENT_DISPATCH_CLOSE = function(body)
         local call = GetCallCache()[body.data.callId]
@@ -56,8 +59,10 @@ local PushEventHandler = {
             local d = { dispatch_type = "CALL_CLOSE", dispatch = call }
             SetCallCache(body.data.callId, body.data)
             TriggerEvent('SonoranCAD::pushevents:DispatchEvent', d)
+            return true
         else
             debugLog(("Unknown call close (call ID %s), current cache: %s"):format(body.data.callId, json.encode(CallCache)))
+            return false, "unknown call close"
         end
     end,
     EVENT_DISPATCH_NOTE = function(body)
@@ -95,6 +100,7 @@ local PushEventHandler = {
         else
             debugLog("No idents in attachment?!")
         end
+        return true
     end,
     EVENT_DISPATCH_UNIT_DETACH = function(body)
         local call = GetCallCache()[body.data.callId]
@@ -138,29 +144,37 @@ local PushEventHandler = {
                 end
             end
         end
+        return true
     end,
     GET_LOGS = function(body)
         TriggerEvent('SonoranCAD::pushevents:SendSupportLogs', body.logKey)
+        return true
     end,
     EVENT_911 = function(body)
         SetEmergencyCache(body.data.call.callId, body.data.call)
         TriggerEvent('SonoranCAD::pushevents:IncomingCadCall', body.data.call, body.data.call.metaData, body.data.apiIds)
+        return true
     end,
     EVENT_REMOVE_911 = function(body)
         SetEmergencyCache(body.data.callId, nil)
         TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callId)
+        return true
     end,
     EVENT_STREETSIGN_UPDATED = function(body)
         TriggerEvent('SonoranCAD::pushevents:SmartSignUpdate', body.data.signData)
+        return true
     end,
     EVENT_RECORD_ADD = function(body)
         TriggerEvent('SonoranCAD::pushevents:RecordAdded', body.data.record)
+        return true
     end,
     EVENT_RECORD_EDIT = function(body)
         TriggerEvent('SonoranCAD::pushevents:RecordEdited', body.data.record)
+        return true
     end,
     EVENT_RECORD_REMOVE = function(body)
         TriggerEvent('SonoranCAD::pushevents:RecordRemoved', body.data.record)
+        return true
     end
 }
 
