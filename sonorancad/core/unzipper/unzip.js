@@ -18,6 +18,8 @@ function deleteDirR(dir) {
 exports('UnzipFolder', (file, name, dest) => {
     let firstDir = null;
 	let hasStreamFolder = false;
+	const rootPath = GetResourcePath(GetCurrentResourceName());
+	const streamPath = rootPath + "/stream/" + name + "/";
 	fs.createReadStream(file).pipe(unzipper.Parse())
 	.on('entry', function(entry) {
 		var fileName = entry.path;
@@ -25,7 +27,7 @@ exports('UnzipFolder', (file, name, dest) => {
 		if (type == "Directory") {
 			if (fileName.includes("stream") && !hasStreamFolder) {
 				hasStreamFolder = true;
-				deleteDirR(`${GetResourcePath(GetCurrentResourceName())}/stream/${name}/`);
+				deleteDirR(streamPath);
 			}
 			if (firstDir == null) {
 				firstDir = fileName;
@@ -41,9 +43,10 @@ exports('UnzipFolder', (file, name, dest) => {
 			fileName = fileName.replace(firstDir, "");
 			let finalPath = dest + fileName;
 			if (fileName.includes("stream")) {
-                finalPath = fileName.replace(`${name}/stream/${name}`,`${GetResourcePath(GetCurrentResourceName())}/stream/${name}/`);
-				if (!fs.existsSync(path.dirname(finalPath))) {
-					fs.mkdirSync(path.dirname(finalPath));
+				let file = fileName.replace(/^.*[\\\/]/, '');
+                finalPath = `${rootPath}/stream/${name}/${file}`;
+				if (!fs.existsSync(`${rootPath}/stream/${name}/`)) {
+					fs.mkdirSync(`${rootPath}/stream/${name}/`);
 				}
             }
 			entry.pipe(fs.createWriteStream(finalPath));

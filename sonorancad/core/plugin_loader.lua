@@ -64,7 +64,7 @@ local function downloadPlugin(name, url)
             f:close()
             local unzipPath = GetResourcePath(GetCurrentResourceName()).."/plugins/"
             debugLog("Unzipping to: "..unzipPath)
-            exports[GetCurrentResourceName()]:UnzipFolder(savePath, unzipPath)
+            exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
             os.remove(savePath)
             infoLog(("Plugin %s successfully downloaded."):format(name))
             PluginsWereUpdated = true
