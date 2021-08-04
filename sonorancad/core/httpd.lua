@@ -1,11 +1,3 @@
-local function getConfig()
-    local config = LoadResourceFile(GetCurrentResourceName(), "config.json")
-    return config
-end
-
-
-
--- Event Handlers
 local PushEventHandler = {
     EVENT_UNIT_STATUS = function(body)
         if (not body.data.identIds) then
@@ -161,6 +153,9 @@ local PushEventHandler = {
         return true
     end,
     EVENT_STREETSIGN_UPDATED = function(body)
+        if body == nil or body.data == nil or body.data.signData == nil then
+            return false
+        end
         TriggerEvent('SonoranCAD::pushevents:SmartSignUpdate', body.data.signData)
         return true
     end,
