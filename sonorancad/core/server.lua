@@ -48,6 +48,9 @@ CreateThread(function()
             warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
         end
     end
+    if GetResourceState("sonoran_updatehelper") == "started" then
+        ExecuteCommand("stop sonoran_updatehelper")
+    end
 end)
 
 -- Toggles API sender.

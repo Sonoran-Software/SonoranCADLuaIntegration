@@ -21,4 +21,5 @@ CreateThread(function()
         os.remove(GetResourcePath(GetCurrentResourceName()).."/run.lock")
         print("sonoran_updatehelper is for internal use and should not be started as a resource.")
     end
+    os.remove(GetResourcePath(GetCurrentResourceName()).."/run.lock")
 end)
