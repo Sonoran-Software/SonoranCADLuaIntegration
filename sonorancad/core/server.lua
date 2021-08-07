@@ -166,6 +166,8 @@ function performApiRequest(postData, type, cb)
     
 end
 
+exports("performApiRequest", performApiRequest)
+
 -- Metrics
 CreateThread(function()
     registerApiType("HEARTBEAT", "general")
