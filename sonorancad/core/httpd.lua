@@ -1,3 +1,13 @@
+local PluginHttpHandlers = {}
+
+function RegisterPluginHttpEvent(eventName, func)
+    if PluginHttpHandlers[eventName] ~= nil then
+        errorLog("Failed to register plugin event "..eventName..": Already Exists")
+        return
+    end
+    PluginHttpHandlers[eventName] = func
+end
+
 local PushEventHandler = {
     EVENT_UNIT_STATUS = function(body)
         if (not body.data.identIds) then
@@ -63,30 +73,24 @@ local PushEventHandler = {
     EVENT_DISPATCH_UNIT_ATTACH = function(body)
         -- fetch the call and unit data
         local call = GetCallCache()[body.data.callId]
-        if body.data.ident ~= nil then
-            local unit = GetUnitCache()[body.data.ident]
-            if call and unit then
-                TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
-            else
-                debugLog("Attach failure, unknown call or unit")
-            end
-        elseif body.data.idents ~= nil then
+        if body.data.idents ~= nil then
             for i=1, #body.data.idents do
-                local unit = GetUnitCache()[body.data.idents[i]]
+                local unit = GetUnitById(body.data.idents[i])
                 if call and unit then
-                    TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
+                    TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, GetUnitCache()[unit])
                     local idx = nil
-                    for i, u in pairs(call.units) do
-                        if u.id == unit.id then
+                    for i, u in pairs(call.dispatch.idents) do
+                        if u == unit.id then
                             idx = i
                         end
                     end
                     if idx == nil then
-                        table.insert(call.units, unit)
+                        table.insert(call.dispatch.idents, unit)
                         SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
                     end
                 else
-                    debugLog("Attach failure, unknown call or unit")
+                    debugLog(("Attach failure, unknown call or unit (C: %s) (U: %s)"):format(json.encode(call), json.encode(unit)))
+                    return false, "invalid call or unit"
                 end
             end
         else
@@ -96,43 +100,24 @@ local PushEventHandler = {
     end,
     EVENT_DISPATCH_UNIT_DETACH = function(body)
         local call = GetCallCache()[body.data.callId]
-        if body.data.ident ~= nil then
-            local unit = GetUnitCache()[body.data.ident]
-            if call and unit then
-                TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
-                local idx = nil
-                debugLog("detach call "..json.encode(call))
-                if call.units ~= nil then
-                    for i, u in pairs(call.units) do
-                        if u.id == unit.id then
-                            idx = i
-                        end
-                    end
-                    if idx ~= nil then
-                        table.remove(call.units, idx)
-                        SetCallCache(body.data.callId, {dispatch_type = "CALL_EDIT", dispatch = call })
-                    end
-                end
-            else
-                debugLog("Detach failure, unknown call or unit")
-            end
-        elseif body.data.idents ~= nil then
+        if body.data.idents ~= nil then
             for i=1, #body.data.idents do
-                local unit = GetUnitCache()[body.data.idents[i]]
+                local unit = GetUnitById(body.data.idents[i])
                 if call and unit then
-                    TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
+                    TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, GetUnitCache()[unit])
                     local idx = nil
-                    for i, u in pairs(call.units) do
-                        if u.id == unit.id then
+                    for i, u in pairs(call.dispatch.idents) do
+                        if u == unit.id then
                             idx = i
                         end
                     end
                     if idx ~= nil then
-                        table.remove(call.units, idx)
+                        table.remove(call.dispatch.idents, idx)
                         SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
                     end
                 else
-                    debugLog("Detach failure, unknown call or unit")
+                    debugLog(("Attach failure, unknown call or unit (C: %s) (U: %s)"):format(json.encode(call), json.encode(unit)))
+                    return false, "invalid call or unit"
                 end
             end
         end
@@ -154,7 +139,7 @@ local PushEventHandler = {
     end,
     EVENT_STREETSIGN_UPDATED = function(body)
         if body == nil or body.data == nil or body.data.signData == nil then
-            return false
+            return false, "invalid data"
         end
         TriggerEvent('SonoranCAD::pushevents:SmartSignUpdate', body.data.signData)
         return true
@@ -250,12 +235,36 @@ SetHttpHandler(function(req, res)
                         if success then
                             res.send("ok")
                         else
+                            if not result then
+                                result = "error"
+                            end
                             res.send(result);
                         end
                     end)
                 else
                     res.send(json.encode({["error"] = "Invalid API request type."}))
                 end
+            end
+        end)
+    elseif method == "POST" and path == '/pluginevent' then
+        req.setDataHandler(function(data)
+            if not data then
+                res.send(json.encode({["error"] = "bad request"}))
+                return
+            end
+            local body = json.decode(data)
+            if not body then
+                res.send(json.encode({["error"] = "bad request"}))
+                return
+            end
+            if body.key and body.key:upper() == Config.apiKey:upper() then
+                if not body.type or not PluginHttpHandlers[body.type] then
+                    return res.send("error")
+                end
+                local resp = PluginHttpHandlers[body.type](body)
+                return res.send(json.encode(resp))
+            else
+                return res.send("error")
             end
         end)
     else

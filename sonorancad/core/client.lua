@@ -81,9 +81,9 @@ CreateThread(function()
     end
     if Config.devHiddenSwitch then
         debugLog("Spawned discord thread")
-        SetDiscordAppId(747991263172755528)
-        SetDiscordRichPresenceAsset("cad_logo")
-        SetDiscordRichPresenceAssetSmall("sonoran_logo")
+        SetDiscordAppId(867548404724531210)
+        SetDiscordRichPresenceAsset("icon")
+        SetDiscordRichPresenceAssetSmall("icon")
         while true do
             SetRichPresence("Developing SonoranCAD!")
             Wait(5000)

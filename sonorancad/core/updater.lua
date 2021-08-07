@@ -74,6 +74,7 @@ function RunAutoUpdater(manualRun)
                 if (string.find(myVersion, "-beta")) then
                     v3 = v3 - 0.5
                 end
+                debugLog(("my: %s remote: %s"):format(myVersion, remote.resource))
                 local latestVersion = r3+(r2*2)+(r1*4)
                 local localVersion = v3+(v2*2)+(v1*4)
 
