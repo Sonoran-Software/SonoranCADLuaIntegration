@@ -10,12 +10,21 @@ CreateThread(function()
         Wait(1000)
         if line == "core" then
             for k, v in pairs(ManagedResources) do
-                ExecuteCommand("restart "..v)
-                Wait(1000)
+                if GetResourceState(v) ~= "started" then
+                    warnLog(("Not restarting resource %s as it is not started. This may be fine. State: %s"):format(v, GetResourceState(v)))
+                else
+                    ExecuteCommand("restart "..v)
+                    Wait(1000)
+                end
             end
         elseif line == "plugin" then
             print("Restarting sonorancad resource for plugin updates...")
-            ExecuteCommand("restart sonorancad")
+            if GetResourceState(v) ~= "started" then
+                warnLog(("Not restarting resource %s as it is not in the started state to avoid server crashing. State: %s"):format("sonorancad", GetResourceState("sonorancad")))
+                warnLog("If you are seeing this message, you have started sonoran_updatehelper in your configuration which is incorrect. Please do not start sonoran_updatehelper manually.")
+            else
+                ExecuteCommand("restart sonorancad")
+            end
         end
     else
         os.remove(GetResourcePath(GetCurrentResourceName()).."/run.lock")
