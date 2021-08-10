@@ -98,7 +98,7 @@ function RunAutoUpdater(manualRun)
                     end
                 else
                     if manualRun then
-                        infoLog("No updates available.")
+                        infoLog(("No updates available. Detected version %s, latest version is %s"):format(localVersion, latestVersion))
                     end
                 end
             end
