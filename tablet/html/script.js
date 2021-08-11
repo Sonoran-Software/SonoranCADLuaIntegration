@@ -25,6 +25,18 @@ $(function () {
 			isApiBeingChecked = true;
 			$("#check-api-data").show();
 		}
+		else if (event.data.type == "resize") {
+			document.getElementById('mdtFrame').width = event.data.newWidth;
+			document.getElementById('mdtFrame').height = event.data.newHeight;
+			document.getElementById('tabletDiv').style.width = event.data.newWidth;
+			document.getElementById('tabletDiv').style.height = event.data.newHeight;
+			$.post('https://tablet/ResizeDone', JSON.stringify({}));
+		}
+		else if (event.data.type == "refresh") {
+			let t = new Date().getTime();
+			let s = document.getElementById('mdtFrame').src;
+			document.getElementById('mdtFrame').src = s + "?" + t.toString();
+		}
 	});
 
 	document.onkeyup = function (data) {
@@ -34,7 +46,7 @@ $(function () {
 		}
 	};
 
-	dragElement(document.getElementById("tablet"));
+	dragElement(document.getElementById("tabletDiv"));
 
 	window.addEventListener("message", receiveMessage, false);
 });

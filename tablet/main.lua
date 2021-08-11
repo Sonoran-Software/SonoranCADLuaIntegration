@@ -1,26 +1,38 @@
 guiEnabled = false
 isRegistered = false
 Citizen.CreateThread(function()
-  while true do
-      if guiEnabled then
-          DisableControlAction(0, 1, guiEnabled) -- LookLeftRight
-          DisableControlAction(0, 2, guiEnabled) -- LookUpDown
+	Wait(1000)
+	if GetResourceKvpString("cadwidth") ~= nil then
+		print("resize available")
+		SendNUIMessage({
+			type = "resize",
+			newWidth = GetResourceKvpString("cadwidth"),
+			newHeight = GetResourceKvpString("cadheight")
+		})
+		SendNUIMessage({
+			type = "refresh"
+		})
+	end
+	while true do
+			if guiEnabled then
+					DisableControlAction(0, 1, guiEnabled) -- LookLeftRight
+					DisableControlAction(0, 2, guiEnabled) -- LookUpDown
 
-          DisableControlAction(0, 142, guiEnabled) -- MeleeAttackAlternate
+					DisableControlAction(0, 142, guiEnabled) -- MeleeAttackAlternate
 
-          DisableControlAction(0, 106, guiEnabled) -- VehicleMouseControlOverride
+					DisableControlAction(0, 106, guiEnabled) -- VehicleMouseControlOverride
 
-      end
-      Citizen.Wait(0) --MH LUA
-  end
+			end
+			Citizen.Wait(0) --MH LUA
+	end
 end)
 
 function PrintChatMessage(text)
-  TriggerEvent('chatMessage', "system", { 255, 0, 0 }, text)
+	TriggerEvent('chatMessage', "system", { 255, 0, 0 }, text)
 end
-  
+	
 RegisterNUICallback('NUIFocusOff', function()
-  Gui(false)
+	Gui(false)
 end)
 
 RegisterCommand("showcad", function(source, args, rawCommand)
@@ -33,50 +45,70 @@ RegisterCommand("checkapiid", function(source,args,rawCommand)
 	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 end, false)
 
+TriggerEvent('chat:addSuggestion', '/cadsize', "Resize CAD to specific width and height in pixels. Default is 1100x510", {
+	{ name="Width", help="Width in pixels" }, { name="Height", help="Height in pixels" }
+})
+RegisterCommand("cadsize", function(source,args,rawCommand)
+	if not args[2] then return end
+	SendNUIMessage({
+		type = "resize",
+		newWidth = args[1],
+		newHeight = args[2]
+	})
+	SetResourceKvp("cadwidth", args[1])
+	SetResourceKvp("cadheight", args[2])
+	print("Resized tablet.")
+end)
+RegisterCommand("cadrefresh", function()
+	SendNUIMessage({
+		type = "refresh"
+	})
+	print("Refreshed tablet.")
+end)
 
 function Gui(toggle)
-  SetNuiFocus(toggle, toggle)
-  guiEnabled = toggle
+	SetNuiFocus(toggle, toggle)
+	guiEnabled = toggle
 
-  if guiEnabled then
-      RequestAnimDict("amb@code_human_in_bus_passenger_idles@female@tablet@base")
-      while not HasAnimDictLoaded("amb@code_human_in_bus_passenger_idles@female@tablet@base") do
-          Citizen.Wait(0)
-      end
-      local tabletModel = GetHashKey("prop_cs_tablet")
-      local bone = GetPedBoneIndex(GetPlayerPed(-1), 60309)
-      RequestModel(tabletModel)
-      while not HasModelLoaded(tabletModel) do
-          Citizen.Wait(100)
-      end
-      tabletProp = CreateObject(tabletModel, 1.0, 1.0, 1.0, 1, 1, 0)
-      AttachEntityToEntity(tabletProp, GetPlayerPed(-1), bone, 0.03, 0.002, -0.0, 10.0, 160.0, 0.0, 1, 0, 0, 0, 2, 1)
-      TaskPlayAnim(GetPlayerPed(-1), "amb@code_human_in_bus_passenger_idles@female@tablet@base", "base", 3.0, 3.0, -1, 49, 0, 0, 0, 0)
-  else
-      DetachEntity(tabletProp, true, true)
-      DeleteObject(tabletProp)
-      TaskPlayAnim(GetPlayerPed(-1), "amb@code_human_in_bus_passenger_idles@female@tablet@base", "exit", 3.0, 3.0, -1, 49, 0, 0, 0, 0)
-  end
+	if guiEnabled then
+			RequestAnimDict("amb@code_human_in_bus_passenger_idles@female@tablet@base")
+			while not HasAnimDictLoaded("amb@code_human_in_bus_passenger_idles@female@tablet@base") do
+					Citizen.Wait(0)
+			end
+			local tabletModel = GetHashKey("prop_cs_tablet")
+			local bone = GetPedBoneIndex(GetPlayerPed(-1), 60309)
+			RequestModel(tabletModel)
+			while not HasModelLoaded(tabletModel) do
+					Citizen.Wait(100)
+			end
+			tabletProp = CreateObject(tabletModel, 1.0, 1.0, 1.0, 1, 1, 0)
+			AttachEntityToEntity(tabletProp, GetPlayerPed(-1), bone, 0.03, 0.002, -0.0, 10.0, 160.0, 0.0, 1, 0, 0, 0, 2, 1)
+			TaskPlayAnim(GetPlayerPed(-1), "amb@code_human_in_bus_passenger_idles@female@tablet@base", "base", 3.0, 3.0, -1, 49, 0, 0, 0, 0)
+	else
+			DetachEntity(tabletProp, true, true)
+			DeleteObject(tabletProp)
+			TaskPlayAnim(GetPlayerPed(-1), "amb@code_human_in_bus_passenger_idles@female@tablet@base", "exit", 3.0, 3.0, -1, 49, 0, 0, 0, 0)
+	end
 
-  if not isRegistered then
-    SendNUIMessage({
-      type = "enableui",
-      enable = toggle,
-      apiCheck = true
-  })
+	if not isRegistered then
+		SendNUIMessage({
+			type = "enableui",
+			enable = toggle,
+			apiCheck = true
+	})
 else
-  SendNUIMessage({
-    type = "enableui",
-    enable = toggle
+	SendNUIMessage({
+		type = "enableui",
+		enable = toggle
 })
 end
 end
 
 AddEventHandler('onClientResourceStart', function(resourceName) --When resource starts, stop the GUI showing. 
-    if(GetCurrentResourceName() ~= resourceName) then
-      return
-    end
-    Gui(false)
+		if(GetCurrentResourceName() ~= resourceName) then
+			return
+		end
+		Gui(false)
 	
 	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 	
@@ -85,13 +117,13 @@ end)
 RegisterNetEvent("sonoran:tablet:apiIdNotFound")
 AddEventHandler('sonoran:tablet:apiIdNotFound', function()
 	SendNUIMessage({
-      type = "regbar"
+			type = "regbar"
 	})
 end)
 
 RegisterNetEvent("sonoran:tablet:apiIdFound")
 AddEventHandler("sonoran:tablet:apiIdFound", function()
-  isRegistered = true
+	isRegistered = true
 end)
 
 RegisterNUICallback('SetAPIData', function(data,cb)
@@ -102,10 +134,10 @@ RegisterNUICallback('SetAPIData', function(data,cb)
 end)
 
 RegisterNUICallback('runApiCheck', function()
-  TriggerServerEvent("sonoran:tablet:forceCheckApiId")
+	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 end)
 
 RegisterNetEvent("sonoran:tablet:failed")
 AddEventHandler("sonoran:tablet:failed", function(message)
-  errorLog("Failed to set API ID: "..tostring(message))
+	errorLog("Failed to set API ID: "..tostring(message))
 end)
