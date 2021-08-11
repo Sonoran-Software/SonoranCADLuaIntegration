@@ -35,7 +35,7 @@ $(function () {
 		else if (event.data.type == "refresh") {
 			let t = new Date().getTime();
 			let s = document.getElementById('mdtFrame').src;
-			document.getElementById('mdtFrame').src = s + "?" + t.toString();
+			document.getElementById('mdtFrame').src = s + "&" + t.toString();
 		}
 	});
 
