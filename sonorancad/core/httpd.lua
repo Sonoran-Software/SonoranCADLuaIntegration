@@ -55,7 +55,7 @@ local PushEventHandler = {
         TriggerEvent('SonoranCAD::pushevents:DispatchEvent', GetCallCache()[body.data.dispatch.callId])
         return true
     end,
-    EVENT_DISPATCH_CLOSE = function(body)
+    EVENT_DISPATCH_CLOSED = function(body)
         local call = GetCallCache()[body.data.callId]
         if call ~= nil then
             local d = { dispatch_type = "CALL_CLOSE", dispatch = call }

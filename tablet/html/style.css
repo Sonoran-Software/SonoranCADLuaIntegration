@@ -1,6 +1,6 @@
 /* The device with borders */
 
-#tablet {
+#tabletDiv {
 	position: absolute;
 	top: 25%;
 	left: 50%;
@@ -14,7 +14,7 @@
 	border-radius: 15px;
 	background: black;
 }
-.tablet .content {
+.tabletDiv .content {
 	margin-left: 37%;
 	margin-bottom: 15%;
 	margin-top: 10%;
