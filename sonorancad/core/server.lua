@@ -40,11 +40,8 @@ CreateThread(function()
     end
     local versionfile = json.decode(LoadResourceFile(GetCurrentResourceName(), "/version.json"))
     local fxversion = versionfile.testedFxServerVersion
-    local s = GetConvar("version", "")
-    local v = s:find("v1.0.0.")
-    local i = string.gsub(s:sub(v),"v1.0.0.",""):sub(1,4)
-    if i ~= nil and fxversion ~= nil then
-        if tonumber(i) < tonumber(fxversion) then
+    if getServerVersion() ~= nil and fxversion ~= nil then
+        if tonumber(getServerVersion()) < tonumber(fxversion) then
             warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
         end
     end
@@ -186,6 +183,7 @@ CreateThread(function()
             commId = Config.communityID,
             playerCount = playerCount,
             serverId = Config.serverId,
+            fxVersion = getServerVersion(),
             plugins = plugins
         }
         performApiRequest(payload, "HEARTBEAT", function() end)

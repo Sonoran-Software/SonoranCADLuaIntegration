@@ -47,6 +47,7 @@ function dumpInfo()
     return ([[
 SonoranCAD
 Version: %s - Latest: %s
+FXS Version: %s
 Available Plugins
 %s
 Loaded Plugins
@@ -57,7 +58,7 @@ Relevant Variables
 %s
 Core Configuration
 %s
-    ]]):format(version, Config.latestVersion, table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "), variableList, table.concat(coreConfig, "\n"))
+    ]]):format(version, Config.latestVersion, getServerVersion(), table.concat(pluginVersions, ", "), table.concat(loadedPlugins, ", "), table.concat(disabledPlugins, ", "), variableList, table.concat(coreConfig, "\n"))
 end
 
 function dumpPlugin(name)
