@@ -63,6 +63,11 @@ local function downloadPlugin(name, url)
             f:write(data)
             f:close()
             local unzipPath = GetResourcePath(GetCurrentResourceName()).."/plugins/"
+            if exists(("%s/%s/%s/"):format(unzipPath, name, name)) then
+                -- nested, edit unzip path
+                debugLog("Nested plugin detected, adjusting path")
+                unzipPath = ("%s/%s/"):format(unzipPath, name)
+            end
             debugLog("Unzipping to: "..unzipPath)
             exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
             os.remove(savePath)
