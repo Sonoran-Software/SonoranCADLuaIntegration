@@ -7,7 +7,7 @@ The Plugin folder in your Git repo needs to have the following base folder struc
 
 ```
 /{plugin_name}/(plugin code, version and config files)
-/{plugin_name}/stream/{plugin_name}/(assets here)
+/{plugin_name}/stream/(assets here)
 /readme.md (optional)
 ```
 
