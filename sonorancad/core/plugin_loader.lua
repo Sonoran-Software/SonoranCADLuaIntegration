@@ -156,8 +156,11 @@ CreateThread(function()
             goto skip
         end
         
-        local versionFile = json.decode(LoadVersionFile(k))
-        
+        local vfile = LoadVersionFile(k)
+        if vfile == nil then
+            goto skip
+        end
+        local versionFile = json.decode(vfile)
         if versionFile.pluginDepends == nil and Config.plugins[k].requiresPlugins ~= nil then
             -- legacy
             debugLog(("Plugin %s using legacy dependency detection. This should be corrected in a future version."):format(k))
