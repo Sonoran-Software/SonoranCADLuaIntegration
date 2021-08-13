@@ -144,6 +144,11 @@ function performApiRequest(postData, type, cb)
                 debugLog("404 response found")
                 cb(res, false)
             elseif statusCode == 429 then -- rate limited :(
+                if rateLimitedEndpoints[type] then
+                    -- don't warn again, it's spammy. Instead, just print a debug
+                    debugLog(("Endpoint %s ratelimited. Dropping request."))
+                    return
+                end
                 rateLimitedEndpoints[type] = true
                 warnLog(("You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 60 seconds. If this is happening frequently, please review your configuration to ensure you're not sending data too quickly."):format(type))
                 SetTimeout(60000, function()
