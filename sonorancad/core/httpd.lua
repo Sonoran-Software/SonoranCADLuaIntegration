@@ -80,13 +80,13 @@ local PushEventHandler = {
                     TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, GetUnitCache()[unit])
                     local idx = nil
                     for i, u in pairs(call.dispatch.idents) do
-                        if u == unit.id then
+                        if u == unit then
                             idx = i
                         end
                     end
                     if idx == nil then
                         table.insert(call.dispatch.idents, unit)
-                        SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
+                        SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
                     end
                 else
                     debugLog(("Attach failure, unknown call or unit (C: %s) (U: %s)"):format(json.encode(call), json.encode(unit)))
@@ -107,13 +107,13 @@ local PushEventHandler = {
                     TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, GetUnitCache()[unit])
                     local idx = nil
                     for i, u in pairs(call.dispatch.idents) do
-                        if u == unit.id then
+                        if u == unit then
                             idx = i
                         end
                     end
                     if idx ~= nil then
                         table.remove(call.dispatch.idents, idx)
-                        SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
+                        SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
                     end
                 else
                     debugLog(("Attach failure, unknown call or unit (C: %s) (U: %s)"):format(json.encode(call), json.encode(unit)))

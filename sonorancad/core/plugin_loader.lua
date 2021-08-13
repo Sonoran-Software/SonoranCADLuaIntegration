@@ -63,6 +63,11 @@ local function downloadPlugin(name, url)
             f:write(data)
             f:close()
             local unzipPath = GetResourcePath(GetCurrentResourceName()).."/plugins/"
+            if exists(("%s/%s/%s/"):format(unzipPath, name, name)) then
+                -- nested, edit unzip path
+                debugLog("Nested plugin detected, adjusting path")
+                unzipPath = ("%s/%s/"):format(unzipPath, name)
+            end
             debugLog("Unzipping to: "..unzipPath)
             exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
             os.remove(savePath)
@@ -151,8 +156,11 @@ CreateThread(function()
             goto skip
         end
         
-        local versionFile = json.decode(LoadVersionFile(k))
-        
+        local vfile = LoadVersionFile(k)
+        if vfile == nil then
+            goto skip
+        end
+        local versionFile = json.decode(vfile)
         if versionFile.pluginDepends == nil and Config.plugins[k].requiresPlugins ~= nil then
             -- legacy
             debugLog(("Plugin %s using legacy dependency detection. This should be corrected in a future version."):format(k))

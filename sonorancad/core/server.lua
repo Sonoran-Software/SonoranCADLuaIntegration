@@ -40,11 +40,8 @@ CreateThread(function()
     end
     local versionfile = json.decode(LoadResourceFile(GetCurrentResourceName(), "/version.json"))
     local fxversion = versionfile.testedFxServerVersion
-    local s = GetConvar("version", "")
-    local v = s:find("v1.0.0.")
-    local i = string.gsub(s:sub(v),"v1.0.0.",""):sub(1,4)
-    if i ~= nil and fxversion ~= nil then
-        if tonumber(i) < tonumber(fxversion) then
+    if getServerVersion() ~= nil and fxversion ~= nil then
+        if tonumber(getServerVersion()) < tonumber(fxversion) then
             warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
         end
     end
@@ -147,6 +144,11 @@ function performApiRequest(postData, type, cb)
                 debugLog("404 response found")
                 cb(res, false)
             elseif statusCode == 429 then -- rate limited :(
+                if rateLimitedEndpoints[type] then
+                    -- don't warn again, it's spammy. Instead, just print a debug
+                    debugLog(("Endpoint %s ratelimited. Dropping request."))
+                    return
+                end
                 rateLimitedEndpoints[type] = true
                 warnLog(("You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 60 seconds. If this is happening frequently, please review your configuration to ensure you're not sending data too quickly."):format(type))
                 SetTimeout(60000, function()
@@ -186,6 +188,7 @@ CreateThread(function()
             commId = Config.communityID,
             playerCount = playerCount,
             serverId = Config.serverId,
+            fxVersion = getServerVersion(),
             plugins = plugins
         }
         performApiRequest(payload, "HEARTBEAT", function() end)
