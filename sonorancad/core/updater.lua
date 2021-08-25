@@ -75,8 +75,8 @@ function RunAutoUpdater(manualRun)
                     v3 = v3 - 0.5
                 end
                 debugLog(("my: %s remote: %s"):format(myVersion, remote.resource))
-                local latestVersion = r3+(r2*2)+(r1*4)
-                local localVersion = v3+(v2*2)+(v1*4)
+                local latestVersion = r3+(r2*10)+(r1*100)
+                local localVersion = v3+(v2*10)+(v1*100)
 
                 assert(localVersion ~= nil, "Failed to parse local version. "..tostring(localVersion))
                 assert(latestVersion ~= nil, "Failed to parse remote version. "..tostring(latestVersion))
