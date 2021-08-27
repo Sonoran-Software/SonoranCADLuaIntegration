@@ -160,6 +160,25 @@ local PushEventHandler = {
     EVENT_RECORD_REMOVE = function(body)
         TriggerEvent('SonoranCAD::pushevents:RecordRemoved', body.data.record)
         return true
+    end,
+    EVENT_UNIT_GROUP_ADD = function(body)
+        local idents = {}
+        if body.identId ~= nil then
+            table.insert(idents, body.identId)
+        else if body.identIds ~= nil then
+            for _, v in pairs(body.identIds) do
+                table.insert(idents, v)
+            end
+        else
+            return false, "invalid data"
+        end
+        local payload = { groupName = body.data.groupName, idents = idents }
+        TriggerEvent('SonoranCAD::pushevents:UnitGroupAdd', payload)
+        return true
+    end,
+    EVENT_UNIT_GROUP_REMOVE = function(body)
+        TriggerEvent('SonoranCAD::pushevents:UnitGroupRemove', body.data)
+        return true
     end
 }
 
