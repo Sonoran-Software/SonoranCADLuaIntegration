@@ -13,14 +13,19 @@ local PushEventHandler = {
         if (not body.data.identIds) then
             return false, "missing identIds"
         end
-        local i = GetUnitById(body.data.identIds)
-        if i then
-            local unit = GetUnitCache()[i]
-            unit.status = body.data.status
-            SetUnitCache(body.data.identIds, unit)
-            TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, unit.status)
+        if body.data.idents ~= nil then
+            for i=1, #body.data.idents do
+                local unit = GetUnitById(body.data.idents[i])
+                if unit then
+                    SetUnitCache(body.data.idents[i], unit)
+                    TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, unit.status)
+                    return true
+                end
+                debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s"):format(json.encode(body.data.identIds)))
+                return false, "unknown unit"
+            end
         else
-            debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s"):format(json.encode(body.data.identIds)))
+            return false, "invalid, no idents"
         end
         return true
     end,
@@ -59,7 +64,7 @@ local PushEventHandler = {
         local call = GetCallCache()[body.data.callId]
         if call ~= nil then
             local d = { dispatch_type = "CALL_CLOSE", dispatch = call }
-            SetCallCache(body.data.callId, body.data)
+            SetCallCache(body.data.callId, d)
             TriggerEvent('SonoranCAD::pushevents:DispatchEvent', d)
             return true
         else
@@ -154,6 +159,25 @@ local PushEventHandler = {
     end,
     EVENT_RECORD_REMOVE = function(body)
         TriggerEvent('SonoranCAD::pushevents:RecordRemoved', body.data.record)
+        return true
+    end,
+    EVENT_UNIT_GROUP_ADD = function(body)
+        local idents = {}
+        if body.identId ~= nil then
+            table.insert(idents, body.identId)
+        else if body.identIds ~= nil then
+            for _, v in pairs(body.identIds) do
+                table.insert(idents, v)
+            end
+        else
+            return false, "invalid data"
+        end
+        local payload = { groupName = body.data.groupName, idents = idents }
+        TriggerEvent('SonoranCAD::pushevents:UnitGroupAdd', payload)
+        return true
+    end,
+    EVENT_UNIT_GROUP_REMOVE = function(body)
+        TriggerEvent('SonoranCAD::pushevents:UnitGroupRemove', body.data)
         return true
     end
 }
