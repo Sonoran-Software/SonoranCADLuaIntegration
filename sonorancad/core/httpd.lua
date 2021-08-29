@@ -165,7 +165,7 @@ local PushEventHandler = {
         local idents = {}
         if body.identId ~= nil then
             table.insert(idents, body.identId)
-        else if body.identIds ~= nil then
+        elseif body.identIds ~= nil then
             for _, v in pairs(body.identIds) do
                 table.insert(idents, v)
             end
