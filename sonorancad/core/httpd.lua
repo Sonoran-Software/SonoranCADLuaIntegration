@@ -142,6 +142,14 @@ local PushEventHandler = {
         TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callId)
         return true
     end,
+    EVENT_UNIT_PANIC = function(body)
+        local unit = GetUnitById(body.data.identId)
+        if unit then
+            TriggerEvent("SonoranCAD::pushevents:UnitPanic", unit, body.data.identId)
+        else
+            debugLog("Ignore panic event, unit not found")
+        end
+    end
     EVENT_STREETSIGN_UPDATED = function(body)
         if body == nil or body.data == nil or body.data.signData == nil then
             return false, "invalid data"
