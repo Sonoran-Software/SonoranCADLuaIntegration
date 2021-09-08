@@ -6,13 +6,61 @@
         <link href="reset.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
-        <div id="tabletDiv" style="display:none;">
+        <div id="cadDiv" style="display:none;">
             <div class="content">
 				<div id="check-api-data" style="display:none">API ID not found! Please login into your Sonoran CAD account to get your API ID set. - <button id="retryapi" name="retryapi" value="Retry" onclick="runApiCheck()">Retry</button></div>
                 <!-- Edit the src field below with your custom link, if used. You can also resize the tablet frame.-->
-                <iframe id="mdtFrame" src="https://sonorancad.com/" width="1100" height="510"></iframe>
+                <iframe id="cadFrame" src="https://sonorancad.com/" width="1100" height="510"></iframe>
             </div>
         </div>
+
+        <div id="hudDiv" style="display:none;">
+            <div id="hudFrame">
+                <div id="hudHeader">
+                    <div id="hudHeaderCalls">0/0</div>
+                    <div id="hudHeaderTime">loading data...</div>
+                    <div id="hudHeaderControls">
+                        <!--<a href="#" class="control">&#8211;</a>-->
+                        <a href="javascript:void;" class="control" onclick="moduleVisible('hud', false);">&times;</a>
+                    </div>
+                </div>
+                <div id="hudContent">
+                    <span id="callCode">loading data...</span>
+                    <span id="callTitle">loading data...</span>
+                    <span id="callLocation">loading data...</span>
+                    <span id="callUnits">
+                        <span id="nounits">No units are attached to this call.</span>
+                        <!-- <span class="unit">103</span>
+                        <span class="unit">105</span>
+                        <span class="unit">205</span>
+                        <span class="unit">518</span>
+                        <span class="unit">ENGINE 3</span>
+                        <span class="unit">RESCUE 15</span>
+                        <span class="unit">MEDIC 16</span>
+                        <span class="unit">LADDER 1</span>
+                        <span class="unit">CAR 4</span> -->
+                    </span>
+                </div>
+                <div id="hudFooter">
+                    <a id="btnPrevCall" href="javascript:void;" onclick="prevCall();">[&#9664;] Prev</a>
+                    <a id="btnAttach" href="javascript:void;" onclick="attach();">[K] Attach</a>
+                    <a id="btnDetail" href="javascript:void;" onclick="toggleDetail();">[L] Details</a>
+                    <a id="btnNextCall" href="javascript:void;" onclick="nextCall();">Next [&#9654;]</a>
+                </div>
+            </div>
+            <div id="hudDetails" style="display: none;">
+                <span class="label">Description:</span>
+                <span id="callDescription">loading...</span>
+                <span class="label">Call Notes:</span>
+                <span id="callNotes"></span>
+            </div>
+            <div id="hudInput" style="display: none;">
+                <input type="text" id="newnote" />
+                <input type="button" id="addnote" value=">" />
+            </div>
+        </div>
+
+        
         <script src="script.js" type="text/javascript"></script>
     </body>
 </html>
