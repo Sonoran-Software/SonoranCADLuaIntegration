@@ -2,59 +2,73 @@ var isApiBeingChecked = false;
 
 $(function () {
 	window.addEventListener('message', function (event) {
-		if (event.data.type == "enableui") {
-			if (event.data.enable) {
-				$("body").show();
-				if (event.data.apiCheck) {
-					isApiBeingChecked = true;
-					$("#check-api-data").show();
+		if (event.data.type == "display") {
+			if (event.data.module == "cad") {
+				if (event.data.enabled) {
+					$("#tabletDiv").show();
+					if (event.data.apiCheck) {
+						isApiBeingChecked = true;
+						$("#check-api-data").show();
+					}
+				} else {
+					$("#tabletDiv").hide();
 				}
-			}
-			else {
-				$("body").hide();
+			} else if (event.data.module == "hud") {
+				if (event.data.enabled) {
+					$("#hudDiv").show();
+				} else {
+					$("#hudDiv").hide();
+				}
 			}
 		}
 		else if (event.data.type == "backHome") {
 			document.body.style.display = "block";
-
 		}
-		else if (event.data.type == "seturl") {
-			document.getElementById("mdtFrame").src = event.data.url;
+		else if (event.data.type == "setUrl") {
+			if (event.data.module == "cad") {
+				document.getElementById("mdtFrame").src = event.data.url;
+			}
 		}
 		else if (event.data.type == "regbar") {
 			isApiBeingChecked = true;
 			$("#check-api-data").show();
 		}
 		else if (event.data.type == "resize") {
-			document.getElementById('mdtFrame').width = event.data.newWidth;
-			document.getElementById('mdtFrame').height = event.data.newHeight;
-			document.getElementById('tabletDiv').style.width = event.data.newWidth;
-			document.getElementById('tabletDiv').style.height = event.data.newHeight;
-			$.post('https://tablet/ResizeDone', JSON.stringify({}));
+			if (event.data.module == "cad") {
+				document.getElementById('mdtFrame').width = event.data.newWidth;
+				document.getElementById('mdtFrame').height = event.data.newHeight;
+				document.getElementById('tabletDiv').style.width = event.data.newWidth;
+				document.getElementById('tabletDiv').style.height = event.data.newHeight;
+				$.post('https://tablet/ResizeDone', JSON.stringify({ module: event.data.module }));
+			} else if (event.data.module == "hud") {
+				document.getElementById('hudFrame').width = event.data.newWidth;
+				document.getElementById('hudFrame').height = event.data.newHeight;
+				document.getElementById('hudDiv').style.width = event.data.newWidth;
+				document.getElementById('hudDiv').style.height = event.data.newHeight;
+				$.post('https://tablet/ResizeDone', JSON.stringify({ module: event.data.module }));
+			}
 		}
 		else if (event.data.type == "refresh") {
 			let t = new Date().getTime();
-			let s = document.getElementById('mdtFrame').src;
-			document.getElementById('mdtFrame').src = s + "&" + t.toString();
+			if (event.data.module == "cad") {
+				let s = document.getElementById('mdtFrame').src;
+				document.getElementById('mdtFrame').src = s + "&" + t.toString();	
+			}
 		}
 	});
 
 	document.onkeyup = function (data) {
 		if (data.which == 27) { // Escape key
 			$.post('https://tablet/NUIFocusOff', JSON.stringify({}));
-
 		}
 	};
 
 	dragElement(document.getElementById("tabletDiv"));
+	dragElement(document.getElementById("hudDiv"));
 
 	window.addEventListener("message", receiveMessage, false);
 });
 
-
-function backHome() {
-	document.body.style.display = "block";
-};
 function dragElement(elmnt) {
 	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 	if (document.getElementById(elmnt.id + "header")) {
