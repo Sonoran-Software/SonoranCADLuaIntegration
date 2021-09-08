@@ -78,8 +78,10 @@ local PushEventHandler = {
 		if call ~= nil then
 			local callnotes = {}
 			table.insert(callnotes, body.data.note)
-			for k, v in pairs(call.notes) do
-				table.insert(callnotes, v)
+			if call.notes ~= nil then
+				for k, v in pairs(call.notes) do
+					table.insert(callnotes, v)
+				end
 			end
 			call.notes = callnotes
 			SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
