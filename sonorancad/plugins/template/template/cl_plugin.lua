@@ -14,6 +14,5 @@ CreateThread(function()
         if pluginConfig.enabled then
             -- logic here
         end
-
-	end)
+    end) 
 end)
