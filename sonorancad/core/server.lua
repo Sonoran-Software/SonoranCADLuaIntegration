@@ -203,8 +203,6 @@ if Config.devHiddenSwitch then
     end)
 end
 
-
-
 -- Missing identifier detection
 RegisterNetEvent("SonoranCAD::core:PlayerReady")
 AddEventHandler("SonoranCAD::core:PlayerReady", function()
