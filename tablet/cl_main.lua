@@ -1,11 +1,12 @@
 nuiFocused = false
 isRegistered = false
-playerHolding = ''
+usingTablet = false
 
 -- Debugging Information
-isDebugging = false
+isDebugging = true
 
 function DebugMessage(message, module)
+	if not isDebugging then return end
 	if module ~= nil then message = "[" .. module .. "] " .. message end
 	print(message .. "\n")
 end
@@ -82,10 +83,6 @@ function DisplayModule(module, show)
 		apiCheck = apiCheck,
 		enabled = show
 	})
-	-- Eventually break this into individual module parameters.
-	if module == "cad" then
-		SetTablet(show)
-	end
 end
 
 -- Set Module URL (for iframes)
@@ -112,12 +109,42 @@ end
 -- Remove NUI focus
 RegisterNUICallback('NUIFocusOff', function()
 	DisplayModule("cad", false)
+	SetTablet(false)
 	SetFocused(false)
 end)
+
+-- Mini Module Commands
+RegisterCommand("minicad", function(source, args, rawCommand)
+	DisplayModule("hud", true)
+	--SetFocused(true)
+end, false)
+RegisterKeyMapping('minicad', 'Mini CAD', 'keyboard', '')
+
+RegisterCommand("minicadp", function(source, args, rawCommand)
+	SendNUIMessage({ type = "command", key="prev" })
+end, false)
+RegisterKeyMapping('minicadp', 'Mini CAD', 'keyboard', 'LEFT')
+
+RegisterCommand("minicada", function(source, args, rawCommand)
+	SendNUIMessage({ type = "command", key="attach" })
+end, false)
+RegisterKeyMapping('minicada', 'Mini CAD', 'keyboard', 'K')
+
+RegisterCommand("minicadd", function(source, args, rawCommand)
+	SendNUIMessage({ type = "command", key="detail" })
+end, false)
+RegisterKeyMapping('minicadd', 'Mini CAD', 'keyboard', 'L')
+
+RegisterCommand("minicadn", function(source, args, rawCommand)
+	SendNUIMessage({ type = "command", key="next" })
+end, false)
+RegisterKeyMapping('minicadn', 'Mini CAD', 'keyboard', 'RIGHT')
+
 
 -- CAD Module Commands
 RegisterCommand("showcad", function(source, args, rawCommand)
 	DisplayModule("cad", true)
+	SetTablet(true)
 	SetFocused(true)
 end, false)
 RegisterKeyMapping('showcad', 'CAD Tablet', 'keyboard', '')
@@ -162,12 +189,29 @@ function SetTablet(using)
 	end
 end
 
+-- Mini-Cad Callbacks
+RegisterNUICallback('AttachToCall', function(data)
+	print("cl_main -> sv_main: SonoranCAD::mini:AttachToCall")
+	TriggerServerEvent("SonoranCAD::mini:AttachToCall", data.callId)
+end)
+
+-- Mini-Cad Events
+RegisterNetEvent("SonoranCAD::mini:CallSync")
+AddEventHandler("SonoranCAD::mini:CallSync", function(CallCache, EmergencyCache)
+	print("sv_main -> cl_main: SonoranCAD::mini:CallSync")
+	print(CallCache)
+	SendNUIMessage({
+		type = 'callSync',
+		activeCalls = CallCache,
+		emergencyCalls = EmergencyCache
+	})
+end)
+
 AddEventHandler('onClientResourceStart', function(resourceName) --When resource starts, stop the GUI showing. 
 	if(GetCurrentResourceName() ~= resourceName) then
 		return
 	end
-	setnu
-	
+	SetFocused(false)	
 	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 end)
 
