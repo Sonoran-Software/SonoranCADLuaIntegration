@@ -74,6 +74,19 @@ local PushEventHandler = {
     end,
     EVENT_DISPATCH_NOTE = function(body)
         TriggerEvent('SonoranCAD::pushevents:DispatchNote', body.data)
+		local call = GetCallCache()[body.data.callId].dispatch
+		if call ~= nil then
+			local callnotes = {}
+			table.insert(callnotes, body.data.note)
+			for k, v in pairs(call.notes) do
+				table.insert(callnotes, v)
+			end
+			call.notes = callnotes
+			SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
+		else
+			debugLog(("Unknown call note update (call ID %s), current cache: %s"):format(body.data.callId, json.encode(CallCache)))
+			return false, "unknown call note"
+		end
     end,
     EVENT_DISPATCH_UNIT_ATTACH = function(body)
         -- fetch the call and unit data
