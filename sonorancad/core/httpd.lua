@@ -149,7 +149,7 @@ local PushEventHandler = {
         else
             debugLog("Ignore panic event, unit not found")
         end
-    end
+    end,
     EVENT_STREETSIGN_UPDATED = function(body)
         if body == nil or body.data == nil or body.data.signData == nil then
             return false, "invalid data"
