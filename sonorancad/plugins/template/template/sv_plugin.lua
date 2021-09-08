@@ -13,13 +13,6 @@ CreateThread(function() Config.LoadPlugin("yourpluginname", function(pluginConfi
     if pluginConfig.enabled then
 
         -- logic here
-
-        -- example HTTP registration
-        RegisterPluginHttpEvent("yourpluginname:hello", function(data)
-            debugLog(("Got data: %s"):format(json.encode(data)))
-            return { result = "ok, got some data!" }
-        end)
-    
     end
 
 end) end)

@@ -88,6 +88,7 @@ EndpointsRequireId = {
 function registerApiType(type, endpoint)
     ApiEndpoints[type] = endpoint
 end
+exports("registerApiType", registerApiType)
 
 local rateLimitedEndpoints = {}
 
@@ -201,6 +202,8 @@ if Config.devHiddenSwitch then
         TriggerClientEvent("chat:clear", -1)
     end)
 end
+
+
 
 -- Missing identifier detection
 RegisterNetEvent("SonoranCAD::core:PlayerReady")
