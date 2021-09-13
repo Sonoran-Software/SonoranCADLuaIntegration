@@ -1,6 +1,7 @@
 nuiFocused = false
 isRegistered = false
 usingTablet = false
+myident = nil
 
 -- Debugging Information
 isDebugging = true
@@ -113,10 +114,19 @@ RegisterNUICallback('NUIFocusOff', function()
 	SetFocused(false)
 end)
 
+RegisterNetEvent("SonoranCAD::mini:OpenMini:Return")
+AddEventHandler('SonoranCAD::mini:OpenMini:Return', function(authorized, ident)
+	myident = ident
+	if authorized then
+		DisplayModule("hud", true)
+	else
+		PrintChatMessage("You are not logged into the CAD or your API id is not set.")
+	end
+end)
+
 -- Mini Module Commands
 RegisterCommand("minicad", function(source, args, rawCommand)
-	DisplayModule("hud", true)
-	--SetFocused(true)
+	TriggerServerEvent("SonoranCAD::mini:OpenMini")
 end, false)
 RegisterKeyMapping('minicad', 'Mini CAD', 'keyboard', '')
 
@@ -195,6 +205,12 @@ RegisterNUICallback('AttachToCall', function(data)
 	TriggerServerEvent("SonoranCAD::mini:AttachToCall", data.callId)
 end)
 
+-- Mini-Cad Callbacks
+RegisterNUICallback('DetachFromCall', function(data)
+	print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
+	TriggerServerEvent("SonoranCAD::mini:DetachFromCall", data.callId)
+end)
+
 -- Mini-Cad Events
 RegisterNetEvent("SonoranCAD::mini:CallSync")
 AddEventHandler("SonoranCAD::mini:CallSync", function(CallCache, EmergencyCache)
@@ -202,6 +218,7 @@ AddEventHandler("SonoranCAD::mini:CallSync", function(CallCache, EmergencyCache)
 	print(CallCache)
 	SendNUIMessage({
 		type = 'callSync',
+		ident = myident,
 		activeCalls = CallCache,
 		emergencyCalls = EmergencyCache
 	})
