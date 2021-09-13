@@ -73,7 +73,7 @@ local PushEventHandler = {
         end
     end,
     EVENT_DISPATCH_NOTE = function(body)
-        TriggerEvent('SonoranCAD::pushevents:DispatchNote', GetCallCache()[body.data.dispatch.callId], body.data)
+        TriggerEvent('SonoranCAD::pushevents:DispatchNote', GetCallCache()[body.data.callId], body.data)
 		if GetCallCache()[body.data.callId] ~= nil then
             local call = GetCallCache()[body.data.callId].dispatch
 			local newnotes = {}
