@@ -1,5 +1,7 @@
 var isApiBeingChecked = false;
 
+var myident = null;
+
 var CallCache = {
 	active: [],
 	emergency: []
@@ -18,18 +20,27 @@ function setupHud() {
 	$("#hudHeaderTime")[0].innerText = "Sonoran Mini-CAD";
 }
 
+function buttonShow(name, visible) {
+	$(name)[0].style.color = (visible? '': 'rgb(70,70,70)');
+}
+
 function refreshCall() {
 	setupHud();
-	//currCall = 0;
-	var nocall = false;
-	while (!CallCache.active[currCall]) {
-		currCall++;
-		if (currCall >= CallCache.active.length) {
-			nocall = true;
-			break;
-		};
-	}
-	if (nocall) {
+
+	let activeCall = true;
+
+	if (CallCache.active.length === 0) activeCall = false;
+	if (currCall > CallCache.active.length) currCall = 0;
+
+	console.log(CallCache.active[currCall].dispatch);
+	console.log("Your Ident: " + myident);
+
+	buttonShow("#btnPrevCall", false);
+	buttonShow("#btnAttach", false);
+	buttonShow("#btnDetail", false);
+	buttonShow("#btnNextCall", false);
+
+	if (!activeCall) {
 		$("#hudHeaderCalls")[0].innerText = '';
 		$("#callCode")[0].innerText = 'No Active Calls';
 		$("#callTitle")[0].innerText = 'There are currently no active calls';
@@ -37,15 +48,15 @@ function refreshCall() {
 		$("#callDescription")[0].innerText = '';
 		$("#callNotes")[0].innerHTML = '';
 		$("#callUnits")[0].innerHTML = '';
-		$("#btnPrevCall").hide();
-		$("#btnAttach").hide();
-		$("#btnDetail").hide();
-		$("#btnNextCall").hide();
 		$("#hudDetails")[0].style.display = "none";
 	} else {
 		let currentCall = CallCache.active[currCall].dispatch;
-		// $("#hudHeaderCalls")[0].innerText = (currCall + 1) + "/" + CallCache.active.length;
-		$("#hudHeaderCalls")[0].innerText = "Call #" + currentCall.callId;
+		buttonShow("#btnAttach", !isAttached(CallCache.active[currCall]));
+		buttonShow("#btnDetail", true);
+		buttonShow("#btnPrevCall", hasPrevCall());
+		buttonShow("#btnNextCall", hasNextCall());
+		$("#hudHeaderCalls")[0].innerText = (currCall + 1) + "/" + CallCache.active.length;
+		//$("#hudHeaderCalls")[0].innerText = "Call #" + currentCall.callId;
 		$("#callCode")[0].innerText = currentCall.code;
 		$("#callTitle")[0].innerText = currentCall.title;
 		$("#callLocation")[0].innerText = (currentCall.postal != "" ? currentCall.postal + " ": "") + currentCall.address;
@@ -94,18 +105,50 @@ function refreshCall() {
 
 function prevCall() {
 	if (currCall === 0) return;
+	//if (!CallCache.active[currCall - 1].dispatch.callId) return;
 	currCall -= 1;
 	refreshCall();
 }
 
 function nextCall() {
 	if (currCall === CallCache.active.length - 1) return;
+	//if (!CallCache.active[currCall + 1].dispatch.callId) return;
 	currCall += 1;
 	refreshCall();
 }
 
+const hasPrevCall = () => {
+	if (currCall === 0) return false;
+	//if (!CallCache.active[currCall - 1].dispatch.callId) return false;
+	return true;
+}
+
+const hasNextCall = () => {
+	if (currCall === CallCache.active.length - 1) return false;
+	//if (!CallCache.active[currCall + 1].dispatch.callId) return false;
+	return true;
+}
+
+const isAttached = (call) => {
+	return call.dispatch.idents.includes(myident);
+}
+
 function attach() {
-	$.post('https://tablet/AttachToCall', JSON.stringify({callId: CallCache.active[currCall].dispatch.callId}));
+	// Don't reattach to the same call.
+	if (isAttached(CallCache.active[currCall])) {
+		// Detach from the current call.
+		$.post('https://tablet/DetachFromCall', JSON.stringify({callId: CallCache.active[currCall].dispatch.callId}));
+	} else {
+		for (const call of CallCache.active) {
+			// Detach from other calls.			
+			if (isAttached(call)) {
+				console.log("Detaching from call #" + call.dispatch.callId);
+				$.post('https://tablet/DetachFromCall', JSON.stringify({callId: call.dispatch.callId}));
+			}
+		}
+		// Attach to the current call.
+		$.post('https://tablet/AttachToCall', JSON.stringify({callId: CallCache.active[currCall].dispatch.callId}));
+	}
 }
 
 function moduleVisible(module, visible) {
@@ -144,21 +187,18 @@ $(function () {
 			}
 		}
 		else if (event.data.type == "callSync") {
-			CallCache.active = event.data.activeCalls;
+			myident = event.data.ident;
+			CallCache.active = [];
+			for (const [key, call] of Object.entries(event.data.activeCalls)) {
+				if (call.dispatch_type) {
+					if (call.dispatch_type != "CALL_CLOSE") CallCache.active.push(call);
+				} else {
+					CallCache.active.push(call);
+				}
+			}
 			CallCache.emergency = event.data.emergencyCalls;
 			refreshCall();
 		}
-		else if (event.data.type == "newNote") {
-			for (const call of CallCache.active) {
-				if (event.data.newNote.callId === call.dispatch.callId) {
-					call.dispatch.notes.push(event.data.newNote.note);
-				}
-			}
-			refreshCall();
-		}
-		// else if (event.data.type == "backHome") {
-		// 	document.body.style.display = "block";
-		// }
 		else if (event.data.type == "setUrl") {
 			if (event.data.module == "cad") {
 				document.getElementById("cadFrame").src = event.data.url;

@@ -151,6 +151,11 @@ a {
 	align-items: center;
 	padding: 0 5;
 }
+
+#hudFrame #hudFooter .hidden {
+	color: rgb(70, 70, 70);
+}
+
 #hudDetails {
 	padding: 10px 10px;
 	background-color: rgb(70, 70, 70,0.8);
