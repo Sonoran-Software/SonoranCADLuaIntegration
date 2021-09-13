@@ -88,6 +88,7 @@ EndpointsRequireId = {
 function registerApiType(type, endpoint)
     ApiEndpoints[type] = endpoint
 end
+exports("registerApiType", registerApiType)
 
 local rateLimitedEndpoints = {}
 
