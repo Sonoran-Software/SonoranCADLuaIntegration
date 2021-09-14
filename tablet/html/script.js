@@ -32,8 +32,8 @@ function refreshCall() {
 	if (CallCache.active.length === 0) activeCall = false;
 	if (currCall > CallCache.active.length) currCall = 0;
 
-	console.log(CallCache.active[currCall].dispatch);
-	console.log("Your Ident: " + myident);
+	//console.log(CallCache.active[currCall].dispatch);
+	//console.log("Your Ident: " + myident);
 
 	buttonShow("#btnPrevCall", false);
 	buttonShow("#btnAttach", false);
@@ -136,8 +136,13 @@ const isAttached = (call) => {
 function attach() {
 	// Don't reattach to the same call.
 	if (isAttached(CallCache.active[currCall])) {
-		// Detach from the current call.
-		$.post('https://tablet/DetachFromCall', JSON.stringify({callId: CallCache.active[currCall].dispatch.callId}));
+		for (const call of CallCache.active) {
+			// Detach from other calls.			
+			if (isAttached(call)) {
+				console.log("Detaching from call #" + call.dispatch.callId);
+				$.post('https://tablet/DetachFromCall', JSON.stringify({callId: call.dispatch.callId}));
+			}
+		}
 	} else {
 		for (const call of CallCache.active) {
 			// Detach from other calls.			
@@ -197,6 +202,7 @@ $(function () {
 				}
 			}
 			CallCache.emergency = event.data.emergencyCalls;
+			console.log(CallCache.active);
 			refreshCall();
 		}
 		else if (event.data.type == "setUrl") {
@@ -227,28 +233,26 @@ $(function () {
 			let t = new Date().getTime();
 			if (event.data.module == "cad") {
 				let s = document.getElementById('cadFrame').src;
-				document.getElementById('cadFrame').src = s + "&" + t.toString();	
+				document.getElementById('cadFrame').src = s + "&" + t.toString();
 			}
 		}
 	});
+
+	document.getElementById('cadFrame').onkeyup = function (data) {
+		switch (data.which) {
+			case 27:
+				$.post('https://tablet/NUIFocusOff', JSON.stringify({}));
+				break;
+			default:
+				break;
+		}
+	}
 
 	document.onkeyup = function (data) {
 		switch (data.which) {
 			case 27:
 				$.post('https://tablet/NUIFocusOff', JSON.stringify({}));
-				break;
-				// Commented out so it doesn't break the tablet
-			// case 37:
-			// 	prevCall();
-			// 	break;
-			// case 75:
-			// 	attach();
-			// 	break;
-			// case 76:
-			// 	toggleDetail();
-			// 	break;
-			// case 39:
-			// 	nextCall();		
+				break;	
 			default:
 				break;
 		}

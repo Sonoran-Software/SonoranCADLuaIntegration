@@ -37,13 +37,11 @@ end)
 exports["sonorancad"]:registerApiType("ATTACH_UNIT", "emergency")
 RegisterServerEvent("SonoranCAD::mini:AttachToCall")
 AddEventHandler("SonoranCAD::mini:AttachToCall", function(callId)
-    print("cl_main -> sv_main: SonoranCAD::mini:AttachToCall")
+    --Debug Only
+    --print("cl_main -> sv_main: SonoranCAD::mini:AttachToCall")
     local ident = exports["sonorancad"]:GetUnitByPlayerId(source)
     if ident ~= nil then
         local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = 1}
-        exports["sonorancad"]:performApiRequest({data}, "DETACH_UNIT", function(res)
-            print("Detach OK: " .. tostring(res))
-        end)
         exports["sonorancad"]:performApiRequest({data}, "ATTACH_UNIT", function(res)
             print("Attach OK: " .. tostring(res))
         end)
@@ -56,16 +54,17 @@ exports["sonorancad"]:registerApiType("ADD_CALL_NOTE", "emergency")
 exports["sonorancad"]:registerApiType("DETACH_UNIT", "emergency")
 RegisterServerEvent("SonoranCAD::mini:DetachFromCall")
 AddEventHandler("SonoranCAD::mini:DetachFromCall", function(callId)
-    print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
+    --Debug Only
+    --print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
     local ident = exports["sonorancad"]:GetUnitByPlayerId(source)
     if ident ~= nil then
         local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = 1}
         exports["sonorancad"]:performApiRequest({data}, "DETACH_UNIT", function(res)
             print("Detach OK: " .. tostring(res))
-        end)
-        data = {callId = callId, serverId = 1, note = json.encode(ident) .. " detached."}
-        exports["sonorancad"]:performApiRequest({data}, "ADD_CALL_NOTE", function(res)
-            print("Note Add OK: " .. tostring(res))
+            data = {callId = callId, serverId = 1, note = ident.data.unitNum .. " detached."}
+            exports["sonorancad"]:performApiRequest({data}, "ADD_CALL_NOTE", function(res)
+                print("Note Add OK: " .. tostring(res))
+            end)
         end)
     else
         print("Unable to detach... if api id is set properly, try relogging into cad.")
