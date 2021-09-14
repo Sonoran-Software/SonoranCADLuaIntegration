@@ -4,7 +4,7 @@ usingTablet = false
 myident = nil
 
 -- Debugging Information
-isDebugging = true
+isDebugging = false
 
 function DebugMessage(message, module)
 	if not isDebugging then return end
@@ -201,21 +201,24 @@ end
 
 -- Mini-Cad Callbacks
 RegisterNUICallback('AttachToCall', function(data)
-	print("cl_main -> sv_main: SonoranCAD::mini:AttachToCall")
+	--Debug Only
+	--print("cl_main -> sv_main: SonoranCAD::mini:AttachToCall")
 	TriggerServerEvent("SonoranCAD::mini:AttachToCall", data.callId)
 end)
 
 -- Mini-Cad Callbacks
 RegisterNUICallback('DetachFromCall', function(data)
-	print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
+	--Debug Only
+	--print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
 	TriggerServerEvent("SonoranCAD::mini:DetachFromCall", data.callId)
 end)
 
 -- Mini-Cad Events
 RegisterNetEvent("SonoranCAD::mini:CallSync")
 AddEventHandler("SonoranCAD::mini:CallSync", function(CallCache, EmergencyCache)
-	print("sv_main -> cl_main: SonoranCAD::mini:CallSync")
-	print(CallCache)
+	--Debug Only
+	--print("sv_main -> cl_main: SonoranCAD::mini:CallSync")
+	--print(json.encode(CallCache))
 	SendNUIMessage({
 		type = 'callSync',
 		ident = myident,
