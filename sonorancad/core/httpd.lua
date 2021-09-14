@@ -95,51 +95,56 @@ local PushEventHandler = {
         -- fetch the call and unit data
         local call = GetCallCache()[body.data.callId]
         if body.data.idents ~= nil then
-            for i=1, #body.data.idents do
-                local unit = GetUnitById(body.data.idents[i])
-                if call and unit then
-                    TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, GetUnitCache()[unit])
-                    local idx = nil
-                    for i, u in pairs(call.dispatch.idents) do
-                        if u == unit then
-                            idx = i
-                        end
+            idents = body.data.idents
+        elseif body.data.ident ~= nil then
+            table.insert(idents, body.data.ident)
+        end
+        for i=1, #idents do
+            local unit = GetUnitById(idents[i])
+            if call and unit then
+                TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
+                local idx = nil
+                for i, u in pairs(call.dispatch.idents) do
+                    if u == unit then
+                        idx = i
                     end
-                    if idx == nil then
-                        table.insert(call.dispatch.idents, unit)
-                        SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
-                    end
-                else
-                    debugLog(("Attach failure, unknown call or unit (C: %s) (U: %s)"):format(json.encode(call), json.encode(unit)))
-                    return false, "invalid call or unit"
                 end
+                if idx == nil then
+                    table.insert(call.dispatch.idents, unit)
+                    SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
+                end
+            else
+                debugLog(("Attach failure, unknown call or unit (C: %s) (U: %s)"):format(json.encode(call), json.encode(unit)))
+                return false, "invalid call or unit"
             end
-        else
-            debugLog("No idents in attachment?!")
         end
         return true
     end,
     EVENT_DISPATCH_UNIT_DETACH = function(body)
         local call = GetCallCache()[body.data.callId]
+        local idents = {}
         if body.data.idents ~= nil then
-            for i=1, #body.data.idents do
-                local unit = GetUnitById(body.data.idents[i])
-                if call and unit then
-                    TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, GetUnitCache()[unit])
-                    local idx = nil
-                    for i, u in pairs(call.dispatch.idents) do
-                        if u == unit then
-                            idx = i
-                        end
+            idents = body.data.idents
+        elseif body.data.ident ~= nil then
+            table.insert(idents, body.data.ident)
+        end
+        for i=1, #idents do
+            local unit = GetUnitById(idents[i])
+            if call and unit then
+                TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
+                local idx = nil
+                for i, u in pairs(idents) do
+                    if u == unit then
+                        idx = i
                     end
-                    if idx ~= nil then
-                        table.remove(call.dispatch.idents, idx)
-                        SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
-                    end
-                else
-                    debugLog(("Attach failure, unknown call or unit (C: %s) (U: %s)"):format(json.encode(call), json.encode(unit)))
-                    return false, "invalid call or unit"
                 end
+                if idx ~= nil then
+                    table.remove(call.dispatch.idents, idx)
+                    SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
+                end
+            else
+                debugLog(("Detach failure, unknown call or unit (C: %s) (U: %s)"):format(json.encode(call), json.encode(unit)))
+                return false, "invalid call or unit"
             end
         end
         return true
@@ -157,6 +162,14 @@ local PushEventHandler = {
         SetEmergencyCache(body.data.callId, nil)
         TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callId)
         return true
+    end,
+    EVENT_UNIT_PANIC = function(body)
+        local unit = GetUnitById(body.data.identId)
+        if unit then
+            TriggerEvent("SonoranCAD::pushevents:UnitPanic", unit, body.data.identId)
+        else
+            debugLog("Ignore panic event, unit not found")
+        end
     end,
     EVENT_STREETSIGN_UPDATED = function(body)
         if body == nil or body.data == nil or body.data.signData == nil then
