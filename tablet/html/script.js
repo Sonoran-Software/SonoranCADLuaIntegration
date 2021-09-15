@@ -51,7 +51,12 @@ function refreshCall() {
 		$("#hudDetails")[0].style.display = "none";
 	} else {
 		let currentCall = CallCache.active[currCall].dispatch;
-		buttonShow("#btnAttach", !isAttached(CallCache.active[currCall]));
+		buttonShow("#btnAttach", true);
+		if (isAttached(CallCache.active[currCall])) {
+			$("#btnAttach")[0].innerText = "[K] Detach";
+		} else {
+			$("#btnAttach")[0].innerText = "[K] Attach";
+		}
 		buttonShow("#btnDetail", true);
 		buttonShow("#btnPrevCall", hasPrevCall());
 		buttonShow("#btnNextCall", hasNextCall());
