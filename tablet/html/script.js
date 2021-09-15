@@ -51,7 +51,7 @@ function refreshCall() {
 		$("#hudDetails")[0].style.display = "none";
 	} else {
 		let currentCall = CallCache.active[currCall].dispatch;
-		buttonShow("#btnAttach", true);
+		buttonShow("#btnAttach", false);
 		if (isAttached(CallCache.active[currCall])) {
 			$("#btnAttach")[0].innerText = "[K] Detach";
 		} else {
