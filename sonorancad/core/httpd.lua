@@ -133,9 +133,9 @@ local PushEventHandler = {
             if call and unit then
                 TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
                 local idx = nil
-                for i, u in pairs(idents) do
-                    if u == unit then
-                        idx = i
+                for x=1, #call.dispatch.idents do
+                    if call.dispatch.idents[x] == idents[i] then
+                        idx = x
                     end
                 end
                 if unit ~= nil then
