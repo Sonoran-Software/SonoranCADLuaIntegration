@@ -84,7 +84,7 @@ local PushEventHandler = {
 				end
 			end
 			call.notes = newnotes
-			SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call })
+			SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
             return true
 		else
 			debugLog(("Unknown call note update (call ID %s), current cache: %s"):format(body.data.callId, json.encode(CallCache)))
@@ -101,7 +101,7 @@ local PushEventHandler = {
         end
         for i=1, #idents do
             local unit = GetUnitById(idents[i])
-            print("UNIT: "..json.encode(unit))
+            debugLog("UNIT: "..json.encode(unit))
             if call and unit then
                 TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, GetUnitCache()[unit])
                 local idx = nil
@@ -110,7 +110,7 @@ local PushEventHandler = {
                         idx = x
                     end
                 end
-                print("INDEX VALUE: "..tostring(idx))
+                debugLog("INDEX VALUE: "..tostring(idx))
                 if idx == nil then
                     table.insert(call.dispatch.idents, idents[i])
                     SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })

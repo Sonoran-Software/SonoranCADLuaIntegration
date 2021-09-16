@@ -41,10 +41,10 @@ AddEventHandler("SonoranCAD::mini:AttachToCall", function(callId)
     if ident ~= nil then
         local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = 1}
         exports["sonorancad"]:performApiRequest({data}, "ATTACH_UNIT", function(res)
-            print("Attach OK: " .. tostring(res))
+            --print("Attach OK: " .. tostring(res))
         end)
     else
-        print("Unable to attach... if api id is set properly, try relogging into cad.")
+        --print("Unable to attach... if api id is set properly, try relogging into cad.")
     end
 end)
 
@@ -55,9 +55,9 @@ AddEventHandler("SonoranCAD::mini:DetachFromCall", function(callId)
     if ident ~= nil then
         local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = 1}
         exports["sonorancad"]:performApiRequest({data}, "DETACH_UNIT", function(res)
-            print("Detach OK: " .. tostring(res))
+            --print("Detach OK: " .. tostring(res))
         end)
     else
-        print("Unable to detach... if api id is set properly, try relogging into cad.")
+        --print("Unable to detach... if api id is set properly, try relogging into cad.")
     end
 end)
