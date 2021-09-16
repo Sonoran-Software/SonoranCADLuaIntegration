@@ -156,6 +156,16 @@ RegisterCommand("minicadn", function(source, args, rawCommand)
 end, false)
 RegisterKeyMapping('minicadn', 'Mini CAD', 'keyboard', CONFIG.keyNext)
 
+TriggerEvent('chat:addSuggestion', '/minicadsize', "Resize the Mini-CAD to specific width and height in pixels.", {
+	{ name="Width", help="Width in pixels" }, { name="Height", help="Height in pixels" }
+})
+RegisterCommand("minicadsize", function(source,args,rawCommand)
+	if not args[1] and not args[2] then return end
+	SetModuleSize("hud", args[1], args[2])
+end)
+RegisterCommand("minicadrefresh", function()
+	RefreshModule("hud")
+end)
 
 -- CAD Module Commands
 RegisterCommand("showcad", function(source, args, rawCommand)
