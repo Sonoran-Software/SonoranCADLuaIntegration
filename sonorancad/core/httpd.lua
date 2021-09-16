@@ -99,7 +99,7 @@ local PushEventHandler = {
         for i=1, #idents do
             local unit = GetUnitById(idents[i])
             if call and unit then
-                TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
+                TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, GetUnitCache()[unit])
                 local idx = nil
                 for i, u in pairs(call.dispatch.idents) do
                     if u == unit then
@@ -128,7 +128,7 @@ local PushEventHandler = {
         for i=1, #idents do
             local unit = GetUnitById(idents[i])
             if call and unit then
-                TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
+                TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, GetUnitCache()[unit])
                 local idx = nil
                 for i, u in pairs(idents) do
                     if u == unit then
@@ -136,7 +136,7 @@ local PushEventHandler = {
                     end
                 end
                 if idx ~= nil then
-                    table.remove(call.dispatch.idents, idx)
+                    table.remove(call.dispatch.idents, unit)
                     SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
                 end
             else
