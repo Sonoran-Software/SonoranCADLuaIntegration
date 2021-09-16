@@ -63,7 +63,7 @@ local PushEventHandler = {
     EVENT_DISPATCH_CLOSED = function(body)
         local call = GetCallCache()[body.data.callId]
         if call ~= nil then
-            local d = { dispatch_type = "CALL_CLOSE", dispatch = call }
+            local d = { dispatch_type = "CALL_CLOSE", dispatch = call.dispatch ~= nil and call.dispatch or call }
             SetCallCache(body.data.callId, d)
             TriggerEvent('SonoranCAD::pushevents:DispatchEvent', d)
             return true
@@ -98,16 +98,18 @@ local PushEventHandler = {
         end
         for i=1, #idents do
             local unit = GetUnitById(idents[i])
+            print("UNIT: "..json.encode(unit))
             if call and unit then
                 TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, GetUnitCache()[unit])
                 local idx = nil
-                for i, u in pairs(call.dispatch.idents) do
-                    if u == unit then
-                        idx = i
+                for x=1, #call.dispatch.idents do
+                    if call.dispatch.idents[x] == idents[i] then
+                        idx = x
                     end
                 end
+                print("INDEX VALUE: "..tostring(idx))
                 if idx == nil then
-                    table.insert(call.dispatch.idents, unit)
+                    table.insert(call.dispatch.idents, idents[i])
                     SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
                 end
             else
@@ -135,8 +137,11 @@ local PushEventHandler = {
                         idx = i
                     end
                 end
-                if idx ~= nil then
-                    table.remove(call.dispatch.idents, unit)
+                if unit ~= nil then
+                    print("DETACH DISPATCH: "..json.encode(call.dispatch))
+                    print("DETACH IDENTS: "..json.encode(call.dispatch.idents))
+                    table.remove(call.dispatch.idents, idx)
+                    print("DETACH IDENTS AFTER: "..json.encode(call.dispatch.idents))
                     SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
                 end
             else
