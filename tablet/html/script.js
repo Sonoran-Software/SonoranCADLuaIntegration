@@ -7,6 +7,13 @@ var CallCache = {
 	emergency: []
 };
 
+const KeyMaps = {
+	previous: "",
+	attach: "",
+	detail: "",
+	next: ""
+}
+
 var currCall = 0;
 
 function toggleDetail() {
@@ -20,8 +27,16 @@ function setupHud() {
 	$("#hudHeaderTime")[0].innerText = "Sonoran Mini-CAD";
 }
 
-function buttonShow(name, visible) {
+function buttonShow(name, visible, label) {
 	$(name)[0].style.color = (visible? '': 'rgb(70,70,70)');
+	if (label) $(name)[0].innerText = label;
+}
+
+function setHotkeys(keyMap) {
+	KeyMaps.previous = keyMap.previous,
+	KeyMaps.attach = keyMap.attach,
+	KeyMaps.detail = keyMap.detail,
+	KeyMaps.next = keyMap.next
 }
 
 function refreshCall() {
@@ -35,10 +50,10 @@ function refreshCall() {
 	//console.log(CallCache.active[currCall].dispatch);
 	//console.log("Your Ident: " + myident);
 
-	buttonShow("#btnPrevCall", false);
-	buttonShow("#btnAttach", false);
-	buttonShow("#btnDetail", false);
-	buttonShow("#btnNextCall", false);
+	buttonShow("#btnPrevCall", false, (KeyMaps.previous == "LEFT"? "[&#9664;]" : "[" + KeyMaps.previous + "]") + " Prev");
+	buttonShow("#btnAttach", false, "[" + KeyMaps.attach + "] Attach");
+	buttonShow("#btnDetail", false, "[" + KeyMaps.detail + "] Details");
+	buttonShow("#btnNextCall", false, "Next " + (KeyMaps.next == "RIGHT"? "[&#9654;]" : "[" + KeyMaps.next + "]"));
 
 	if (!activeCall) {
 		$("#hudHeaderCalls")[0].innerText = '';
@@ -53,9 +68,9 @@ function refreshCall() {
 		let currentCall = CallCache.active[currCall].dispatch;
 		buttonShow("#btnAttach", true);
 		if (isAttached(CallCache.active[currCall])) {
-			$("#btnAttach")[0].innerText = "[K] Detach";
+			buttonShow("#btnAttach", true, "[" + KeyMaps.attach + "] Detach");
 		} else {
-			$("#btnAttach")[0].innerText = "[K] Attach";
+			buttonShow("#btnAttach", true, "[" + KeyMaps.attach + "] Attach");
 		}
 		buttonShow("#btnDetail", true);
 		buttonShow("#btnPrevCall", hasPrevCall());
@@ -177,6 +192,7 @@ $(function () {
 				isApiBeingChecked = true;
 				$("#check-api-data").show();
 			}
+			setHotkeys(event.data.keyMap);
 		}
 		else if (event.data.type == "command") {
 			switch (event.data.key) {

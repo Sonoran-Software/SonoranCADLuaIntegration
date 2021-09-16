@@ -82,7 +82,13 @@ function DisplayModule(module, show)
 		type = "display",
 		module = module,
 		apiCheck = apiCheck,
-		enabled = show
+		enabled = show,
+		keyMap = {
+			previous = CONFIG.keyPrevious,
+			attach = CONFIG.keyAttach,
+			detail = CONFIG.keyDetail,
+			next = CONFIG.keyNext
+		}
 	})
 end
 
@@ -133,22 +139,22 @@ RegisterKeyMapping('minicad', 'Mini CAD', 'keyboard', '')
 RegisterCommand("minicadp", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="prev" })
 end, false)
-RegisterKeyMapping('minicadp', 'Mini CAD', 'keyboard', 'LEFT')
+RegisterKeyMapping('minicadp', 'Mini CAD', 'keyboard', CONFIG.keyPrevious)
 
 RegisterCommand("minicada", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="attach" })
 end, false)
-RegisterKeyMapping('minicada', 'Mini CAD', 'keyboard', 'K')
+RegisterKeyMapping('minicada', 'Mini CAD', 'keyboard', CONFIG.keyAttach)
 
 RegisterCommand("minicadd", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="detail" })
 end, false)
-RegisterKeyMapping('minicadd', 'Mini CAD', 'keyboard', 'L')
+RegisterKeyMapping('minicadd', 'Mini CAD', 'keyboard', CONFIG.keyDetail)
 
 RegisterCommand("minicadn", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="next" })
 end, false)
-RegisterKeyMapping('minicadn', 'Mini CAD', 'keyboard', 'RIGHT')
+RegisterKeyMapping('minicadn', 'Mini CAD', 'keyboard', CONFIG.keyNext)
 
 
 -- CAD Module Commands
