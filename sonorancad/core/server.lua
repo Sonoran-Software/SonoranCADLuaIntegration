@@ -66,6 +66,7 @@ ApiEndpoints = {
     ["UNIT_PANIC"] = "emergency",
     ["GET_VERSION"] = "general",
     ["GET_SERVERS"] = "general",
+    ["ATTACH_UNIT"] = "emergency",
     ["DETACH_UNIT"] = "emergency"
 }
 
