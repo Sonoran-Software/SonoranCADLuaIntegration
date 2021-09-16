@@ -67,7 +67,11 @@ ApiEndpoints = {
     ["GET_VERSION"] = "general",
     ["GET_SERVERS"] = "general",
     ["ATTACH_UNIT"] = "emergency",
-    ["DETACH_UNIT"] = "emergency"
+    ["DETACH_UNIT"] = "emergency",
+    ["GET_SERVERS"] = "general",
+    ["ATTACH_UNIT"] = "emergency",
+    ["DETACH_UNIT"] = "emergency",
+    ["ADD_CALL_NOTE"] = "emergency"
 }
 
 EndpointsRequireId = {
