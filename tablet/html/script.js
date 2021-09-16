@@ -46,10 +46,10 @@ function refreshCall() {
 	if (CallCache.active.length === 0) activeCall = false;
 	if (currCall > CallCache.active.length) currCall = 0;
 
-	buttonShow("#btnPrevCall", false, (KeyMaps.previous == "LEFT"? "[&#9664;]" : "[" + KeyMaps.previous + "]") + " Prev");
+	buttonShow("#btnPrevCall", false);
 	buttonShow("#btnAttach", false, "[" + KeyMaps.attach + "] Attach");
 	buttonShow("#btnDetail", false, "[" + KeyMaps.detail + "] Details");
-	buttonShow("#btnNextCall", false, "Next " + (KeyMaps.next == "RIGHT"? "[&#9654;]" : "[" + KeyMaps.next + "]"));
+	buttonShow("#btnNextCall", false);
 
 	if (!activeCall) {
 		$("#hudHeaderCalls")[0].innerText = '';
