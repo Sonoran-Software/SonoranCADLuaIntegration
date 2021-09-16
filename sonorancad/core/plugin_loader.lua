@@ -126,7 +126,7 @@ function CheckForPluginUpdate(name, forceUpdate)
                     end
                 end
                 if remote.configVersion ~= nil and plugin.configVersion ~= nil then
-                    if remote.configVersion ~= plugin.configVersion then
+                    if remote.configVersion ~= plugin.configVersion and not Config.debugMode then
                         errorLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(name, name))
                         Config.plugins[name].enabled = false
                         Config.plugins[name].disableReason = "outdated config file"

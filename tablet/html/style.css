@@ -1,6 +1,6 @@
 /* The device with borders */
-
-#tabletDiv {
+/* Tablet Device */
+#cadDiv {
 	position: absolute;
 	top: 25%;
 	left: 50%;
@@ -14,13 +14,12 @@
 	border-radius: 15px;
 	background: black;
 }
-.tabletDiv .content {
+.cadDiv .content {
 	margin-left: 37%;
 	margin-bottom: 15%;
 	margin-top: 10%;
 	border: 5px;
 	border-color: yellow
-	
 	
 }
 #blackbar {
@@ -41,4 +40,162 @@
 	line-height:20px;
 	font-weight: bolder;
 	text-align:center;
+}
+
+/* Mini-Cad Hud */
+a {
+	color: white;
+	text-decoration: none; /* no underline */
+	font-size: 18px;
+}
+
+.control {
+	font-size: 18px;
+}
+
+#hudDiv {
+	font-family: system-ui;
+	position: absolute;
+	top: 3%;
+	left: 86%;
+	transform: translate(-50%, 0);
+	width: 300px;
+	height: 130px;
+
+	border: 1px black solid;
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+	border-radius: 1px;
+}
+#hudFrame {
+	text-align: center;
+}
+#hudFrame #hudHeader {
+	height: 15%;
+	background-color: rgb(70, 70, 70);
+	color: white;
+	display: flex;
+    justify-content: space-between;
+	align-items: center;
+	font-size: 12px;
+	padding: 0 5;
+	border-bottom: 1px solid red;
+}
+#hudFrame #hudContent {
+	height: 65%;
+	background-color: rgb(70, 70, 70,0.8);
+	font-weight: bold;
+	color: white;
+	display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+	flex-direction: column;
+}
+#hudFrame #hudContent #callCode {
+	font-size: 14px;
+}
+#hudFrame #hudContent #callTitle {
+	font-size: 12px;
+}
+#hudFrame #hudContent #callLocation {
+	font-size: 12px;
+}
+#hudFrame #hudContent #callUnits {
+	font-size: 12px;
+	display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+#hudFrame #hudContent #callUnits #nounits {
+	color: tomato;
+}
+#hudFrame #hudContent #callUnits .unit {
+	background-color: #9c27b0;
+    border-radius: 4px;
+    padding: 0.5px 3px;
+}
+/* #hudFrame .hudContent #callUnits .unavailable {
+	background-color: rgb(193, 0, 21);
+    border-radius: 4px;
+    padding: 0.5px 3px;
+}
+#hudFrame .hudContent #callUnits .busy {
+	background-color: rgb(255, 111, 0);
+    border-radius: 4px;
+    padding: 0.5px 3px;
+}
+#hudFrame .hudContent #callUnits .available {
+	background-color: rgb(38, 166, 154);
+    border-radius: 4px;
+    padding: 0.5px 3px;
+}
+#hudFrame .hudContent #callUnits .enroute {
+	background-color: rgb(38, 83, 166);;
+    border-radius: 4px;
+    padding: 0.5px 3px;
+}
+#hudFrame .hudContent #callUnits .onscene {
+	background-color: rgb(38, 166, 66);
+    border-radius: 4px;
+    padding: 0.5px 3px;
+} */
+
+#hudFrame #hudFooter {
+	height: 20%;
+	background-color: rgb(70, 70, 70);
+	color: white;
+	display: flex;
+    justify-content: space-between;
+	align-items: center;
+	padding: 0 5;
+}
+
+#hudFrame #hudFooter .hidden {
+	color: rgb(70, 70, 70);
+}
+
+#hudDetails {
+	padding: 10px 10px;
+	background-color: rgb(70, 70, 70,0.8);
+	font-weight: bold;
+	color: white;
+	display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+	flex-direction: column;
+}
+#hudDetails .label {
+	padding-bottom: 5px;
+}
+#hudDetails #callDescription {
+	font-size: 12px;
+	padding-bottom: 5px;
+}
+#hudDetails #callNotes {
+	display: flex;
+    flex-direction: column;
+}
+#hudDetails #callNotes span {
+	font-size: 11px;
+}
+#hudInput {
+	height: 20%;
+	background-color: rgb(70, 70, 70);
+	color: white;
+	display: flex;
+    justify-content: space-between;
+	align-items: center;
+	padding: 0 5;
+}
+#hudInput input {
+	background-color: rgb(70, 70, 70,0.8);
+	color: white;
+}
+#hudInput #newnote {
+	width: 90%;
+}
+#hudInput #addnote {
+	width: 10%;
 }
