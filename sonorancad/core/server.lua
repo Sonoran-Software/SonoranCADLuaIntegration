@@ -68,9 +68,6 @@ ApiEndpoints = {
     ["GET_SERVERS"] = "general",
     ["ATTACH_UNIT"] = "emergency",
     ["DETACH_UNIT"] = "emergency",
-    ["GET_SERVERS"] = "general",
-    ["ATTACH_UNIT"] = "emergency",
-    ["DETACH_UNIT"] = "emergency",
     ["ADD_CALL_NOTE"] = "emergency"
 }
 

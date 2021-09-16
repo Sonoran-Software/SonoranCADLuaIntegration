@@ -101,14 +101,16 @@ local PushEventHandler = {
         end
         for i=1, #idents do
             local unit = GetUnitById(idents[i])
+            print("UNIT: "..json.encode(unit))
             if call and unit then
-                TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, unit)
+                TriggerEvent('SonoranCAD::pushevents:UnitAttach', call, GetUnitCache()[unit])
                 local idx = nil
                 for x=1, #call.dispatch.idents do
                     if call.dispatch.idents[x] == idents[i] then
                         idx = x
                     end
                 end
+                print("INDEX VALUE: "..tostring(idx))
                 if idx == nil then
                     table.insert(call.dispatch.idents, idents[i])
                     SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
@@ -131,7 +133,7 @@ local PushEventHandler = {
         for i=1, #idents do
             local unit = GetUnitById(idents[i])
             if call and unit then
-                TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, unit)
+                TriggerEvent('SonoranCAD::pushevents:UnitDetach', call, GetUnitCache()[unit])
                 local idx = nil
                 for x=1, #call.dispatch.idents do
                     if call.dispatch.idents[x] == idents[i] then
