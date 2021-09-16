@@ -37,8 +37,6 @@ end)
 exports["sonorancad"]:registerApiType("ATTACH_UNIT", "emergency")
 RegisterServerEvent("SonoranCAD::mini:AttachToCall")
 AddEventHandler("SonoranCAD::mini:AttachToCall", function(callId)
-    --Debug Only
-    --print("cl_main -> sv_main: SonoranCAD::mini:AttachToCall")
     local ident = exports["sonorancad"]:GetUnitByPlayerId(source)
     if ident ~= nil then
         local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = 1}
@@ -53,8 +51,6 @@ end)
 exports["sonorancad"]:registerApiType("DETACH_UNIT", "emergency")
 RegisterServerEvent("SonoranCAD::mini:DetachFromCall")
 AddEventHandler("SonoranCAD::mini:DetachFromCall", function(callId)
-    --Debug Only
-    --print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
     local ident = exports["sonorancad"]:GetUnitByPlayerId(source)
     if ident ~= nil then
         local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = 1}

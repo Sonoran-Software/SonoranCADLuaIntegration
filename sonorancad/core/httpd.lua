@@ -98,7 +98,6 @@ local PushEventHandler = {
             idents = body.data.idents
         elseif body.data.ident ~= nil then
             table.insert(idents, body.data.ident)
-            print("UNIT: "..json.encode(unit))
         end
         for i=1, #idents do
             local unit = GetUnitById(idents[i])
@@ -110,7 +109,6 @@ local PushEventHandler = {
                         idx = x
                     end
                 end
-                print("INDEX VALUE: "..tostring(idx))
                 if idx == nil then
                     table.insert(call.dispatch.idents, idents[i])
                     SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
@@ -141,10 +139,7 @@ local PushEventHandler = {
                     end
                 end
                 if unit ~= nil then
-                    print("DETACH DISPATCH: "..json.encode(call.dispatch))
-                    print("DETACH IDENTS: "..json.encode(call.dispatch.idents))
                     table.remove(call.dispatch.idents, idx)
-                    print("DETACH IDENTS AFTER: "..json.encode(call.dispatch.idents))
                     SetCallCache(body.data.callId, { dispatch_type = "CALL_EDIT", dispatch = call.dispatch ~= nil and call.dispatch or call })
                 end
             else

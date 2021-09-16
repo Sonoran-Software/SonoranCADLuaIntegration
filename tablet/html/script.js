@@ -23,7 +23,6 @@ function toggleDetail() {
 }
 
 function setupHud() {
-	//console.log('setting up ui');
 	$("#hudHeaderTime")[0].innerText = "Sonoran Mini-CAD";
 }
 
@@ -46,9 +45,6 @@ function refreshCall() {
 
 	if (CallCache.active.length === 0) activeCall = false;
 	if (currCall > CallCache.active.length) currCall = 0;
-
-	//console.log(CallCache.active[currCall].dispatch);
-	//console.log("Your Ident: " + myident);
 
 	buttonShow("#btnPrevCall", false, (KeyMaps.previous == "LEFT"? "[&#9664;]" : "[" + KeyMaps.previous + "]") + " Prev");
 	buttonShow("#btnAttach", false, "[" + KeyMaps.attach + "] Attach");
@@ -92,6 +88,7 @@ function refreshCall() {
 			for (var i = 0; i<currentCall.units.length; i++) {
 				//console.log(currentCall.units[i].status);
 				let style = "unit";
+				// Not Yet Implemented!
 				// switch (currentCall.units[i].status) {
 				// 	case 0:
 				// 		style += " unavailable"
@@ -117,35 +114,27 @@ function refreshCall() {
 		}
 
 	}
-
-	//console.log(currentCall.units);
-	
-	//TODO: Setup Units
 }
 
 function prevCall() {
 	if (currCall === 0) return;
-	//if (!CallCache.active[currCall - 1].dispatch.callId) return;
 	currCall -= 1;
 	refreshCall();
 }
 
 function nextCall() {
 	if (currCall === CallCache.active.length - 1) return;
-	//if (!CallCache.active[currCall + 1].dispatch.callId) return;
 	currCall += 1;
 	refreshCall();
 }
 
 const hasPrevCall = () => {
 	if (currCall === 0) return false;
-	//if (!CallCache.active[currCall - 1].dispatch.callId) return false;
 	return true;
 }
 
 const hasNextCall = () => {
 	if (currCall === CallCache.active.length - 1) return false;
-	//if (!CallCache.active[currCall + 1].dispatch.callId) return false;
 	return true;
 }
 
