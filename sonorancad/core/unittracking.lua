@@ -190,7 +190,7 @@ CreateThread(function()
         return
     end
     local payload = { serverId = Config.serverId}
-    while true do
+    --while true do
         performApiRequest({payload},"GET_CALLS",function(response)
             local calls = json.decode(response)
             for k, v in pairs(calls.activeCalls) do
@@ -200,6 +200,6 @@ CreateThread(function()
                 EmergencyCache[v.callId] = v
             end
         end)
-        Citizen.Wait(30 * 1000)
-    end
+        --Citizen.Wait(30 * 1000)
+    --end
 end)
