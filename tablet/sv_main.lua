@@ -15,6 +15,8 @@ CreateThread(function()
         for k, v in pairs(CONFIG) do
             if GetConvar("sonorantablet_"..k, "NONE") == "NONE" then
                 SetConvarReplicated("sonorantablet_"..k, tostring(v))
+            else
+                SetConvarReplicated("sonorantablet_"..k, GetConvar("sonorantablet_"..k, "NONE"))
             end
         end
     end
