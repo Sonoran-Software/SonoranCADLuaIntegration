@@ -20,7 +20,7 @@ Citizen.CreateThread(function()
 	InitModuleSize("cad")
 	InitModuleSize("hud")
 
-	SetModuleUrl("cad", CONFIG.cadUrl)
+	SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/'))
 
 	-- Disable Controls Loop
 	while true do
@@ -84,10 +84,10 @@ function DisplayModule(module, show)
 		apiCheck = apiCheck,
 		enabled = show,
 		keyMap = {
-			previous = CONFIG.keyPrevious,
-			attach = CONFIG.keyAttach,
-			detail = CONFIG.keyDetail,
-			next = CONFIG.keyNext
+			previous = GetConvar("sonorantablet_keyPrevious", 'LEFT'),
+			attach = GetConvar("sonorantablet_keyAttach", 'K'),
+			detail = GetConvar("sonorantablet_keyDetail", 'L'),
+			next = GetConvar("sonorantablet_keyNext", 'RIGHT')
 		}
 	})
 end
@@ -139,22 +139,22 @@ RegisterKeyMapping('minicad', 'Mini CAD', 'keyboard', '')
 RegisterCommand("minicadp", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="prev" })
 end, false)
-RegisterKeyMapping('minicadp', 'Mini CAD', 'keyboard', CONFIG.keyPrevious)
+RegisterKeyMapping('minicadp', 'Previous Call', 'keyboard', GetConvar("sonorantablet_keyPrevious", 'LEFT')))
 
 RegisterCommand("minicada", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="attach" })
 end, false)
-RegisterKeyMapping('minicada', 'Mini CAD', 'keyboard', CONFIG.keyAttach)
+RegisterKeyMapping('minicada', 'Attach to Call', 'keyboard', GetConvar("sonorantablet_keyAttach", 'K')))
 
 RegisterCommand("minicadd", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="detail" })
 end, false)
-RegisterKeyMapping('minicadd', 'Mini CAD', 'keyboard', CONFIG.keyDetail)
+RegisterKeyMapping('minicadd', 'Call Detail', 'keyboard', GetConvar("sonorantablet_keyDetail", 'L')))
 
 RegisterCommand("minicadn", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="next" })
 end, false)
-RegisterKeyMapping('minicadn', 'Mini CAD', 'keyboard', CONFIG.keyNext)
+RegisterKeyMapping('minicadn', 'Next Call', 'keyboard', "sonorantablet_keyNext", 'RIGHT'))
 
 TriggerEvent('chat:addSuggestion', '/minicadsize', "Resize the Mini-CAD to specific width and height in pixels.", {
 	{ name="Width", help="Width in pixels" }, { name="Height", help="Height in pixels" }

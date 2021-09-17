@@ -4,9 +4,18 @@ UnitCache = {}
 
 CreateThread(function()
     Wait(0)
-    for k, v in pairs(CONFIG) do
-        if GetConvar("sonorantablet_"..k, "NONE") ~= "NONE" then
-            CONFIG[k] = GetConvar("sonorantablet_"..k)
+    if CONFIG == nil then
+        warnLog("Config file wasn't found for tablet resource. Assuming defaults.")
+        SetConvarReplicated("sonorantablet_keyPrevious", 'LEFT')
+        SetConvarReplicated("sonorantablet_keyAttach", 'K')
+        SetConvarReplicated("sonorantablet_keyDetail", 'L')
+        SetConvarReplicated("sonorantablet_keyNext", 'RIGHT')
+        SetConvarReplicated("sonorantablet_cadUrl", 'https://sonorancad.com/')
+    else
+        for k, v in pairs(CONFIG) do
+            if GetConvar("sonorantablet_"..k, "NONE") == "NONE" then
+                SetConvarReplicated("sonorantablet_"..k, tostring(v))
+            end
         end
     end
     while true do
