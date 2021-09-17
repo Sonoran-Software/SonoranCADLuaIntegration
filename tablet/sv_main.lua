@@ -3,24 +3,6 @@ EmergencyCache = {}
 UnitCache = {}
 
 CreateThread(function()
-    Wait(0)
-    if CONFIG == nil then
-        print("Config file wasn't found for tablet resource. Assuming defaults.")
-        SetConvarReplicated("sonorantablet_keyPrevious", 'LEFT')
-        SetConvarReplicated("sonorantablet_keyAttach", 'K')
-        SetConvarReplicated("sonorantablet_keyDetail", 'L')
-        SetConvarReplicated("sonorantablet_keyNext", 'RIGHT')
-        SetConvarReplicated("sonorantablet_cadUrl", 'https://sonorancad.com/')
-    else
-        for k, v in pairs(CONFIG) do
-            if GetConvar("sonorantablet_"..k, "NONE") == "NONE" then
-                print(("setting %s to default %s"):format(k, v))
-                SetConvarReplicated("sonorantablet_"..k, tostring(v))
-            else
-                SetConvarReplicated("sonorantablet_"..k, GetConvar("sonorantablet_"..k, "NONE"))
-            end
-        end
-    end
     while true do
         Wait(1000)
         CallCache = exports["sonorancad"]:GetCallCache()

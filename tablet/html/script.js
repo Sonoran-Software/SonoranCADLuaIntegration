@@ -32,6 +32,7 @@ function buttonShow(name, visible, label) {
 }
 
 function setHotkeys(keyMap) {
+	return;
 	KeyMaps.previous = keyMap.previous,
 	KeyMaps.attach = keyMap.attach,
 	KeyMaps.detail = keyMap.detail,
@@ -47,8 +48,8 @@ function refreshCall() {
 	if (currCall > CallCache.active.length) currCall = 0;
 
 	buttonShow("#btnPrevCall", false);
-	buttonShow("#btnAttach", false, "[" + KeyMaps.attach + "] Attach");
-	buttonShow("#btnDetail", false, "[" + KeyMaps.detail + "] Details");
+	buttonShow("#btnAttach", false, "Attach");
+	buttonShow("#btnDetail", false, "Details");
 	buttonShow("#btnNextCall", false);
 
 	if (!activeCall) {
@@ -64,9 +65,9 @@ function refreshCall() {
 		let currentCall = CallCache.active[currCall].dispatch;
 		buttonShow("#btnAttach", true);
 		if (isAttached(CallCache.active[currCall])) {
-			buttonShow("#btnAttach", true, "[" + KeyMaps.attach + "] Detach");
+			buttonShow("#btnAttach", true, "Detach");
 		} else {
-			buttonShow("#btnAttach", true, "[" + KeyMaps.attach + "] Attach");
+			buttonShow("#btnAttach", true, "Attach");
 		}
 		buttonShow("#btnDetail", true);
 		buttonShow("#btnPrevCall", hasPrevCall());
@@ -171,6 +172,10 @@ function moduleVisible(module, visible) {
 	} else {
 		$("#"+ module + "Div").hide();
 	}
+}
+
+function showHelp() {
+	$.post('https://tablet/ShowHelp');
 }
 
 $(function () {

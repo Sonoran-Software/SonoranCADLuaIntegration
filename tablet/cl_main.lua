@@ -82,13 +82,7 @@ function DisplayModule(module, show)
 		type = "display",
 		module = module,
 		apiCheck = apiCheck,
-		enabled = show,
-		keyMap = {
-			previous = GetConvar("sonorantablet_keyPrevious", 'LEFT'),
-			attach = GetConvar("sonorantablet_keyAttach", 'K'),
-			detail = GetConvar("sonorantablet_keyDetail", 'L'),
-			next = GetConvar("sonorantablet_keyNext", 'RIGHT')
-		}
+		enabled = show
 	})
 end
 
@@ -104,7 +98,7 @@ end
 
 -- Print a chat message to the current player
 function PrintChatMessage(text)
-	TriggerEvent('chatMessage', "system", { 255, 0, 0 }, text)
+	TriggerEvent('chatMessage', "System", { 255, 0, 0 }, text)
 end
 
 -- Set the focus state of the NUI
@@ -125,10 +119,18 @@ AddEventHandler('SonoranCAD::mini:OpenMini:Return', function(authorized, ident)
 	myident = ident
 	if authorized then
 		DisplayModule("hud", true)
+		if not GetResourceKvpString("shownTutorial") then
+			ShowHelpMessage()
+			SetResourceKvp("shownTutorial", "yes")
+		end
 	else
 		PrintChatMessage("You are not logged into the CAD or your API id is not set.")
 	end
 end)
+
+function ShowHelpMessage()
+	PrintChatMessage("Keybinds: Attach/Detach [K], Details [L], Previous/Next [LEFT/RIGHT], changable in settings!")
+end
 
 -- Mini Module Commands
 RegisterCommand("minicad", function(source, args, rawCommand)
@@ -136,25 +138,27 @@ RegisterCommand("minicad", function(source, args, rawCommand)
 end, false)
 RegisterKeyMapping('minicad', 'Mini CAD', 'keyboard', '')
 
+RegisterCommand("minicadhelp", function() ShowHelpMessage() end)
+
 RegisterCommand("minicadp", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="prev" })
 end, false)
-RegisterKeyMapping('minicadp', 'Previous Call', 'keyboard', GetConvar("sonorantablet_keyPrevious", 'LEFT'))
+RegisterKeyMapping('minicadp', 'Previous Call', 'keyboard', 'LEFT')
 
 RegisterCommand("minicada", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="attach" })
 end, false)
-RegisterKeyMapping('minicada', 'Attach to Call', 'keyboard', GetConvar("sonorantablet_keyAttach", 'K'))
+RegisterKeyMapping('minicada', 'Attach to Call', 'keyboard', 'K')
 
 RegisterCommand("minicadd", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="detail" })
 end, false)
-RegisterKeyMapping('minicadd', 'Call Detail', 'keyboard', GetConvar("sonorantablet_keyDetail", 'L'))
+RegisterKeyMapping('minicadd', 'Call Detail', 'keyboard', 'L')
 
 RegisterCommand("minicadn", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="next" })
 end, false)
-RegisterKeyMapping('minicadn', 'Next Call', 'keyboard', GetConvar("sonorantablet_keyNext", 'RIGHT'))
+RegisterKeyMapping('minicadn', 'Next Call', 'keyboard', 'RIGHT')
 
 TriggerEvent('chat:addSuggestion', '/minicadsize', "Resize the Mini-CAD to specific width and height in pixels.", {
 	{ name="Width", help="Width in pixels" }, { name="Height", help="Height in pixels" }
@@ -228,6 +232,8 @@ RegisterNUICallback('DetachFromCall', function(data)
 	--print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
 	TriggerServerEvent("SonoranCAD::mini:DetachFromCall", data.callId)
 end)
+
+RegisterNUICallback("ShowHelp", function() ShowHelpMessage() end)
 
 -- Mini-Cad Events
 RegisterNetEvent("SonoranCAD::mini:CallSync")
