@@ -28,9 +28,9 @@ end)
 RegisterServerEvent("SonoranCAD::mini:OpenMini")
 AddEventHandler("SonoranCAD::mini:OpenMini", function ()
     local ident = exports["sonorancad"]:GetUnitByPlayerId(source)
-    if ident == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) end
-    if ident.data == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) end
-    if ident.data.apiIds[1] == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) end
+    if ident == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) return end
+    if ident.data == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) return end
+    if ident.data.apiIds[1] == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) return end
     TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, true, ident.id)
 end)
 
@@ -39,7 +39,7 @@ RegisterServerEvent("SonoranCAD::mini:AttachToCall")
 AddEventHandler("SonoranCAD::mini:AttachToCall", function(callId)
     local ident = exports["sonorancad"]:GetUnitByPlayerId(source)
     if ident ~= nil then
-        local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = 1}
+        local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = GetConvar("sonoran_serverId", 1)}
         exports["sonorancad"]:performApiRequest({data}, "ATTACH_UNIT", function(res)
             --print("Attach OK: " .. tostring(res))
         end)
@@ -53,7 +53,7 @@ RegisterServerEvent("SonoranCAD::mini:DetachFromCall")
 AddEventHandler("SonoranCAD::mini:DetachFromCall", function(callId)
     local ident = exports["sonorancad"]:GetUnitByPlayerId(source)
     if ident ~= nil then
-        local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = 1}
+        local data = {callId = callId, units = {ident.data.apiIds[1]}, serverId = GetConvar("sonoran_serverId", 1)}
         exports["sonorancad"]:performApiRequest({data}, "DETACH_UNIT", function(res)
             --print("Detach OK: " .. tostring(res))
         end)

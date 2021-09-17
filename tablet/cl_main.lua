@@ -15,12 +15,11 @@ end
 -- Initialization Procedure
 Citizen.CreateThread(function()
 	Wait(1000)
-
 	-- Set Default Module Sizes
 	InitModuleSize("cad")
 	InitModuleSize("hud")
 
-	SetModuleUrl("cad", CONFIG.cadUrl)
+	SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/'))
 
 	-- Disable Controls Loop
 	while true do
@@ -51,6 +50,7 @@ end
 
 -- Set a Module's Size
 function SetModuleSize(module, width, height)
+	DebugMessage(("MODULE %s SIZE %s - %s"):format(module, width, height))
 	-- Send message to NUI to resize the specified module.
 	DebugMessage("sending resize message to nui", module)
 	SendNUIMessage({
@@ -60,9 +60,9 @@ function SetModuleSize(module, width, height)
 		newHeight = height
 	})
 
-	DebugMessage("saving module size to kvp", module)
-	SetResourceKvp(module .. "width", newWidth)
-	SetResourceKvp(module .. "height", newHeight)
+	DebugMessage("saving module size to kvp")
+	SetResourceKvp(module .. "width", width)
+	SetResourceKvp(module .. "height", height)
 end
 
 -- Refresh a Module
@@ -82,13 +82,7 @@ function DisplayModule(module, show)
 		type = "display",
 		module = module,
 		apiCheck = apiCheck,
-		enabled = show,
-		keyMap = {
-			previous = CONFIG.keyPrevious,
-			attach = CONFIG.keyAttach,
-			detail = CONFIG.keyDetail,
-			next = CONFIG.keyNext
-		}
+		enabled = show
 	})
 end
 
@@ -104,7 +98,7 @@ end
 
 -- Print a chat message to the current player
 function PrintChatMessage(text)
-	TriggerEvent('chatMessage', "system", { 255, 0, 0 }, text)
+	TriggerEvent('chatMessage', "System", { 255, 0, 0 }, text)
 end
 
 -- Set the focus state of the NUI
@@ -125,10 +119,18 @@ AddEventHandler('SonoranCAD::mini:OpenMini:Return', function(authorized, ident)
 	myident = ident
 	if authorized then
 		DisplayModule("hud", true)
+		if not GetResourceKvpString("shownTutorial") then
+			ShowHelpMessage()
+			SetResourceKvp("shownTutorial", "yes")
+		end
 	else
 		PrintChatMessage("You are not logged into the CAD or your API id is not set.")
 	end
 end)
+
+function ShowHelpMessage()
+	PrintChatMessage("Keybinds: Attach/Detach [K], Details [L], Previous/Next [LEFT/RIGHT], changable in settings!")
+end
 
 -- Mini Module Commands
 RegisterCommand("minicad", function(source, args, rawCommand)
@@ -136,25 +138,27 @@ RegisterCommand("minicad", function(source, args, rawCommand)
 end, false)
 RegisterKeyMapping('minicad', 'Mini CAD', 'keyboard', '')
 
+RegisterCommand("minicadhelp", function() ShowHelpMessage() end)
+
 RegisterCommand("minicadp", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="prev" })
 end, false)
-RegisterKeyMapping('minicadp', 'Mini CAD', 'keyboard', CONFIG.keyPrevious)
+RegisterKeyMapping('minicadp', 'Previous Call', 'keyboard', 'LEFT')
 
 RegisterCommand("minicada", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="attach" })
 end, false)
-RegisterKeyMapping('minicada', 'Mini CAD', 'keyboard', CONFIG.keyAttach)
+RegisterKeyMapping('minicada', 'Attach to Call', 'keyboard', 'K')
 
 RegisterCommand("minicadd", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="detail" })
 end, false)
-RegisterKeyMapping('minicadd', 'Mini CAD', 'keyboard', CONFIG.keyDetail)
+RegisterKeyMapping('minicadd', 'Call Detail', 'keyboard', 'L')
 
 RegisterCommand("minicadn", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="next" })
 end, false)
-RegisterKeyMapping('minicadn', 'Mini CAD', 'keyboard', CONFIG.keyNext)
+RegisterKeyMapping('minicadn', 'Next Call', 'keyboard', 'RIGHT')
 
 TriggerEvent('chat:addSuggestion', '/minicadsize', "Resize the Mini-CAD to specific width and height in pixels.", {
 	{ name="Width", help="Width in pixels" }, { name="Height", help="Height in pixels" }
@@ -228,6 +232,8 @@ RegisterNUICallback('DetachFromCall', function(data)
 	--print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
 	TriggerServerEvent("SonoranCAD::mini:DetachFromCall", data.callId)
 end)
+
+RegisterNUICallback("ShowHelp", function() ShowHelpMessage() end)
 
 -- Mini-Cad Events
 RegisterNetEvent("SonoranCAD::mini:CallSync")
