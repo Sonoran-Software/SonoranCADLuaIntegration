@@ -3,6 +3,12 @@ EmergencyCache = {}
 UnitCache = {}
 
 CreateThread(function()
+    Wait(0)
+    for k, v in pairs(CONFIG) do
+        if GetConvar("sonorantablet_"..k, "NONE") ~= "NONE" then
+            CONFIG[k] = GetConvar("sonorantablet_"..k)
+        end
+    end
     while true do
         Wait(1000)
         CallCache = exports["sonorancad"]:GetCallCache()

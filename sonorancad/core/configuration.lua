@@ -91,28 +91,23 @@ if parsedConfig == nil then
 end
 for k, v in pairs(json.decode(conf)) do
     local cvar = GetConvar("sonoran_"..k, "NONE")
+    local val = nil
     if cvar ~= "NONE" then
         debugLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
         Config[k] = cvar
+        val = cvar
     else
         Config[k] = v
+        val = v
+    end
+    if k ~= "apiKey" then
+        SetConvar("sonoran_"..k, tostring(val))
     end
 end
 
 if Config.updateBranch == nil then
     Config.updateBranch = "master"
 end
-
-RegisterServerEvent("SonoranCAD::core::getConfig")
-AddEventHandler("SonoranCAD::core::getConfig", function()
-    local config = json.encode({
-        communityID = Config.communityID,
-        apiKey = Config.apiKey,
-        postTime = Config.postTime,
-        apiSendEnabled = Config.apiSendEnabled
-    })
-    TriggerEvent("SonoranCAD::core:configData", config)
-end)
 
 RegisterNetEvent("SonoranCAD::core:sendClientConfig")
 AddEventHandler("SonoranCAD::core:sendClientConfig", function()
