@@ -51,6 +51,7 @@ end
 
 -- Set a Module's Size
 function SetModuleSize(module, width, height)
+	DebugMessage(("MODULE %s SIZE %s - %s"):format(module, width, height))
 	-- Send message to NUI to resize the specified module.
 	DebugMessage("sending resize message to nui", module)
 	SendNUIMessage({
@@ -60,9 +61,9 @@ function SetModuleSize(module, width, height)
 		newHeight = height
 	})
 
-	DebugMessage("saving module size to kvp", module)
-	SetResourceKvp(module .. "width", newWidth)
-	SetResourceKvp(module .. "height", newHeight)
+	DebugMessage("saving module size to kvp")
+	SetResourceKvp(module .. "width", width)
+	SetResourceKvp(module .. "height", height)
 end
 
 -- Refresh a Module
@@ -139,22 +140,22 @@ RegisterKeyMapping('minicad', 'Mini CAD', 'keyboard', '')
 RegisterCommand("minicadp", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="prev" })
 end, false)
-RegisterKeyMapping('minicadp', 'Previous Call', 'keyboard', GetConvar("sonorantablet_keyPrevious", 'LEFT')))
+RegisterKeyMapping('minicadp', 'Previous Call', 'keyboard', GetConvar("sonorantablet_keyPrevious", 'LEFT'))
 
 RegisterCommand("minicada", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="attach" })
 end, false)
-RegisterKeyMapping('minicada', 'Attach to Call', 'keyboard', GetConvar("sonorantablet_keyAttach", 'K')))
+RegisterKeyMapping('minicada', 'Attach to Call', 'keyboard', GetConvar("sonorantablet_keyAttach", 'K'))
 
 RegisterCommand("minicadd", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="detail" })
 end, false)
-RegisterKeyMapping('minicadd', 'Call Detail', 'keyboard', GetConvar("sonorantablet_keyDetail", 'L')))
+RegisterKeyMapping('minicadd', 'Call Detail', 'keyboard', GetConvar("sonorantablet_keyDetail", 'L'))
 
 RegisterCommand("minicadn", function(source, args, rawCommand)
 	SendNUIMessage({ type = "command", key="next" })
 end, false)
-RegisterKeyMapping('minicadn', 'Next Call', 'keyboard', "sonorantablet_keyNext", 'RIGHT'))
+RegisterKeyMapping('minicadn', 'Next Call', 'keyboard', GetConvar("sonorantablet_keyNext", 'RIGHT'))
 
 TriggerEvent('chat:addSuggestion', '/minicadsize', "Resize the Mini-CAD to specific width and height in pixels.", {
 	{ name="Width", help="Width in pixels" }, { name="Height", help="Height in pixels" }
