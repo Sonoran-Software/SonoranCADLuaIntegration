@@ -3,21 +3,29 @@ EmergencyCache = {}
 UnitCache = {}
 
 CreateThread(function()
-    while true do
-        Wait(1000)
-        CallCache = exports["sonorancad"]:GetCallCache()
-        UnitCache = exports["sonorancad"]:GetUnitCache()
-        for k, v in pairs(CallCache) do
-            v.dispatch.units = {}
-            if v.dispatch.idents then
-                for ka, va in pairs(v.dispatch.idents) do
-                    local unit
-                    local unitId = exports["sonorancad"]:GetUnitById(va)
-                    table.insert(v.dispatch.units, UnitCache[unitId]);
+    if CONFIG == nil then
+        print("####################################################################")
+        print("        *** CRITICAL ERROR *** CONFIGURATION MISSING ***            ")
+        print("   This version of Sonoran CAD requires changing configuration!     ")
+        print("  Please rename [sonorancad]\tablet\config.dist.lua to config.lua   ")
+        print("####################################################################")
+    else
+        while true do
+            Wait(1000)
+            CallCache = exports["sonorancad"]:GetCallCache()
+            UnitCache = exports["sonorancad"]:GetUnitCache()
+            for k, v in pairs(CallCache) do
+                v.dispatch.units = {}
+                if v.dispatch.idents then
+                    for ka, va in pairs(v.dispatch.idents) do
+                        local unit
+                        local unitId = exports["sonorancad"]:GetUnitById(va)
+                        table.insert(v.dispatch.units, UnitCache[unitId]);
+                    end
                 end
             end
+            TriggerClientEvent("SonoranCAD::mini:CallSync", -1, CallCache, EmergencyCache)
         end
-        TriggerClientEvent("SonoranCAD::mini:CallSync", -1, CallCache, EmergencyCache)
     end
 end)
 
