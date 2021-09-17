@@ -15,7 +15,6 @@ end
 -- Initialization Procedure
 Citizen.CreateThread(function()
 	Wait(1000)
-
 	-- Set Default Module Sizes
 	InitModuleSize("cad")
 	InitModuleSize("hud")

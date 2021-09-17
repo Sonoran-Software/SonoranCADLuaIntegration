@@ -14,6 +14,7 @@ CreateThread(function()
     else
         for k, v in pairs(CONFIG) do
             if GetConvar("sonorantablet_"..k, "NONE") == "NONE" then
+                print(("setting %s to default %s"):format(k, v))
                 SetConvarReplicated("sonorantablet_"..k, tostring(v))
             else
                 SetConvarReplicated("sonorantablet_"..k, GetConvar("sonorantablet_"..k, "NONE"))
