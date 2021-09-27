@@ -8,7 +8,7 @@ end
 local function sendConsole(level, color, message)
     local debugging = true
     if Config ~= nil then
-        debugging = Config.debugMode
+        debugging = (Config.debugMode == true and Config.debugMode ~= "false")
     end
     local time = os and os.date("%X") or LocalTime()
     local info = debug.getinfo(3, 'S')
@@ -29,7 +29,7 @@ end
 function debugLog(message)
     if Config == nil then
         return
-    elseif Config.debugMode then
+    elseif (Config.debugMode == true and Config.debugMode ~= "false") then
         
         sendConsole("DEBUG", "^7", message)
     end

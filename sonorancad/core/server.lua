@@ -40,9 +40,10 @@ CreateThread(function()
     end
     local versionfile = json.decode(LoadResourceFile(GetCurrentResourceName(), "/version.json"))
     local fxversion = versionfile.testedFxServerVersion
-    if getServerVersion() ~= nil and fxversion ~= nil then
-        if tonumber(getServerVersion()) < tonumber(fxversion) then
-            warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, i))
+    local currentFxVersion = getServerVersion()
+    if currentFxVersion ~= nil and fxversion ~= nil then
+        if tonumber(currentFxVersion) < tonumber(fxversion) then
+            warnLog(("SonoranCAD has been tested with FXServer version %s, but you're running %s. Please update ASAP."):format(fxversion, currentFxVersion))
         end
     end
     if GetResourceState("sonoran_updatehelper") == "started" then

@@ -4,7 +4,7 @@ usingTablet = false
 myident = nil
 
 -- Debugging Information
-isDebugging = false
+isDebugging = (GetConvar("sonoran_debugMode", false) == true and GetConvar("sonoran_debugMode", false) ~= "false")
 
 function DebugMessage(message, module)
 	if not isDebugging then return end
@@ -19,7 +19,7 @@ Citizen.CreateThread(function()
 	InitModuleSize("cad")
 	InitModuleSize("hud")
 
-	SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/'))
+	SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://app.sonorancad.com/#/?comid='..GetConvar("sonoran_communityID", "")))
 
 	-- Disable Controls Loop
 	while true do
