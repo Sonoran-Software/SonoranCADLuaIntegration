@@ -210,10 +210,12 @@ $(function () {
 			myident = event.data.ident;
 			CallCache.active = [];
 			for (const [key, call] of Object.entries(event.data.activeCalls)) {
-				if (call.dispatch_type) {
-					if (call.dispatch_type != "CALL_CLOSE") CallCache.active.push(call);
-				} else {
-					CallCache.active.push(call);
+				if (call != null) {
+					if (call.dispatch_type) {
+						if (call.dispatch_type != "CALL_CLOSE") CallCache.active.push(call);
+					} else {
+						CallCache.active.push(call);
+					}
 				}
 			}
 			CallCache.emergency = event.data.emergencyCalls;
@@ -234,13 +236,11 @@ $(function () {
 				document.getElementById('cadFrame').height = event.data.newHeight;
 				document.getElementById('cadDiv').style.width = event.data.newWidth;
 				document.getElementById('cadDiv').style.height = event.data.newHeight;
-				$.post('https://tablet/ResizeDone', JSON.stringify({ module: event.data.module }));
 			} else if (event.data.module == "hud") {
 				document.getElementById('hudFrame').width = event.data.newWidth;
 				document.getElementById('hudFrame').height = event.data.newHeight;
 				document.getElementById('hudDiv').style.width = event.data.newWidth;
 				document.getElementById('hudDiv').style.height = event.data.newHeight;
-				$.post('https://tablet/ResizeDone', JSON.stringify({ module: event.data.module }));
 			}
 		}
 		else if (event.data.type == "refresh") {
