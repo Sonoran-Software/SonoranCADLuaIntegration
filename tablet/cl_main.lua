@@ -4,7 +4,7 @@ usingTablet = false
 myident = nil
 
 -- Debugging Information
-isDebugging = (GetConvar("sonoran_debugMode", false) == true and GetConvar("sonoran_debugMode", false) ~= "false")
+isDebugging = false
 
 function DebugMessage(message, module)
 	if not isDebugging then return end
