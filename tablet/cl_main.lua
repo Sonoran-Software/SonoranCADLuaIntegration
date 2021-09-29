@@ -2,9 +2,10 @@ nuiFocused = false
 isRegistered = false
 usingTablet = false
 myident = nil
+isMiniVisible = false
 
 -- Debugging Information
-isDebugging = false
+isDebugging = true
 
 function DebugMessage(message, module)
 	if not isDebugging then return end
@@ -76,7 +77,7 @@ end
 
 -- Display a Module
 function DisplayModule(module, show)
-	DebugMessage("sending display message to nui", module)
+	DebugMessage("sending display message to nui "..tostring(show), module)
 	if not isRegistered then apiCheck = true end
 	SendNUIMessage({
 		type = "display",
@@ -84,6 +85,9 @@ function DisplayModule(module, show)
 		apiCheck = apiCheck,
 		enabled = show
 	})
+	if module == "hud" then
+		isMiniVisible = show
+	end
 end
 
 -- Set Module URL (for iframes)
@@ -141,21 +145,26 @@ RegisterKeyMapping('minicad', 'Mini CAD', 'keyboard', '')
 RegisterCommand("minicadhelp", function() ShowHelpMessage() end)
 
 RegisterCommand("minicadp", function(source, args, rawCommand)
+	if not isMiniVisible then return end
 	SendNUIMessage({ type = "command", key="prev" })
 end, false)
 RegisterKeyMapping('minicadp', 'Previous Call', 'keyboard', 'LEFT')
 
 RegisterCommand("minicada", function(source, args, rawCommand)
+	print("ismini "..tostring(isMiniVisible))
+	if not isMiniVisible then return end
 	SendNUIMessage({ type = "command", key="attach" })
 end, false)
 RegisterKeyMapping('minicada', 'Attach to Call', 'keyboard', 'K')
 
 RegisterCommand("minicadd", function(source, args, rawCommand)
+	if not isMiniVisible then return end
 	SendNUIMessage({ type = "command", key="detail" })
 end, false)
 RegisterKeyMapping('minicadd', 'Call Detail', 'keyboard', 'L')
 
 RegisterCommand("minicadn", function(source, args, rawCommand)
+	if not isMiniVisible then return end
 	SendNUIMessage({ type = "command", key="next" })
 end, false)
 RegisterKeyMapping('minicadn', 'Next Call', 'keyboard', 'RIGHT')
@@ -220,20 +229,29 @@ function SetTablet(using)
 end
 
 -- Mini-Cad Callbacks
-RegisterNUICallback('AttachToCall', function(data)
+RegisterNUICallback('AttachToCall', function(data, cb)
 	--Debug Only
 	--print("cl_main -> sv_main: SonoranCAD::mini:AttachToCall")
 	TriggerServerEvent("SonoranCAD::mini:AttachToCall", data.callId)
+	cb({ ok = true })
 end)
 
 -- Mini-Cad Callbacks
-RegisterNUICallback('DetachFromCall', function(data)
+RegisterNUICallback('DetachFromCall', function(data, cb)
 	--Debug Only
 	--print("cl_main -> sv_main: SonoranCAD::mini:DetachFromCall")
 	TriggerServerEvent("SonoranCAD::mini:DetachFromCall", data.callId)
+	cb({ ok = true })
 end)
 
 RegisterNUICallback("ShowHelp", function() ShowHelpMessage() end)
+
+RegisterNUICallback("VisibleEvent", function(data, cb)
+	if data.module == "hud" then
+		isMiniVisible = data.state
+	end
+	cb({ ok = true })
+end)
 
 -- Mini-Cad Events
 RegisterNetEvent("SonoranCAD::mini:CallSync")

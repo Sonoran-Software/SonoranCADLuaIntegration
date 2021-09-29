@@ -172,6 +172,7 @@ function moduleVisible(module, visible) {
 	} else {
 		$("#"+ module + "Div").hide();
 	}
+	$.post('https://tablet/VisibleEvent', JSON.stringify({ state: visible, module: module }));
 }
 
 function showHelp() {
