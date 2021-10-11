@@ -29,7 +29,7 @@ end
 function debugLog(message)
     if Config == nil then
         return
-    elseif (Config.debugMode == true and Config.debugMode ~= "false") then
+    elseif ((Config.debugMode == true or Config.debugMode == "true") and Config.debugMode ~= "false") then
         
         sendConsole("DEBUG", "^7", message)
     end
