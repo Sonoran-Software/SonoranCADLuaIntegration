@@ -156,6 +156,19 @@ CreateThread(function()
         if ServerInfo.mapPort ~= tostring(detectedMapPort) and isMapRunning then
             errorLog(("CONFIGURATION PROBLEM: Map port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedMapPort, ServerInfo.mapPort, serverId))
         end
+        PerformHttpRequest("https://api.ipify.org?format=json", function(errorCode, resultData, resultHeaders)
+            local r = json.decode(resultData)
+            if r ~= nil and r.ip ~= nil then
+                infoLog("Detected IP is: "..tostring(r.ip))
+                if ServerInfo.mapIp ~= r.ip then
+                    if ServerInfo.differingOutbound and outboundIp == r.ip then
+                        infoLog("Detected proper differing outbound IP configuration.")
+                    else
+                        errorLog(("CONFIGURATION PROBLEM: Detected IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.mapIp))
+                    end
+                end
+            end
+        end, "GET", nil, nil)
     end)
 
     if isPluginLoaded("pushevents") then
