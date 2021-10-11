@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "ts3-nodejs-library": "^3.4.0",
+    "unzipper": "^0.10.11"
+  }
+}
