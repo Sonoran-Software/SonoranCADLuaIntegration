@@ -65,6 +65,14 @@ function SetEmergencyCache(k, v) EmergencyCache[k] = v end
 -- Global function wrapper
 function GetUnitById(ids) return findUnitById(ids) end
 
+function GetUnitObjectById(id)
+    if UnitCache[id] ~= nil then
+        return UnitCache[id]
+    else
+        return nil
+    end
+end
+
 function GetUnitByPlayerId(player)
     local identifiers = GetIdentifiers(player)
     local ids = {}
