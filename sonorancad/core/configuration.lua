@@ -137,28 +137,26 @@ CreateThread(function()
     local detectedMapPort = GetConvar("socket_port", "30121")
     local isMapRunning = (isPluginLoaded("livemap") and GetResourceState("sonoran_livemap") == "started")
     local serverId = Config.serverId
-
-    if isMapRunning then
-        performApiRequest({}, "GET_SERVERS", function(response)
-            local info = json.decode(response)
-            for k, v in pairs(info.servers) do
-                if tostring(v.id) == tostring(serverId) then
-                    ServerInfo = v
-                    break
-                end
+    performApiRequest({}, "GET_SERVERS", function(response)
+        local info = json.decode(response)
+        debugLog(("get_servers %s"):format(response))
+        for k, v in pairs(info.servers) do
+            if tostring(v.id) == tostring(serverId) then
+                ServerInfo = v
+                break
             end
-            if ServerInfo == nil then
-                errorLog(("Could not find valid server information for server ID %s. Ensure you have configured your server in the CAD before using the map or push events."):format(serverId))
-                return
-            end
-            if ServerInfo.mapPort ~= tostring(detectedMapPort) and isMapRunning then
-                errorLog(("CONFIGURATION PROBLEM: Map port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedMapPort, ServerInfo.mapPort, serverId))
-            end
-            if ServerInfo.listenerPort == "3232" and checkPusheventsDeprecated then
-                warnLog("CONFIGURATION PROBLEM: Please update the listener port configuration to map your game server port. Pushevents plugin is deprecated.")
-            end
-        end)
-    end
+        end
+        if ServerInfo == nil then
+            errorLog(("Could not find valid server information for server ID %s. Ensure you have configured your server in the CAD before using the map or push events."):format(serverId))
+            return
+        end
+        if ServerInfo.listenerPort ~= GetConvar("netPort", "0") then
+            errorLog(("CONFIGURATION PROBLEM: Your current game server port (%s) does not match your CAD configuration (%s). Please ensure they match."):format(GetConvar("netPort", "0"), ServerInfo.listenerPort))
+        end
+        if ServerInfo.mapPort ~= tostring(detectedMapPort) and isMapRunning then
+            errorLog(("CONFIGURATION PROBLEM: Map port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedMapPort, ServerInfo.mapPort, serverId))
+        end
+    end)
 
     if isPluginLoaded("pushevents") then
         warnLog("Since 2.5.0, SonoranCAD now uses your game port for push events. While the old method will work, this is deprecated. Please change your game port settings under Admin -> Advanced -> In-Game Integration to reflect this server's game port.")
