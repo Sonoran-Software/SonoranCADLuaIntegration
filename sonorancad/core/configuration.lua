@@ -94,6 +94,11 @@ for k, v in pairs(json.decode(conf)) do
     local val = nil
     if cvar ~= "NONE" then
         debugLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+        if cvar == "true" then
+            cvar = true
+        elseif cvar == "false" then
+            cvar = false
+        end
         Config[k] = cvar
         val = cvar
     else
