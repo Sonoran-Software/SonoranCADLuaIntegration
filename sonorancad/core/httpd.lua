@@ -168,7 +168,7 @@ local PushEventHandler = {
     EVENT_UNIT_PANIC = function(body)
         local unit = GetUnitById(body.data.identId)
         if unit then
-            TriggerEvent("SonoranCAD::pushevents:UnitPanic", unit, body.data.identId)
+            TriggerEvent("SonoranCAD::pushevents:UnitPanic", unit, body.data.identId, body.data.isPanic)
         else
             debugLog("Ignore panic event, unit not found")
         end
