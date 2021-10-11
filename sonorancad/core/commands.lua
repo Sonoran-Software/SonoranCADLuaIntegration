@@ -21,7 +21,7 @@ function dumpInfo()
     local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
     local pluginList, loadedPlugins, disabledPlugins = GetPluginLists()
     local pluginVersions = {}
-    local cadVariables = { ["socket_port"] = GetConvar("socket_port", "30121 (default)")}
+    local cadVariables = { ["socket_port"] = GetConvar("socket_port", "30121 (default)"), ["netPort"] = GetConvar("netPort", "Unknown")}
     local variableList = ""
     for k, v in pairs(cadVariables) do
         variableList = ("%s%s = %s\n"):format(variableList, k, v)
@@ -136,6 +136,7 @@ SonoranCAD Help
     pluginupdate - Run plugin updater
     viewcaches - View the current unit and call cache, for troubleshooting
     getclientlog <playerId> - Get a log buffer from a given client
+    dumpconsole - Dumps current console buffer to file
 ]])
     elseif args[1] == "debugmode" then
         Config.debugMode = not Config.debugMode
