@@ -161,7 +161,7 @@ CreateThread(function()
             if r ~= nil and r.ip ~= nil then
                 infoLog("Detected IP is: "..tostring(r.ip))
                 if ServerInfo.mapIp ~= r.ip then
-                    if ServerInfo.differingOutbound and outboundIp == r.ip then
+                    if ServerInfo.differingOutbound and ServerInfo.outboundIp == r.ip then
                         infoLog("Detected proper differing outbound IP configuration.")
                     else
                         errorLog(("CONFIGURATION PROBLEM: Detected IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.mapIp))
