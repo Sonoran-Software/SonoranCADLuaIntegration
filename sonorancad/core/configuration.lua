@@ -139,7 +139,6 @@ CreateThread(function()
     local serverId = Config.serverId
     performApiRequest({}, "GET_SERVERS", function(response)
         local info = json.decode(response)
-        debugLog(("get_servers %s"):format(response))
         for k, v in pairs(info.servers) do
             if tostring(v.id) == tostring(serverId) then
                 ServerInfo = v
@@ -159,12 +158,16 @@ CreateThread(function()
         PerformHttpRequest("https://api.ipify.org?format=json", function(errorCode, resultData, resultHeaders)
             local r = json.decode(resultData)
             if r ~= nil and r.ip ~= nil then
-                infoLog("Detected IP is: "..tostring(r.ip))
+                debugLog(("IP DETECT - IP: %s - Detected: %s - Outbound set: %s - Outbound IP: %s"):format(ServerInfo.mapIp, r.ip, ServerInfo.differingOutbound, ServerInfo.outboundIp))
                 if ServerInfo.mapIp ~= r.ip then
                     if ServerInfo.differingOutbound and ServerInfo.outboundIp == r.ip then
                         infoLog("Detected proper differing outbound IP configuration.")
                     else
-                        errorLog(("CONFIGURATION PROBLEM: Detected IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.mapIp))
+                        if ServerInfo.differingOutbound then
+                            errorLog(("CONFIGURATION PROBLEM: Detected outbound IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.outboundIp))
+                        else
+                            errorLog(("CONFIGURATION PROBLEM: Detected IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.mapIp))
+                        end
                     end
                 end
             end
