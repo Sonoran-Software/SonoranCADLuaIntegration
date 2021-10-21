@@ -56,6 +56,7 @@ local function downloadPlugin(name, url)
     end
     local releaseUrl = ("%s/archive/%s.zip"):format(url, zipname)
     PerformHttpRequest(releaseUrl, function(code, data, headers)
+        debugLog(("downloadPlugin(%s): %s"):format(releaseUrl, code))
         if code == 200 then
             exports[GetCurrentResourceName()]:CreateFolderIfNotExisting(GetResourcePath(GetCurrentResourceName()).."/pluginupdates/")
             local savePath = GetResourcePath(GetCurrentResourceName()).."/pluginupdates/"..name..".zip"
@@ -69,8 +70,15 @@ local function downloadPlugin(name, url)
                 unzipPath = ("%s/%s/"):format(unzipPath, name)
             end
             debugLog("Unzipping to: "..unzipPath)
+            local filetest, err, errNo = io.open(savePath, 'r')
+            if filetest == nil then
+                errorLog("Failed to save update file. "..tostring(filetest))
+                errorLog("File path was: "..tostring(savePath))
+                return false
+            end
+            filetest:close()
             exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
-            os.remove(savePath)
+           -- os.remove(savePath)
             infoLog(("Plugin %s successfully downloaded."):format(name))
             PluginsWereUpdated = true
         else
@@ -113,7 +121,6 @@ function CheckForPluginUpdate(name, forceUpdate)
                         if Config.allowAutoUpdate or forceUpdate then
                             infoLog(("Attempting to automatically update %s..."):format(name))
                             downloadPlugin(name, remote.download_url)
-                            PluginsWereUpdated = true
                         else
                             warnLog("Automatic updates are disabled. Please update this plugin ASAP.")
                         end
