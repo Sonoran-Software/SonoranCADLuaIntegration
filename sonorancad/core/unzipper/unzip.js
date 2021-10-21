@@ -3,8 +3,11 @@ var fs = require("fs");
 
 exports('UnzipFile', (file, dest) => {
     try {
-		fs.createReadStream(file).pipe(unzipper.Extract({ path: dest}));
-		return true;
+		fs.createReadStream(file).pipe(unzipper.Extract({ path: dest}).on('close', () => {
+			emit("unzipCoreCompleted", true);
+		}).on('error', (error) => {
+			emit("unzipCoreCompleted", false, error);
+		}));
 	} catch(ex) {
 		console.error("Failed to unzip a file: " + ex);
 		return false;
@@ -26,8 +29,11 @@ exports('UnzipFolder', (file, name, dest) => {
 	let hasStreamFolder = false;
 	const rootPath = GetResourcePath(GetCurrentResourceName());
 	const streamPath = rootPath + "/stream/" + name + "/";
-	try {
-		fs.createReadStream(file).pipe(unzipper.Parse())
+	if (!fs.existsSync(file)) {
+		console.error("File " + file + " doesn't exist.");
+		return false;
+	}
+	fs.createReadStream(file).pipe(unzipper.Parse())
 		.on('entry', function(entry) {
 			var fileName = entry.path;
 			const type = entry.type;
@@ -56,17 +62,17 @@ exports('UnzipFolder', (file, name, dest) => {
 						fs.mkdirSync(`${rootPath}/stream/${name}/`);
 					}
 				}
+				emit("SonoranCAD::core:writeLog", "debug", "write: " + finalPath);
 				entry.pipe(fs.createWriteStream(finalPath));
 			} else {
 				entry.autodrain();
 
 			}
-		})
-		return true;
-	} catch(ex) {
-		console.error("Failed to unzip a folder: " + ex);
-		return false;
-	}
+	}).on('close', () => {
+		emit("unzipCompleted", true, name, file);
+	}).on('error', (error) => {
+		emit("unzipCompleted", false, name, file, error);
+	})
 });
 
 exports('CreateFolderIfNotExisting', (path) => {

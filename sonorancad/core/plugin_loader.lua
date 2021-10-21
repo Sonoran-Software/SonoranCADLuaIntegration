@@ -70,17 +70,7 @@ local function downloadPlugin(name, url)
                 unzipPath = ("%s/%s/"):format(unzipPath, name)
             end
             debugLog("Unzipping to: "..unzipPath)
-            local filetest, err, errNo = io.open(savePath, 'r')
-            if filetest == nil then
-                errorLog("Failed to save update file. "..tostring(filetest))
-                errorLog("File path was: "..tostring(savePath))
-                return false
-            end
-            filetest:close()
             exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
-           -- os.remove(savePath)
-            infoLog(("Plugin %s successfully downloaded."):format(name))
-            PluginsWereUpdated = true
         else
             if not Config.enableCanary then
                 errorLog(("Failed to download from %s: %s %s"):format(realUrl, code, data))
@@ -88,6 +78,16 @@ local function downloadPlugin(name, url)
         end
     end, "GET")
 end
+
+AddEventHandler("unzipCompleted", function(success, name, savePath, error)
+    if success then 
+        infoLog(("Plugin %s successfully downloaded."):format(name))
+        os.remove(savePath)
+        PluginsWereUpdated = true
+    else
+        errorLog(("Failed to unzip update file %s to %s: %s"):format(name, savePath, error))
+    end
+end)
 
 function CheckForPluginUpdate(name, forceUpdate)
     local plugin = Config.plugins[name]

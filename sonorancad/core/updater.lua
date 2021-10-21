@@ -3,19 +3,25 @@ local pendingRestart = false
 local function doUnzip(path)
     local unzipPath = GetResourcePath(GetCurrentResourceName()).."/../../"
     exports[GetCurrentResourceName()]:UnzipFile(path, unzipPath)
-    infoLog("Unzipped to "..unzipPath)
-    if not Config.allowUpdateWithPlayers and GetNumPlayerIndices() > 0 then
-        pendingRestart = true
-        infoLog("Delaying auto-update until server is empty.")
-        return
-    end
-    warnLog("Auto-restarting...")
-    local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock", "w+"))
-    f:write("core")
-    f:close()
-    Wait(5000)
-    ExecuteCommand("ensure sonoran_updatehelper")
 end
+
+AddEventHandler("unzipCoreCompleted", function(success, error)
+    if success then
+        if not Config.allowUpdateWithPlayers and GetNumPlayerIndices() > 0 then
+            pendingRestart = true
+            infoLog("Delaying auto-update until server is empty.")
+            return
+        end
+        warnLog("Auto-restarting...")
+        local f = assert(io.open(GetResourcePath("sonoran_updatehelper").."/run.lock", "w+"))
+        f:write("core")
+        f:close()
+        Wait(5000)
+        ExecuteCommand("ensure sonoran_updatehelper")
+    else
+        errorLog("Failed to download core update. "..tostring(error))
+    end
+end)
 
 local function doUpdate(latest)
     -- best way to do this...
