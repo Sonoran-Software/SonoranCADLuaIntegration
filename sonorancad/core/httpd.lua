@@ -13,12 +13,14 @@ local PushEventHandler = {
         if (not body.data.identIds) then
             return false, "missing identIds"
         end
-        if body.data.idents ~= nil then
-            for i=1, #body.data.idents do
-                local unit = GetUnitById(body.data.idents[i])
+        if body.data.identIds ~= nil then
+            for i=1, #body.data.identIds do
+                local unit = GetUnitObjectById(body.data.identIds[i])
                 if unit then
-                    SetUnitCache(body.data.idents[i], unit)
+                    unit.status = body.data.status
+                    SetUnitCache(body.data.identIds[i], unit)
                     TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, unit.status)
+                    TriggerEvent('SonoranCAD::pushevents:UnitStatusUpdate', unit, unit.status)
                     return true
                 end
                 debugLog(("EVENT_UNIT_STATUS: Unknown unit, idents: %s"):format(json.encode(body.data.identIds)))
