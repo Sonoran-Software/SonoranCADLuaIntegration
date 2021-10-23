@@ -15,8 +15,9 @@ local PushEventHandler = {
         end
         if body.data.identIds ~= nil then
             for i=1, #body.data.identIds do
-                local unit = GetUnitById(body.data.identIds[i])
+                local unit = GetUnitObjectById(body.data.identIds[i])
                 if unit then
+                    unit.status = body.data.status
                     SetUnitCache(body.data.identIds[i], unit)
                     TriggerEvent('SonoranCAD::pushevents:UnitUpdate', unit, unit.status)
                     TriggerEvent('SonoranCAD::pushevents:UnitStatusUpdate', unit, unit.status)
