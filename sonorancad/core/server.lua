@@ -137,13 +137,11 @@ function performApiRequest(postData, type, cb)
                 -- additional safeguards
                 if res == "INVALID COMMUNITY ID"
                         or res == "API IS NOT ENABLED FOR THIS COMMUNITY"
+                        or string.find(res, "IS NOT ENABLED FOR THIS COMMUNITY")
                         or res == "INVALID API KEY" then
-                    errorLog("Fatal: Disabling API - an error was encountered that must be resolved. Please restart the resource after resolving.")
+                    errorLog("Fatal: Disabling API - an error was encountered that must be resolved. Please restart the resource after resolving: "..tostring(res))
                     Config.apiSendEnabled = false
                 end
-                assert(res ~= "INVALID COMMUNITY ID", "Your community ID is invalid!")
-                assert(res ~= "API IS NOT ENABLED FOR THIS COMMUNITY", "You do not have access to the API.")
-                assert(res ~= "INVALID API KEY", "Your API Key is invalid. Please verify the configuration.")
                 cb(res, false)
             elseif statusCode == 404 then -- handle 404 requests, like from CHECK_APIID
                 debugLog("404 response found")
