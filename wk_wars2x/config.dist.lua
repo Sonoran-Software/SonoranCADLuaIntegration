@@ -61,7 +61,7 @@ CONFIG.allow_passenger_view = false
 CONFIG.allow_passenger_control = false
 
 -- Set this to true if you use Sonoran CAD with the WraithV2 plugin
-CONFIG.use_sonorancad = false
+CONFIG.use_sonorancad = true
 
 -- Sets the defaults of all keybinds
 -- These keybinds can be changed by each person in their GTA Settings->Keybinds->FiveM
