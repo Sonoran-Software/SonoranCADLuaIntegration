@@ -285,6 +285,9 @@ SetHttpHandler(function(req, res)
             end
             if body.key and body.key:upper() == Config.apiKey:upper() then
                 debugLog(("EVENT: %s - %s"):format(body.type, json.encode(body)))
+                if Config.enablePushEventForwarding then
+                    PerformHttpRequestS(Config.pushEventForwardUrl, function(statusCode, res, headers) infoLog("RES: "..tostring(res)) end, "POST", data, {["Content-Type"]="application/json"})
+                end
                 if PushEventHandler[body.type:upper()] then
                     CreateThread(function()
                         body.res = res 
@@ -348,4 +351,9 @@ AddEventHandler("SonoranCAD::pushevents:shim", function(chunk)
             end)
         end
     end
+end)
+
+RegisterPluginHttpEvent("mock", function(body)
+    infoLog("GOT: "..tostring(body))
+    return "OK"
 end)
