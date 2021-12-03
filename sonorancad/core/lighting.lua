@@ -2,11 +2,13 @@ light_port = 9990
 light_last_event = "restore"
 
 local function runEvent(event)
+    if event == nil then
+        return
+    end
     if event == light_last_event or (light_last_event == "panic" and event ~= "restore") then
         return
     end
     light_last_event = event
-    debugLog("event: "..event)
     SendNUIMessage({ type = "light_event", event = event, port = light_port })
 end
 
