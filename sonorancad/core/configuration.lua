@@ -77,14 +77,14 @@ end
 
 local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
 if conf == nil then
-    errorLog("Failed to load core configuration. Ensure config.json is present.")
+    errorLog("CONFIG_ERROR")
     Config.critError = true
     Config.apiSendEnabled = false
     return
 end
 local parsedConfig = json.decode(conf)
 if parsedConfig == nil then
-    errorLog("Failed to parse your config file. Make sure it is valid JSON.")
+    errorLog("CONFIG_ERROR")
     Config.critError = true
     Config.apiSendEnabled = false
     return
@@ -145,15 +145,15 @@ CreateThread(function()
                 break
             end
         end
-        if ServerInfo == nil then
-            errorLog(("Could not find valid server information for server ID %s. Ensure you have configured your server in the CAD before using the map or push events."):format(serverId))
+        if ServerInfo == nil or ServerInfo.listenerPort == nil then
+            logError("PORT_CONFIG_ERROR", ("Could not find valid server information for server ID %s. Ensure you have configured your server in the CAD before using the map or push events."):format(serverId))
             return
         end
         if ServerInfo.listenerPort ~= GetConvar("netPort", "0") then
-            errorLog(("CONFIGURATION PROBLEM: Your current game server port (%s) does not match your CAD configuration (%s). Please ensure they match."):format(GetConvar("netPort", "0"), ServerInfo.listenerPort))
+            logError("PORT_CONFIG_ERROR", ("CONFIGURATION PROBLEM: Your current game server port (%s) does not match your CAD configuration (%s). Please ensure they match."):format(GetConvar("netPort", "0"), ServerInfo.listenerPort))
         end
         if ServerInfo.mapPort ~= tostring(detectedMapPort) and isMapRunning then
-            errorLog(("CONFIGURATION PROBLEM: Map port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedMapPort, ServerInfo.mapPort, serverId))
+            logError("MAP_CONFIG_ERROR",("CONFIGURATION PROBLEM: Map port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match."):format(detectedMapPort, ServerInfo.mapPort, serverId))
         end
         PerformHttpRequest("https://api.ipify.org?format=json", function(errorCode, resultData, resultHeaders)
             local r = json.decode(resultData)
@@ -164,9 +164,9 @@ CreateThread(function()
                         infoLog("Detected proper differing outbound IP configuration.")
                     else
                         if ServerInfo.differingOutbound then
-                            errorLog(("CONFIGURATION PROBLEM: Detected outbound IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.outboundIp))
+                            logError("PORT_OUTBOUND_ERROR", ("CONFIGURATION PROBLEM: Detected outbound IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.outboundIp))
                         else
-                            errorLog(("CONFIGURATION PROBLEM: Detected IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.mapIp))
+                            logError("PORT_OUTBOUND_ERROR", ("CONFIGURATION PROBLEM: Detected IP (%s), but (%s) is configured in the CAD. They must match!"):format(r.ip, ServerInfo.mapIp))
                         end
                     end
                 end

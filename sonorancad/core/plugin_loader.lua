@@ -154,7 +154,7 @@ CreateThread(function()
         Wait(10)
     end
     if Config.critError then
-        errorLog("Aborted startup due to above errors.")
+        logError("ERROR_ABORT")
     end
     for k, v in pairs(Config.plugins) do
         if Config.critError then
@@ -175,7 +175,7 @@ CreateThread(function()
                 for _, v in pairs(Config.plugins[k].requiresPlugins) do
                     debugLog(("Checking %s dependency %s"):format(k, v))
                     if Config.plugins[v] == nil or not Config.plugins[v].enabled then
-                        errorLog(("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
+                        logError("PLUGIN_DEPENDENCY_ERROR", ("Plugin %s requires %s, which is not loaded! Skipping."):format(k, v))
                         Config.plugins[k].enabled = false
                         Config.plugins[k].disableReason = ("Missing dependency %s"):format(v)
                         goto skip
@@ -190,7 +190,7 @@ CreateThread(function()
                 local vFile = LoadVersionFile(plugin.name)
                 if vFile == nil then
                     if isCritical then
-                        errorLog(("PLUGIN ERROR: Plugin %s requires the %s plugin, but it is not installed."):format(k, plugin.name))
+                        logError("PLUGIN_DEPENDENCY_ERROR", ("PLUGIN ERROR: Plugin %s requires the %s plugin, but it is not installed."):format(k, plugin.name))
                         Config.plugins[k].enabled = false
                         Config.plugins[k].disableReason = ("Missing dependency %s"):format(plugin.name)
                     elseif plugin.name ~= "esxsupport" then
@@ -202,7 +202,7 @@ CreateThread(function()
                     local checkVersion = string.gsub(check.version, "%.","")
                     if (checkVersion < requiredVersion) then
                         if isCritical then
-                            errorLog(("PLUGIN ERROR: Plugin %s requires %s at version %s or higher, but only %s was found. Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
+                            logError("PLUGIN_DEPENDENCY_ERROR", ("PLUGIN ERROR: Plugin %s requires %s at version %s or higher, but only %s was found. Use the command \"sonoran pluginupdate\" to check for updates."):format(k, plugin.name, plugin.version, check.version))
                             Config.plugins[k].enabled = false
                             Config.plugins[k].disableReason = ("Wrong version for dependency %s (%s)"):format(plugin.name, plugin.version)
                         else
@@ -222,7 +222,7 @@ CreateThread(function()
             Config.plugins[k].check_url = version.check_url
             Config.plugins[k].download_url = version.download_url
             if version.configVersion ~= nil and Config.plugins[k].configVersion ~= nil and Config.plugins[k].configVersion ~= version.configVersion then
-                errorLog(("Plugin Updater: %s has a new configuration version (%s ~= %s). You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(k, Config.plugins[k].configVersion, version.configVersion, k))
+                logError("PLUGIN_CONFIG_OUTDATED", ("Plugin Updater: %s has a new configuration version (%s ~= %s). You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(k, Config.plugins[k].configVersion, version.configVersion, k))
                 Config.plugins[k].enabled = false
                 Config.plugins[k].disableReason = "outdated config file"
             end
@@ -232,7 +232,7 @@ CreateThread(function()
                 local minVersion = string.gsub(version.minCoreVersion, "%.","")
                 local coreVersion = string.gsub(coreVersion, "%.", "")
                 if minVersion > coreVersion then
-                    errorLog(("PLUGIN ERROR: Plugin %s requires Core Version %s, but you have %s. Please update SonoranCAD to use this plugin. Force disabled."):format(k, version.minCoreVersion, coreVersion))
+                    logError("PLUGIN_CORE_OUTDATED", ("PLUGIN ERROR: Plugin %s requires Core Version %s, but you have %s. Please update SonoranCAD to use this plugin. Force disabled."):format(k, version.minCoreVersion, coreVersion))
                     Config.plugins[k].enabled = false
                     Config.plugins[k].disableReason = "Outdated core version"
                 end

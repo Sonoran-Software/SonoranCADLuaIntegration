@@ -1,5 +1,19 @@
 local MessageBuffer = {}
 
+local ErrorCodes = {
+    ['STEAM_ERROR'] = "You have set SonoranCAD to Steam mode, but have not configured a Steam Web API key. Please see FXServer documentation. SonoranCAD will not function in Steam mode without this set.",
+    ['PORT_CONFIG_ERROR'] = "",
+    ['MAP_CONFIG_ERROR'] = "",
+    ['PORT_OUTBOUND_ERROR'] = "",
+    ['CONFIG_ERROR'] = "Failed to load core configuration. Ensure config.json is present and is the correct format.",
+    ['API_ERROR'] = "Failed to get version information. Is the API down? Please restart sonorancad.",
+    ['API_PAID_ONLY'] = "ERROR: Your community cannot use any plugins requiring the API. Please purchase a subscription of Standard or higher.",
+    ['ERROR_ABORT'] = "Aborted startup due to critical errors reported. Review logs for troubleshooting.",
+    ['PLUGIN_DEPENDENCY_ERROR'] = "",
+    ['PLUGIN_CONFIG_OUTDATED'] = "",
+    ['PLUGIN_CORE_OUTDATED'] = ""
+}
+
 local function LocalTime()
 	local _, _, _, h, m, s = GetLocalTime()
 	return '' .. h .. ':' .. m .. ':' .. s
@@ -37,6 +51,16 @@ end
 
 function debugPrint(message)
     debugLog(message)
+end
+
+function logError(err, msg)
+    local o = ""
+    if msg == nil then
+        o = ("ERR %s: %s - See https://sonoran.software/errorcodes for more information."):format(err, ErrorCodes[err])
+    else
+        o = ("ERR %s: %s - See https://sonoran.software/errorcodes for more information."):format(err, msg)
+    end
+    sendConsole("ERROR", "^1", o)
 end
 
 function errorLog(message)

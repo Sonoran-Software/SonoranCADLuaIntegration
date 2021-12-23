@@ -22,20 +22,20 @@ CreateThread(function()
     Config.apiUrl = getApiUrl()
     performApiRequest({}, "GET_VERSION", function(result, ok)
         if not ok then
-            errorLog("Failed to get version information. Is the API down? Please restart sonorancad.")
+            errorLog("API_ERROR")
             Config.critError = true
             return
         end
         Config.apiVersion = tonumber(string.sub(result, 1, 1))
         if Config.apiVersion < 2 then
-            errorLog("ERROR: Your community cannot use any plugins requiring the API. Please purchase a subscription of Standard or higher.")
+            errorLog("API_PAID_ONLY")
             Config.critError = true
         end
         debugLog(("Set version %s from response %s"):format(Config.apiVersion, result))
         infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
     end)
     if Config.primaryIdentifier == "steam" and GetConvar("steam_webapiKey", "none") == "none" then
-        errorLog("You have set SonoranCAD to Steam mode, but have not configured a Steam Web API key. Please see FXServer documentation. SonoranCAD will not function in Steam mode without this set.")
+        logError("STEAM_ERROR")
         Config.critError = true
     end
     local versionfile = json.decode(LoadResourceFile(GetCurrentResourceName(), "/version.json"))
@@ -153,14 +153,14 @@ function performApiRequest(postData, type, cb)
                     return
                 end
                 rateLimitedEndpoints[type] = true
-                warnLog(("You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 60 seconds. If this is happening frequently, please review your configuration to ensure you're not sending data too quickly."):format(type))
+                warnLog(("WARN_RATELIMIT: You are being ratelimited (last request made to %s) - Ignoring all API requests to this endpoint for 60 seconds. If this is happening frequently, please review your configuration to ensure you're not sending data too quickly."):format(type))
                 SetTimeout(60000, function()
                     rateLimitedEndpoints[type] = nil
                     infoLog(("Endpoint %s no longer ignored."):format(type))
                 end)
             elseif string.match(tostring(statusCode), "50") then
                 errorLog(("API error returned (%s). Check status.sonoransoftware.com or our Discord to see if there's an outage."):format(statusCode))
-                debugLog(("Error returned: %s %s"):format(statusCode, res))
+                debugLog(("API_ERROR Error returned: %s %s"):format(statusCode, res))
             else
                 errorLog(("CAD API ERROR (from %s): %s %s"):format(url, statusCode, res))
             end
