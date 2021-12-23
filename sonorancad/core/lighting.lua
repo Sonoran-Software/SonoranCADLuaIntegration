@@ -9,6 +9,7 @@ local function runEvent(event)
         return
     end
     light_last_event = event
+    debugLog("send light event "..json.encode({ type = "light_event", event = event, port = light_port }))
     SendNUIMessage({ type = "light_event", event = event, port = light_port })
 end
 
