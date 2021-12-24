@@ -2,17 +2,24 @@ local MessageBuffer = {}
 
 local ErrorCodes = {
     ['STEAM_ERROR'] = "You have set SonoranCAD to Steam mode, but have not configured a Steam Web API key. Please see FXServer documentation. SonoranCAD will not function in Steam mode without this set.",
-    ['PORT_CONFIG_ERROR'] = "",
-    ['MAP_CONFIG_ERROR'] = "",
-    ['PORT_OUTBOUND_ERROR'] = "",
+    ['PORT_MISSING_ERROR'] = "Could not find valid server information for server ID %s. Ensure you have configured your server in the CAD before using the map or push events.",
+    ['PORT_CONFIG_ERROR'] = "CONFIGURATION PROBLEM: Your current game server port (%s) does not match your CAD configuration (%s). Please ensure they match.",
+    ['MAP_CONFIG_ERROR'] = "CONFIGURATION PROBLEM: Map port on the server (%s) does not match your CAD configuration (%s) for server ID (%s). Please ensure they match.",
+    ['PORT_OUTBOUND_ERROR'] = "CONFIGURATION PROBLEM: Detected outbound IP (%s), but (%s) is configured in the CAD. They must match!",
+    ['PORT_OUTBOUND_MISMATCH'] = "CONFIGURATION PROBLEM: Detected IP (%s), but (%s) is configured in the CAD. They must match!",
     ['CONFIG_ERROR'] = "Failed to load core configuration. Ensure config.json is present and is the correct format.",
     ['API_ERROR'] = "Failed to get version information. Is the API down? Please restart sonorancad.",
     ['API_PAID_ONLY'] = "ERROR: Your community cannot use any plugins requiring the API. Please purchase a subscription of Standard or higher.",
     ['ERROR_ABORT'] = "Aborted startup due to critical errors reported. Review logs for troubleshooting.",
-    ['PLUGIN_DEPENDENCY_ERROR'] = "",
-    ['PLUGIN_CONFIG_OUTDATED'] = "",
-    ['PLUGIN_CORE_OUTDATED'] = ""
+    ['PLUGIN_DEPENDENCY_ERROR'] = "Plugin %s requires %s, which is not loaded! Skipping.",
+    ['PLUGIN_VERSION_MISMATCH'] = "PLUGIN ERROR: Plugin %s requires %s at version %s or higher, but only %s was found. Use the command \"sonoran pluginupdate\" to check for updates.",
+    ['PLUGIN_CONFIG_OUTDATED'] = "Plugin Updater: %s has a new configuration version (%s ~= %s). You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin.",
+    ['PLUGIN_CORE_OUTDATED'] = "PLUGIN ERROR: Plugin %s requires Core Version %s, but you have %s. Please update SonoranCAD to use this plugin. Force disabled."
 }
+
+function getErrorText(err)
+    return ErrorCodes[err]
+end
 
 local function LocalTime()
 	local _, _, _, h, m, s = GetLocalTime()
