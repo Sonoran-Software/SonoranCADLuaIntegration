@@ -51,9 +51,10 @@ end
 
 local function downloadPlugin(name, url)
     local zipname = "latest"
-    --if Config.enableCanary then
-    --    zipname = "canary"
-    --end
+    -- temp fix...
+    if name == "esxsupport" then
+        url = "https://github.com/Sonoran-Software/sonoran_esxsupport/"
+    end
     local releaseUrl = ("%s/archive/%s.zip"):format(url, zipname)
     PerformHttpRequest(releaseUrl, function(code, data, headers)
         debugLog(("downloadPlugin(%s): %s"):format(releaseUrl, code))

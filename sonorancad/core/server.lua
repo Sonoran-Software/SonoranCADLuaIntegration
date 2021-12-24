@@ -34,7 +34,7 @@ CreateThread(function()
         debugLog(("Set version %s from response %s"):format(Config.apiVersion, result))
         infoLog(("Loaded community ID %s with API URL: %s"):format(Config.communityID, Config.apiUrl))
     end)
-    if Config.primaryIdentifier == "steam" and GetConvar("steam_webapiKey", "none") == "none" then
+    if Config.primaryIdentifier == "steam" and (GetConvar("steam_webapiKey", "none") == "none" or GetConvar("steam_webapiKey", "none") == "") then
         logError("STEAM_ERROR")
         Config.critError = true
     end
