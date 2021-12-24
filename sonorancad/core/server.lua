@@ -69,7 +69,9 @@ ApiEndpoints = {
     ["GET_SERVERS"] = "general",
     ["ATTACH_UNIT"] = "emergency",
     ["DETACH_UNIT"] = "emergency",
-    ["ADD_CALL_NOTE"] = "emergency"
+    ["ADD_CALL_NOTE"] = "emergency",
+    ["RECORD_ADD"] = "general",
+    ["RECORD_UPDATE"] = "general"
 }
 
 EndpointsRequireId = {
@@ -106,6 +108,8 @@ function performApiRequest(postData, type, cb)
     local endpoint = nil
     if ApiEndpoints[type] ~= nil then
         endpoint = ApiEndpoints[type]
+    else
+        return warnLog(("API request failed: endpoint %s is not registered. Use the registerApiType function to register this endpoint with the appropriate type."):format(type))
     end
     local url = ""
     if endpoint == "support" then
