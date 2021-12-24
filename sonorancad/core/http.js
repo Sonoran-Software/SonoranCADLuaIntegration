@@ -5,7 +5,7 @@ function byteCount(s) {
 }
 
 exports('HandleHttpRequest', (dest, callback, method, data, headers) => {
-    //emit("SonoranCAD::core:writeLog", "debug", "[http] to: " + dest + " - data: " + dest, JSON.stringify(data));
+    emit("SonoranCAD::core:writeLog", "debug", "[http] to: " + dest + " - data: " + dest, JSON.stringify(data));
     const urlObj = url.parse(dest)
     const options = {
         hostname: urlObj.hostname,
@@ -22,6 +22,7 @@ exports('HandleHttpRequest', (dest, callback, method, data, headers) => {
         return;
     }
     options.headers['X-SonoranCAD-Version'] = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
+    //console.debug("send to: " + dest);
     const req = https.request(options, (res) => {
         let output = "";
         res.on('data', (d) => {
