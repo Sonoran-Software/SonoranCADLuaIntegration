@@ -51,9 +51,9 @@ end
 
 local function downloadPlugin(name, url)
     local zipname = "latest"
-    if Config.enableCanary then
-        zipname = "canary"
-    end
+    --if Config.enableCanary then
+    --    zipname = "canary"
+    --end
     local releaseUrl = ("%s/archive/%s.zip"):format(url, zipname)
     PerformHttpRequest(releaseUrl, function(code, data, headers)
         debugLog(("downloadPlugin(%s): %s"):format(releaseUrl, code))
@@ -72,9 +72,7 @@ local function downloadPlugin(name, url)
             debugLog("Unzipping to: "..unzipPath)
             exports[GetCurrentResourceName()]:UnzipFolder(savePath, name, unzipPath)
         else
-            if not Config.enableCanary then
-                errorLog(("Failed to download from %s: %s %s"):format(realUrl, code, data))
-            end
+            warnLog(("Failed to download from %s: %s %s"):format(releaseUrl, code, data))
         end
     end, "GET")
 end
@@ -98,9 +96,9 @@ function CheckForPluginUpdate(name, forceUpdate)
         debugLog(("Plugin %s does not have check_url set. Is it configured correctly?"):format(name))
         return
     end
-    if Config.enableCanary then
-        plugin.check_url = plugin.check_url:gsub("main", "canary"):gsub("master", "canary")
-    end
+   -- if Config.enableCanary then
+    --    plugin.check_url = plugin.check_url:gsub("main", "canary"):gsub("master", "canary")
+    --end
     if forceUpdate then
         infoLog(("Checking %s for updates..."):format(name))
     end
@@ -142,9 +140,7 @@ function CheckForPluginUpdate(name, forceUpdate)
             end
             
         else
-            if not Config.enableCanary then
-                errorLog(("Failed to check plugin updates for %s: %s %s"):format(name, code, data))
-            end
+            warnLog(("Failed to check plugin updates for %s: %s %s"):format(name, code, data))
         end
     end, "GET")
 end
