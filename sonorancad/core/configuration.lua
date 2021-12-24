@@ -137,6 +137,13 @@ CreateThread(function()
     local detectedMapPort = GetConvar("socket_port", "30121")
     local isMapRunning = (isPluginLoaded("livemap") and GetResourceState("sonoran_livemap") == "started")
     local serverId = Config.serverId
+    while Config.apiVersion == -1 do
+        Wait(10)
+    end
+    if not Config.apiSendEnabled or Config.apiVersion < 3 then
+        debugLog("Too low version or API disabled, ignore this")
+        return
+    end
     performApiRequest({}, "GET_SERVERS", function(response)
         local info = json.decode(response)
         for k, v in pairs(info.servers) do
