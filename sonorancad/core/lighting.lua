@@ -25,7 +25,7 @@ local function vehicleSignalState(veh)
         elseif lights == 3 then
             return "hazard"
         else
-            return nil
+            return "restore"
         end
     else
         return "restore"
