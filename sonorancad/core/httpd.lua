@@ -212,6 +212,10 @@ local PushEventHandler = {
     EVENT_UNIT_GROUP_REMOVE = function(body)
         TriggerEvent('SonoranCAD::pushevents:UnitGroupRemove', body.data)
         return true
+    end,
+    EVENT_TONE = function(body)
+        TriggerEvent('SonoranCAD::pushevents:Tone', body.data)
+        return true
     end
 }
 
@@ -302,7 +306,8 @@ SetHttpHandler(function(req, res)
                         end
                     end)
                 else
-                    res.send(json.encode({["error"] = "Invalid API request type."}))
+                    TriggerEvent('SonoranCAD::pushevents:OtherEvent', body.type:upper(), body.data)
+                    res.send("ok - custom")
                 end
             end
         end)
