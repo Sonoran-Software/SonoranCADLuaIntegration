@@ -34,7 +34,7 @@ exports('HandleHttpRequest', (dest, callback, method, data, headers) => {
       })
         
     req.on('error', (error) => {
-        console.error("HTTP error caught: " + JSON.stringify(error));
+        console.debug("HTTP error caught: " + JSON.stringify(error));
     })
     if (method == "POST") {
         req.write(data);
