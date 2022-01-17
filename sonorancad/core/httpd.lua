@@ -286,7 +286,7 @@ SetHttpHandler(function(req, res)
             if body.key and body.key:upper() == Config.apiKey:upper() then
                 debugLog(("EVENT: %s - %s"):format(body.type, json.encode(body)))
                 if Config.enablePushEventForwarding then
-                    PerformHttpRequestS(Config.pushEventForwardUrl, function(statusCode, res, headers) debugLog("Forward Response: "..tostring(res)) end, "POST", data, {["Content-Type"]="application/json"})
+                    PerformHttpRequest(Config.pushEventForwardUrl, function(statusCode, res, headers) debugLog("Forward Response: "..tostring(res)) end, "POST", data, {["Content-Type"]="application/json"})
                 end
                 if PushEventHandler[body.type:upper()] then
                     CreateThread(function()
