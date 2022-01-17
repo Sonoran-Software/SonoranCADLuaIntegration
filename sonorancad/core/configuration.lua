@@ -128,14 +128,11 @@ AddEventHandler("SonoranCAD::core:sendClientConfig", function()
     }
     TriggerClientEvent("SonoranCAD::core:recvClientConfig", source, config)
 end)
-
 CreateThread(function()
     Wait(2000) -- wait for server to settle
     if Config.critError then
         return
     end
-    local detectedMapPort = GetConvar("socket_port", "30121")
-    local isMapRunning = (isPluginLoaded("livemap") and GetResourceState("sonoran_livemap") == "started")
     local serverId = Config.serverId
     while Config.apiVersion == -1 do
         Wait(10)
@@ -152,37 +149,76 @@ CreateThread(function()
                 break
             end
         end
-        if ServerInfo == nil or ServerInfo.listenerPort == nil then
-            logError("PORT_MISSING_ERROR", getErrorText("PORT_MISSING_ERROR"):format(serverId))
-            return
+        local needSetup = false
+        local serverObj = {}
+        if ServerInfo == nil then
+            needSetup = true
+            serverObj = {
+                id = serverId,
+                name = "Server "..serverId,
+                description = "Server "..serverId,
+                signal = "",
+                listenerPort = GetConvar("netPort", "0"),
+                mapIp = "",
+                differingOutbound = false,
+                outboundIp = "",
+                enableMap = true,
+                mapType = "NORMAL"
+            }
+        else
+            serverObj = ServerInfo
+        end
+        if serverObj.name == "" then
+            serverObj.name = "Server "..tostring(serverId)
         end
         if ServerInfo.listenerPort ~= GetConvar("netPort", "0") then
-            logError("PORT_CONFIG_ERROR", getErrorText("PORT_CONFIG_ERROR"):format(GetConvar("netPort", "0"), ServerInfo.listenerPort))
-        end
-        if ServerInfo.mapPort ~= tostring(detectedMapPort) and isMapRunning then
-            logError("MAP_CONFIG_ERROR",getErrorText("MAP_CONFIG_ERROR"):format(detectedMapPort, ServerInfo.mapPort, serverId))
+            infoLog(("Configuration information doesn't match, will attempt to auto-correct game port from %s to %s."):format(ServerInfo.listenerPort, GetConvar("netPort", "0")))
+            serverObj.listenerPort = GetConvar("netPort", "0")
+            needSetup = true
         end
         PerformHttpRequest("https://api.ipify.org?format=json", function(errorCode, resultData, resultHeaders)
             local r = json.decode(resultData)
             if r ~= nil and r.ip ~= nil then
                 debugLog(("IP DETECT - IP: %s - Detected: %s - Outbound set: %s - Outbound IP: %s"):format(ServerInfo.mapIp, r.ip, ServerInfo.differingOutbound, ServerInfo.outboundIp))
+                if serverObj.mapIp == "" then
+                    serverObj.mapIp = r.ip
+                end
                 if ServerInfo.mapIp ~= r.ip then
                     if ServerInfo.differingOutbound and ServerInfo.outboundIp == r.ip then
                         infoLog("Detected proper differing outbound IP configuration.")
                     else
                         if ServerInfo.differingOutbound then
-                            logError("PORT_OUTBOUND_ERROR", getErrorText("PORT_OUTBOUND_ERROR"):format(r.ip, ServerInfo.outboundIp))
+                            needSetup = true
+                            serverObj.outboundIp = r.ip
                         else
-                            logError("PORT_OUTBOUND_MISMATCH", getErrorText("PORT_OUTBOUND_MISMATCH"):format(r.ip, ServerInfo.mapIp))
+                            needSetup = true
+                            serverObj.outboundIp = r.ip
+                            serverObj.differingOutbound = true
                         end
                     end
                 end
             end
+            if needSetup then
+                local payload = nil
+                if ServerInfo == nil then
+                    payload = { ["servers"] = {serverObj}}
+                else
+                    payload = info
+                    for k, v in pairs(payload) do
+                        if v.id == serverId then
+                            payload[k] = serverObj
+                        end
+                    end
+                end
+                debugLog(("Send payload: %s"):format(json.encode(payload)))
+                performApiRequest(json.encode(payload), "SET_SERVERS", function(resp) 
+                    debugLog("SET_SERVERS: "..tostring(resp))
+                end)
+            end
         end, "GET", nil, nil)
     end)
 
-    if isPluginLoaded("pushevents") then
-        warnLog("Since 2.5.0, SonoranCAD now uses your game port for push events. While the old method will work, this is deprecated. Please change your game port settings under Admin -> Advanced -> In-Game Integration to reflect this server's game port.")
-        warnLog("After changing this information, please remove or disable the pushevents plugin to remove this message.")
+    if isPluginLoaded("livemap") then
+        warnLog("The livemap plugin is no longer being used due to the map being native to the CAD. You can remove this plugin.")
     end
 end)

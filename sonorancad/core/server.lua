@@ -71,7 +71,8 @@ ApiEndpoints = {
     ["DETACH_UNIT"] = "emergency",
     ["ADD_CALL_NOTE"] = "emergency",
     ["RECORD_ADD"] = "general",
-    ["RECORD_UPDATE"] = "general"
+    ["RECORD_UPDATE"] = "general",
+    ["SET_SERVERS"] = "general"
 }
 
 EndpointsRequireId = {
