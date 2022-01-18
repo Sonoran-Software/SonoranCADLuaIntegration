@@ -239,7 +239,14 @@ SetHttpHandler(function(req, res)
             else
                 local pluginsFormatted = {}
                 for name, plugin in pairs(Config.plugins) do
-                    table.insert(pluginsFormatted, name..": "..json.encode(plugin))
+                    local pl = plugin
+                    for k, v in pairs(pl) do
+                        if type(v) == "function" then
+                            debugLog("replacing a function")
+                            pl[k] = "function"
+                        end
+                    end
+                    table.insert(pluginsFormatted, name..": "..json.encode(pl))
                 end
                 res.send(json.encode({
                     ["status"] = "ok", 
