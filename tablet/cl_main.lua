@@ -20,7 +20,7 @@ Citizen.CreateThread(function()
 	InitModuleSize("cad")
 	InitModuleSize("hud")
 
-	SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://app.sonorancad.com/#/?comid='..GetConvar("sonoran_communityID", "")))
+	SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://app.sonorancad.com/#/?comid='..GetConvar("sonoran_communityID", "https://sonorancad.com")))
 
 	-- Disable Controls Loop
 	while true do

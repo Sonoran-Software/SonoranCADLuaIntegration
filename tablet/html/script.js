@@ -185,7 +185,7 @@ $(function () {
 			moduleVisible(event.data.module, event.data.enabled)
 			if (event.data.apiCheck) {
 				isApiBeingChecked = true;
-				$("#check-api-data").show();
+				//$("#check-api-data").show();
 			}
 			setHotkeys(event.data.keyMap);
 		}
