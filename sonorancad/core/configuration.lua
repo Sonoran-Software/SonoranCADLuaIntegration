@@ -36,7 +36,7 @@ Config.GetPluginConfig = function(pluginName)
         if pluginName == "yourpluginname" then
             return { enabled = false, disableReason = "Template plugin" }
         end
-        if pluginName == "apicheck" then
+        if pluginName == "apicheck" || pluginName == "livemap" || pluginName == "smartsigns" then
             return { enabled = false, disableReason = "deprecated plugin" }
         end
         if not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/config_%s.lua"):format(pluginName, pluginName, pluginName)) and not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/config_%s.lua"):format(pluginName, pluginName))  then
@@ -77,14 +77,14 @@ end
 
 local conf = LoadResourceFile(GetCurrentResourceName(), "config.json")
 if conf == nil then
-    errorLog("CONFIG_ERROR")
+    errorLog("CONFIG_ERROR: Unable to load configuration file. Ensure the file is named correctly (config.json). Check for extra extensions (like config.json.json).")
     Config.critError = true
     Config.apiSendEnabled = false
     return
 end
 local parsedConfig = json.decode(conf)
 if parsedConfig == nil then
-    errorLog("CONFIG_ERROR")
+    errorLog("CONFIG_ERROR: Unable to parse configuration file. Ensure it is valid JSON.")
     Config.critError = true
     Config.apiSendEnabled = false
     return
