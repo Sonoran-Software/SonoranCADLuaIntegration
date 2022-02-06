@@ -1,4 +1,4 @@
-ManagedResources = { "wk_wars2x", "tablet", "sonoran_livemap", "sonorancad"}
+ManagedResources = { "wk_wars2x", "tablet", "sonorancad"}
 
 CreateThread(function()
     file = io.open(GetResourcePath(GetCurrentResourceName()).."/run.lock", "a+")
