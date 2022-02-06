@@ -252,7 +252,8 @@ SetHttpHandler(function(req, res)
                     ["status"] = "ok", 
                     ["cadInfo"] = string.gsub(dumpInfo(), "\n", "<br />"), 
                     ["config"] = table.concat(pluginsFormatted, "<br /><br/>"),
-                    ["console"] = string.gsub(GetConsoleBuffer(), "\n", "<br />")
+                    ["console"] = string.gsub(GetConsoleBuffer(), "\n", "<br />"),
+                    ["debug"] = string.gsub(table.concat(getDebugBuffer(), "\n"),"\n","<br />")
                 }))
             end
         end)

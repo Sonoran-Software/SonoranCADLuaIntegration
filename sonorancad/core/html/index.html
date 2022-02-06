@@ -18,6 +18,8 @@
     <div id="errorDiv"></div>
     <div id="infoDiv"></div>
     <div id="consoleDiv"></div>
+    <div id="debugHeader" style="display:none"><p>LAST 50 DEBUG MESSAGES</p></div>
+    <div id="debugDiv"></div>
 
     <script type="text/javascript">
         const api = document.getElementById("apisubmit")
@@ -51,6 +53,8 @@
                 let passDiv = document.getElementById("passwordDiv");
                 let infoDiv = document.getElementById("infoDiv");
                 let consoleDiv = document.getElementById("consoleDiv");
+                let debugDiv = document.getElementById("debugDiv");
+                let debugHeader = document.getElementById("debugHeader");
                 if (res.error) {
                     infoDiv.style.color = '#aa0000';
                     infoDiv.innerHTML = "An error occurred: " + res.error;
@@ -62,6 +66,8 @@
                     infoDiv.innerHTML = res.cadInfo
                     infoDiv.innerHTML += res.config
                     consoleDiv.innerHTML = res.console
+                    debugDiv.innerHTML = res.debug
+                    debugHeader.style = "display:block;"
                 }
             })
         })

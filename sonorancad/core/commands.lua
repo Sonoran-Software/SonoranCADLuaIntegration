@@ -106,7 +106,11 @@ Configuration Information
 Console Buffer
 ------
 %s
-    ]]):format(dumpInfo(), GetConsoleBuffer())
+---------------------------------------
+Last 50 Debug Messages
+----------------------
+%s
+    ]]):format(dumpInfo(), GetConsoleBuffer(), table.concat(getDebugBuffer(), "\n"))
     Config.debugMode = false
     performApiRequest({cadOutput}, "UPLOAD_LOGS", function(data)
         if data == "LOGS UPDATED" then

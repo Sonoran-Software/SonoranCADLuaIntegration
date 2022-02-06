@@ -36,7 +36,7 @@ Config.GetPluginConfig = function(pluginName)
         if pluginName == "yourpluginname" then
             return { enabled = false, disableReason = "Template plugin" }
         end
-        if pluginName == "apicheck" || pluginName == "livemap" || pluginName == "smartsigns" then
+        if pluginName == "apicheck" or pluginName == "livemap" or pluginName == "smartsigns" then
             return { enabled = false, disableReason = "deprecated plugin" }
         end
         if not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/%s/config_%s.lua"):format(pluginName, pluginName, pluginName)) and not LoadResourceFile(GetCurrentResourceName(), ("plugins/%s/config_%s.lua"):format(pluginName, pluginName))  then
