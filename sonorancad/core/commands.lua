@@ -21,7 +21,7 @@ function dumpInfo()
     local version = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
     local pluginList, loadedPlugins, disabledPlugins = GetPluginLists()
     local pluginVersions = {}
-    local cadVariables = { ["socket_port"] = GetConvar("socket_port", "30121 (default)"), ["netPort"] = GetConvar("netPort", "Unknown")}
+    local cadVariables = { ["netPort"] = GetConvar("netPort", "Unknown")}
     local variableList = ""
     for k, v in pairs(cadVariables) do
         variableList = ("%s%s = %s\n"):format(variableList, k, v)

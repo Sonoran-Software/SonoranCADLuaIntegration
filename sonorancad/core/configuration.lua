@@ -222,3 +222,32 @@ CreateThread(function()
         warnLog("The livemap plugin is no longer being used due to the map being native to the CAD. You can remove this plugin.")
     end
 end)
+
+CreateThread(function()
+    while Config.apiVersion == -1 do
+        Wait(100)
+    end
+    if Config.critError then return end
+    if isPluginLoaded("wraithv2") then
+        if GetResourceState("wk_wars2x") ~= "started" then
+            warnLog(("Warning: wk_wars2x resource in bad start (%s). Ensure it is started to use the wraithv2 resource."):format(GetResourceState("wk_wars2x")))
+        end
+        if GetResourceState("pNotify") ~= "started" then
+            warnLog(("Warning: pNotify is required to see notifications from the wraithv2 plugin but the resource in bad start (%s). Ensure it is started"):format(GetResourceState("pNotify")))
+        end
+    end
+    if isPluginLoaded("smartsigns") then
+        warnLog("smartsigns is now a standalone resource. Please update.")
+    end
+    -- smartsigns improper install check
+    if file_exists(("%s/plugins/smartsigns/sv_smartsigns.lua"):format(GetResourcePath(GetCurrentResourceName()))) or file_exists(("%s/plugins/smartsigns/smartsigns/sv_smartsigns.lua"):format(GetResourcePath(GetCurrentResourceName()))) then
+        errorLog("-----------------------")
+        errorLog("Smartsigns incorrect installation detected. This should be installed a standalone resource. If you still have the plugin, you MUST update! You will recieve a parse error in this state.")
+        errorLog("-----------------------")
+    end
+end)
+
+function file_exists(name)
+    local f=io.open(name,"r")
+    if f~=nil then io.close(f) return true else return false end
+ end
