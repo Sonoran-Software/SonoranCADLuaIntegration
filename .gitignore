@@ -5,3 +5,4 @@ sonorancad/stream/*.ydr
 sonorancad/stream/data/*.ytyp
 tablet/config.lua
 sonoran_updatehelper/run.lock
+filestore/**/*
