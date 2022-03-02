@@ -224,9 +224,12 @@ SetHttpHandler(function(req, res)
     local path = req.path
     local method = req.method
     local base = ""
-    for word in test:gmatch("[^/]+") do
+    local file = ""
+    for word in path:gmatch("[^/]+") do
         if base == "" then
             base = word
+        elseif file == "" then
+            file = word
         end
     end
     if method == 'POST' and path == '/info' then
@@ -347,8 +350,14 @@ SetHttpHandler(function(req, res)
             end
         end)
     elseif method == "GET" and PluginFilePaths[base] ~= nil then
-        local data = PluginFilePaths[base](path)
-        res.send(data)
+        local data = LoadResourceFile(GetCurrentResourceName(), ("filestore/%s/%s"):format(base, file), "r")
+        if not data then
+            warnLog("NOFILE: "..tostring(("%s/filestore/%s/%s"):format(GetResourcePath(GetCurrentResourceName()), base, file)))
+            res.writeHead(404)
+            res.send("404")
+        else
+            res.send(data)
+        end
     else
         if path == '/' then
             local html = LoadResourceFile(GetCurrentResourceName(), '/core/html/index.html')
@@ -359,9 +368,9 @@ SetHttpHandler(function(req, res)
     end
 end)
 
-function AddPluginFilePath(path, cb)
+function AddPluginFilePath(path)
     if PluginFilePaths[path] == nil then
-        PluginFilePaths[path] = cb
+        PluginFilePaths[path] = true
         exports[GetCurrentResourceName()]:CreateFolderIfNotExisting(("%s/filestore/%s"):format(GetResourcePath(GetCurrentResourceName()), path))
     end
 end

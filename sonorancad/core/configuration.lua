@@ -116,7 +116,7 @@ if Config.updateBranch == nil then
 end
 
 if GetConvar("web_baseUrl", "") ~= "" then
-    Config.proxyUrl = ("https://%s/sonorancad/"):format(GetConvar("web_baseUrl", "")
+    Config.proxyUrl = ("https://%s/sonorancad/"):format(GetConvar("web_baseUrl", ""))
 end
 
 RegisterNetEvent("SonoranCAD::core:sendClientConfig")

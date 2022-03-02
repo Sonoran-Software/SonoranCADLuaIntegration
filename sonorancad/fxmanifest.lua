@@ -8,6 +8,7 @@ version '2.9.2'
 server_scripts {
     'core/http.js'
     ,'core/unzipper/unzip.js'
+    ,'core/image.js'
     ,'core/logging.lua'
     ,'core/shared_functions.lua'
     ,'core/configuration.lua'
@@ -24,6 +25,7 @@ server_scripts {
                }
 client_scripts {
     'core/logging.lua'
+    ,'core/headshots.lua'
     ,'core/shared_functions.lua'
     ,'core/client.lua'
     ,'core/lighting.lua'

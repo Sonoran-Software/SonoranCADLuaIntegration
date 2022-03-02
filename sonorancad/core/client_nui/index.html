@@ -4,5 +4,37 @@
         <script src="js/http.js" tyle="text/javascript"></script>
     </head>
     <body style="display:none;">
+        <script>
+            // CRED: https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript/20285053#20285053
+            function toDataUrl(url, callback) {
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function() {
+                    var reader = new FileReader();
+                    reader.onloadend = function() {
+                        callback(reader.result);
+                    }
+                    reader.readAsDataURL(xhr.response);
+                };
+                xhr.open("GET", url);
+                xhr.responseType = "blob";
+                xhr.send();
+            }
+
+            window.addEventListener("message", function(event) {
+                if (event.data.type === "convert_base64") {
+                    toDataUrl(event.data.img, function(base64) {
+                        fetch(`https://${GetParentResourceName()}/base64`, {
+                            method: "POST",
+                            headers: {"Content-Type": "application/json; charset=UTF-8"},
+                            body: JSON.stringify({
+                                base64: base64,
+                                handle: event.data.handle,
+                                id: event.data.id
+                            })
+                        });
+                    });
+                }
+            });
+        </script>
     </body>
 </html>
