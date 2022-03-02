@@ -197,7 +197,8 @@ CreateThread(function()
             playerCount = playerCount,
             serverId = Config.serverId,
             fxVersion = getServerVersion(),
-            plugins = plugins
+            plugins = plugins,
+            ingressUrl = GetConvar("web_baseUrl", "")
         }
         performApiRequest(payload, "HEARTBEAT", function() end)
         Wait(1000*60*60)

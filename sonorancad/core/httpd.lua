@@ -1,4 +1,5 @@
 local PluginHttpHandlers = {}
+local PluginFilePaths = {}
 
 function RegisterPluginHttpEvent(eventName, func)
     if PluginHttpHandlers[eventName] ~= nil then
@@ -222,7 +223,12 @@ local PushEventHandler = {
 SetHttpHandler(function(req, res)
     local path = req.path
     local method = req.method
-
+    local base = ""
+    for word in test:gmatch("[^/]+") do
+        if base == "" then
+            base = word
+        end
+    end
     if method == 'POST' and path == '/info' then
         req.setDataHandler(function(body)
             if not body then
@@ -340,6 +346,9 @@ SetHttpHandler(function(req, res)
                 return res.send("error")
             end
         end)
+    elseif method == "GET" and PluginFilePaths[base] ~= nil then
+        local data = PluginFilePaths[base](path)
+        res.send(data)
     else
         if path == '/' then
             local html = LoadResourceFile(GetCurrentResourceName(), '/core/html/index.html')
@@ -349,6 +358,22 @@ SetHttpHandler(function(req, res)
         end
     end
 end)
+
+function AddPluginFilePath(path, cb)
+    if PluginFilePaths[path] == nil then
+        PluginFilePaths[path] = cb
+        exports[GetCurrentResourceName()]:CreateFolderIfNotExisting(("%s/filestore/%s"):format(GetResourcePath(GetCurrentResourceName()), path))
+    end
+end
+
+function SaveFileInPluginPath(path, filename, filedata)
+    if PluginFilePaths[path] ~= nil then
+        local file = assert(io.open(("%s/filestore/%s/%s"):format(GetResourcePath(GetCurrentResourceName()), path, filename), 'wb+'))
+        file:write(filedata)
+        file:close()
+        debugLog("Saved file: "..("%s/filestore/%s/%s"):format(GetResourcePath(GetCurrentResourceName()), path, filename))
+    end
+end
 
 AddEventHandler("SonoranCAD::pushevents:shim", function(chunk)
     local body = json.decode(chunk)
@@ -364,4 +389,8 @@ AddEventHandler("SonoranCAD::pushevents:shim", function(chunk)
             end)
         end
     end
+end)
+
+AddPluginFilePath("images", function(path)
+
 end)

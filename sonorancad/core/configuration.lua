@@ -12,6 +12,7 @@ Config = {
     latestVersion = "",
     apiVersion = -1,
     plugins = {},
+    proxyUrl = ""
 }
 
 Config.RegisterPluginConfig = function(pluginName, configs)
@@ -112,6 +113,10 @@ end
 
 if Config.updateBranch == nil then
     Config.updateBranch = "master"
+end
+
+if GetConvar("web_baseUrl", "") ~= "" then
+    Config.proxyUrl = ("https://%s/sonorancad/"):format(GetConvar("web_baseUrl", "")
 end
 
 RegisterNetEvent("SonoranCAD::core:sendClientConfig")
