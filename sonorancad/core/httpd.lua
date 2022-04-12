@@ -64,15 +64,18 @@ local PushEventHandler = {
         return true
     end,
     EVENT_DISPATCH_CLOSED = function(body)
-        if GetCallCache()[body.data.callId] ~= nil then
-            local call = GetCallCache()[body.data.callId].dispatch
-            local d = { dispatch_type = "CALL_CLOSE", dispatch = call.dispatch ~= nil and call.dispatch or call }
-            SetCallCache(body.data.callId, d)
-            TriggerEvent('SonoranCAD::pushevents:DispatchEvent', d)
-            return true
-        else
-            debugLog(("Unknown call close (call ID %s), current cache: %s"):format(body.data.callId, json.encode(CallCache)))
-            return false, "unknown call close"
+        for i=1, #body.data.callIds do
+            local id = body.data.callIds[i]
+            if GetCallCache()[id] ~= nil then
+                local call = GetCallCache()[id].dispatch
+                local d = { dispatch_type = "CALL_CLOSE", dispatch = call.dispatch ~= nil and call.dispatch or call }
+                SetCallCache(id, d)
+                TriggerEvent('SonoranCAD::pushevents:DispatchEvent', d)
+                return true
+            else
+                debugLog(("Unknown call close (call ID %s), current cache: %s"):format(id, json.encode(CallCache)))
+                return false, "unknown call close"
+            end
         end
     end,
     EVENT_DISPATCH_NOTE = function(body)
@@ -164,8 +167,12 @@ local PushEventHandler = {
         return true
     end,
     EVENT_REMOVE_911 = function(body)
-        SetEmergencyCache(body.data.callId, nil)
-        TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callId)
+        for i=1, #body.data.callIds do
+            if body.data.callIds[i] then
+                SetEmergencyCache(body.data.callIds[i], nil)
+                TriggerEvent('SonoranCAD::pushevents:CadCallRemoved', body.data.callIds[i])
+            end
+        end
         return true
     end,
     EVENT_UNIT_PANIC = function(body)
