@@ -185,8 +185,9 @@ CreateThread(function()
             local r = json.decode(resultData)
             if r ~= nil and r.ip ~= nil then
                 debugLog(("IP DETECT - IP: %s - Detected: %s - Outbound set: %s - Outbound IP: %s"):format(ServerInfo.mapIp, r.ip, ServerInfo.differingOutbound, ServerInfo.outboundIp))
-                if serverObj.mapIp == "" then
+                if serverObj.mapIp == "" or serverObj.mapIp == nil then
                     serverObj.mapIp = r.ip
+                    needSetup = true
                 end
                 if ServerInfo.mapIp ~= r.ip then
                     if ServerInfo.differingOutbound and ServerInfo.outboundIp == r.ip then

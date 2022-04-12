@@ -46,7 +46,7 @@ local function sendConsole(level, color, message)
         if #DebugBuffer > 50 then
             table.remove(DebugBuffer)
         end
-        table.insert(DebugBuffer, msg)
+        table.insert(DebugBuffer, 1, msg)
     else
         if not IsDuplicityVersion() then
             if #MessageBuffer > 10 then
