@@ -51,6 +51,10 @@ CreateThread(function()
     end
 end)
 
+exports("getCadVersion", function()
+    return Config.apiVersion
+end)
+
 -- Toggles API sender.
 RegisterServerEvent("cadToggleApi")
 AddEventHandler("cadToggleApi", function()
