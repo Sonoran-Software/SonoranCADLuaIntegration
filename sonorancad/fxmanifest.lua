@@ -3,7 +3,7 @@ games {'gta5'}
 
 author 'Sonoran CAD'
 description 'Sonoran CAD FiveM Integration'
-version '2.9.5'
+version '2.9.6'
 
 server_scripts {
     'core/http.js'
