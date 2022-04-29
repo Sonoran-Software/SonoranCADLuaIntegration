@@ -58,8 +58,14 @@ function SetUnitCache(k, v)
         table.insert(UnitCache, v)
     end
 end
-function SetCallCache(k, v) CallCache[k] = v end
-function SetEmergencyCache(k, v) EmergencyCache[k] = v end
+function SetCallCache(k, v) 
+    TriggerClientEvent('SonoranCAD::mini:CallSync', -1, GetCallCache(), GetEmergencyCache())
+    CallCache[k] = v 
+end
+function SetEmergencyCache(k, v) 
+    TriggerClientEvent('SonoranCAD::mini:CallSync', -1, GetCallCache(), GetEmergencyCache())
+    EmergencyCache[k] = v 
+end
 
 
 -- Global function wrapper
@@ -207,6 +213,7 @@ CreateThread(function()
             for k, v in pairs(calls.emergencyCalls) do
                 EmergencyCache[v.callId] = v
             end
+            TriggerClientEvent('SonoranCAD::mini:CallSync', -1, GetCallCache(), GetEmergencyCache())
         end)
         Citizen.Wait(60 * 1000)
     end

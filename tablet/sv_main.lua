@@ -23,8 +23,13 @@ CreateThread(function()
                     end
                 end
             end
-            TriggerClientEvent("SonoranCAD::mini:CallSync", -1, CallCache, EmergencyCache)
+            --TriggerClientEvent("SonoranCAD::mini:CallSync", -1, CallCache, EmergencyCache)
         end
+    end)
+
+    RegisterNetEvent("SonoranCAD::mini:CallSync_S")
+    AddEventHandler("SonoranCAD::mini:CallSync_S", function()
+        TriggerClientEvent("SonoranCAD::mini:CallSync", source, CallCache, EmergencyCache)
     end)
     
     AddEventHandler("SonoranCAD::pushevents:DispatchNote", function(data)

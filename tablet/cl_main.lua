@@ -22,6 +22,8 @@ Citizen.CreateThread(function()
 
 	SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://app.sonorancad.com/#/?comid='..GetConvar("sonoran_communityID", "https://sonorancad.com")))
 
+	TriggerServerEvent("SonoranCAD::mini:CallSync_S")
+
 	-- Disable Controls Loop
 	while true do
 		if nuiFocused then	-- Disable controls while NUI is focused.
