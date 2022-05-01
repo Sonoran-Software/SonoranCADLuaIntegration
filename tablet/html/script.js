@@ -84,7 +84,7 @@ function refreshCall() {
 				$("#callNotes")[0].innerHTML += '<span class="callnote">' + currentCall.notes[i] + '</span>';
 			}
 		}
-		if (currentCall.units.length > 0) {
+		if (currentCall.units != undefined && currentCall.units.length > 0) {
 			$("#callUnits")[0].innerHTML = '';
 			for (var i = 0; i<currentCall.units.length; i++) {
 				//console.log(currentCall.units[i].status);
