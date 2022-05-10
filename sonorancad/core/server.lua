@@ -76,7 +76,14 @@ ApiEndpoints = {
     ["ADD_CALL_NOTE"] = "emergency",
     ["RECORD_ADD"] = "general",
     ["RECORD_UPDATE"] = "general",
-    ["SET_SERVERS"] = "general"
+    ["SET_SERVERS"] = "general",
+    ["GET_CHARACTERS"] = "civilian",
+	["EDIT_CHARACTER"] = "civilian",
+	["NEW_RECORD"] = "general",
+	["EDIT_RECORD"] = "general",
+	["REMOVE_RECORD"] = "general",
+	["GET_TEMPLATES"] = "general",
+	["LOOKUP_INT"] = "general",
 }
 
 EndpointsRequireId = {
