@@ -225,6 +225,7 @@ $(function () {
 		else if (event.data.type == "setUrl") {
 			if (event.data.module == "cad") {
 				document.getElementById("cadFrame").src = event.data.url;
+				document.getElementById('cadFrame').setAttribute("name", Date.now())
 			}
 		}
 		else if (event.data.type == "regbar") {
@@ -249,6 +250,7 @@ $(function () {
 			if (event.data.module == "cad") {
 				let s = document.getElementById('cadFrame').src;
 				document.getElementById('cadFrame').src = s + "&" + t.toString();
+				document.getElementById('cadFrame').setAttribute("name", Date.now())
 			}
 		}
 	});
