@@ -34,7 +34,10 @@ exports('HandleHttpRequest', (dest, callback, method, data, headers) => {
       })
         
     req.on('error', (error) => {
-        console.debug("HTTP error caught: " + JSON.stringify(error));
+        let ignore_ids = ["EAI_AGAIN", "ETIMEOUT", "ENOTFOUND"]
+        if (!ignore_ids.includes(error.code))
+            console.debug("HTTP error caught: " + JSON.stringify(error));
+        callback(error.errono, {}, {});
     })
     if (method == "POST") {
         req.write(data);
