@@ -52,3 +52,6 @@
 [submodule "sonorancad/plugins/characterphoto"]
 	path = sonorancad/plugins/characterphoto
 	url = https://github.com/Sonoran-Software/characterphoto.git
+[submodule "sonorancad/plugins/sonrad"]
+	path = sonorancad/plugins/sonrad
+	url = https://github.com/Sonoran-Software/sonoran_sonrad.git
