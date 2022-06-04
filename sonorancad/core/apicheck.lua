@@ -39,6 +39,15 @@ RegisterCommand("apiid", function(source, args, rawCommand)
                 pid = identifiers[type]
             end
         end
+    elseif isPluginLoaded("frameworksupport") then
+        local type = Config.plugins["frameworksupport"].identityType
+        if identifiers[type] ~= nil then
+            if Config.plugins["frameworksupport"].usePrefix then
+                pid = ("%s:%s"):format(type, identifiers[type])
+            else
+                pid = identifiers[type]
+            end
+        end
     else
         if identifiers[Config.primaryIdentifier] ~= nil then
             pid = identifiers[Config.primaryIdentifier]
