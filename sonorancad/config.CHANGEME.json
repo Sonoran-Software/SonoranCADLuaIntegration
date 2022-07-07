@@ -15,5 +15,6 @@
     "noUnitTimer": false,
     "forceSetApiId": false,
     "enablePushEventForwarding": false,
-    "pushEventForwardUrl": "https://host"
+    "pushEventForwardUrl": "https://host",
+    "disableOverride": false
 }
