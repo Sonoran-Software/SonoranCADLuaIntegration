@@ -203,7 +203,7 @@ CreateThread(function()
         debugLog("Too low version or API disabled, skip call caching")
         return
     end
-    local payload = { serverId = Config.serverId}
+    local payload = { serverId = Config.serverId }
     while true do
         performApiRequest({payload},"GET_CALLS",function(response)
             local calls = json.decode(response)
@@ -213,7 +213,7 @@ CreateThread(function()
             for k, v in pairs(calls.emergencyCalls) do
                 EmergencyCache[v.callId] = v
             end
-            TriggerClientEvent('SonoranCAD::mini:CallSync', -1, GetCallCache(), GetEmergencyCache())
+            --TriggerClientEvent('SonoranCAD::mini:CallSync', -1, GetCallCache(), GetEmergencyCache())
         end)
         Citizen.Wait(60 * 1000)
     end
