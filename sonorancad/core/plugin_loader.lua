@@ -93,6 +93,8 @@ function CheckForPluginUpdate(name, forceUpdate)
     if plugin == nil then
         errorLog(("Plugin %s not found."):format(name))
         return
+    elseif plugin.enabled == false then
+        return
     elseif plugin.check_url == nil or plugin.check_url == "" then
         debugLog(("Plugin %s does not have check_url set. Is it configured correctly?"):format(name))
         return
@@ -112,9 +114,10 @@ function CheckForPluginUpdate(name, forceUpdate)
             else
                 Config.plugins[name].latestVersion = remote.version
                 Config.plugins[name].download_url = remote.download_url
-                local latestVersion = string.gsub(remote.version, "%.","")
-                local localVersion = string.gsub(plugin.version, "%.", "")
-                if localVersion < latestVersion then
+                _, _, v1, v2, v3 = string.find( plugin.version, "(%d+)%.(%d+)%.(%d+)" )
+                _, _, r1, r2, r3 = string.find( remote.version, "(%d+)%.(%d+)%.(%d+)" )
+                local compare = compareVersions(remote.version, plugin.version)
+                if compare.result then
                     warnLog(("Plugin Updater: %s has an available update! %s -> %s"):format(name, plugin.version, remote.version))
                     if remote.download_url ~= nil and remote.download_url ~= "" then
                         if Config.allowAutoUpdate or forceUpdate then
@@ -132,7 +135,8 @@ function CheckForPluginUpdate(name, forceUpdate)
                     end
                 end
                 if remote.configVersion ~= nil and plugin.configVersion ~= nil then
-                    if remote.configVersion ~= plugin.configVersion and not Config.debugMode then
+                    local configCompare = compareVersions(remote.configVersion, plugin.configVersion)
+                    if configCompare.result and not Config.debugMode then
                         errorLog(("Plugin Updater: %s has a new configuration version. You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin."):format(name, name))
                         Config.plugins[name].enabled = false
                         Config.plugins[name].disableReason = "outdated config file"
@@ -181,7 +185,6 @@ CreateThread(function()
             end
         elseif versionFile.pluginDepends ~= nil then
             for _, plugin in pairs(versionFile.pluginDepends) do
-                local requiredVersion = string.gsub(plugin.version, "%.","")
                 local isCritical = plugin.critical
                 -- get the depend plugin information
                 local vFile = LoadVersionFile(plugin.name)
@@ -195,9 +198,7 @@ CreateThread(function()
                     end
                 else
                     local check = json.decode(vFile)
-                    -- check if its version >= required
-                    local checkVersion = string.gsub(check.version, "%.","")
-                    if (checkVersion < requiredVersion) then
+                    if compareVersions(plugin.version, check.version).result then
                         if isCritical then
                             logError("PLUGIN_VERSION_MISMATCH", getErrorText("PLUGIN_VERSION_MISMATCH"):format(k, plugin.name, plugin.version, check.version))
                             Config.plugins[k].enabled = false
@@ -218,18 +219,20 @@ CreateThread(function()
             Config.plugins[k].version = version.version
             Config.plugins[k].check_url = version.check_url
             Config.plugins[k].download_url = version.download_url
-            if version.configVersion ~= nil and Config.plugins[k].configVersion ~= nil and Config.plugins[k].configVersion ~= version.configVersion then
-                logError("PLUGIN_CONFIG_OUTDATED", getErrorText("PLUGIN_CONFIG_OUTDATED"):format(k, Config.plugins[k].configVersion, version.configVersion, k))
+            local configVer = Config.plugins[k].configVersion ~= nil and Config.plugins[k].configVersion or "1.0.0"
+            local remoteVer = version.configVersion ~= nil and version.configVersion or "1.0.0"
+            local compare = compareVersions(remoteVer, configVer)
+            if compare.result then
+                logError("PLUGIN_CONFIG_OUTDATED", getErrorText("PLUGIN_CONFIG_OUTDATED"):format(k, compare.version1, compare.version2, k))
                 Config.plugins[k].enabled = false
                 Config.plugins[k].disableReason = "outdated config file"
             end
             CheckForPluginUpdate(k)
             if version.minCoreVersion ~= nil then
                 local coreVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
-                local minVersion = string.gsub(version.minCoreVersion, "%.","")
-                local coreVersion = string.gsub(coreVersion, "%.", "")
-                if minVersion > coreVersion then
-                    logError("PLUGIN_CORE_OUTDATED", getErrorText("PLUGIN_CORE_OUTDATED"):format(k, version.minCoreVersion, coreVersion))
+                local coreCompare = compareVersions(version.minCoreVersion, coreVersion)
+                if coreCompare.result then
+                    logError("PLUGIN_CORE_OUTDATED", getErrorText("PLUGIN_CORE_OUTDATED"):format(k, coreCompare.version2, coreCompare.version1))
                     Config.plugins[k].enabled = false
                     Config.plugins[k].disableReason = "Outdated core version"
                 end

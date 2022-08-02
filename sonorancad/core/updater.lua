@@ -67,24 +67,13 @@ function RunAutoUpdater(manualRun)
                 debugLog(("Raw output for %s: %s"):format(k, data))
             else
                 Config.latestVersion = remote.resource
-                _, _, v1, v2, v3 = string.find( myVersion, "(%d+)%.(%d+)%.(%d+)" )
-                _, _, r1, r2, r3 = string.find( remote.resource, "(%d+)%.(%d+)%.(%d+)" )
-                if (string.find(myVersion, "-beta")) then
-                    v3 = v3 - 0.5
-                end
-                debugLog(("my: %s remote: %s"):format(myVersion, remote.resource))
-                local latestVersion = r3+(r2*100)+(r1*1000)
-                local localVersion = v3+(v2*100)+(v1*1000)
-
-                assert(localVersion ~= nil, "Failed to parse local version. "..tostring(localVersion))
-                assert(latestVersion ~= nil, "Failed to parse remote version. "..tostring(latestVersion))
-
-                if latestVersion > localVersion then
+                local compare = compareVersions(remote.resource, myVersion)
+                if compare.result then
                     if not Config.allowAutoUpdate then
                         print("^3|===========================================================================|")
                         print("^3|                        ^5SonoranCAD Update Available                        ^3|")
-                        print("^3|                             ^8Current : " .. localVersion .. "                               ^3|")
-                        print("^3|                             ^2Latest  : " .. latestVersion .. "                               ^3|")
+                        print("^3|                             ^8Current : " .. compare.version2 .. "                               ^3|")
+                        print("^3|                             ^2Latest  : " .. compare.version1 .. "                               ^3|")
                         print("^3| Download at: ^4https://github.com/Sonoran-Software/SonoranCADLuaIntegration ^3|")
                         print("^3|===========================================================================|^7")
                         if Config.allowAutoUpdate == nil then
@@ -96,7 +85,7 @@ function RunAutoUpdater(manualRun)
                     end
                 else
                     if manualRun then
-                        infoLog(("No updates available. Detected version %s, latest version is %s"):format(localVersion, latestVersion))
+                        infoLog(("No updates available. Detected version %s, latest version is %s"):format(compare.version1, compare.version2))
                     end
                 end
             end
