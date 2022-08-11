@@ -204,7 +204,8 @@ CreateThread(function()
                     end
                 end
             end
-            if needSetup then
+            local disableOverride = (Config.disableIpOverride ~= nil and Config.disableIpOverride or false)
+            if needSetup and not disableOverride then
                 local payload = nil
                 if ServerInfo == nil then
                     payload = { ["servers"] = {serverObj}}
