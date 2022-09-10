@@ -139,6 +139,15 @@ AddEventHandler('SonoranCAD::mini:OpenMini:Return', function(authorized, ident)
 	end
 end)
 
+CreateThread(function()
+	while true do
+		if isMiniVisible then
+			TriggerServerEvent("SonoranCAD::mini:CallSync_S")
+		end
+		Wait(10000)
+	end
+end)
+
 function ShowHelpMessage()
 	PrintChatMessage("Keybinds: Attach/Detach [K], Details [L], Previous/Next [LEFT/RIGHT], changable in settings!")
 end

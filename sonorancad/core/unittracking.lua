@@ -213,7 +213,6 @@ CreateThread(function()
             for k, v in pairs(calls.emergencyCalls) do
                 EmergencyCache[v.callId] = v
             end
-            TriggerClientEvent('SonoranCAD::mini:CallSync', -1, GetCallCache(), GetEmergencyCache())
         end)
         Citizen.Wait(60 * 1000)
     end

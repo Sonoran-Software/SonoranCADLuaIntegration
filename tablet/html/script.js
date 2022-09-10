@@ -62,7 +62,8 @@ function refreshCall() {
 		$("#callUnits")[0].innerHTML = '';
 		$("#hudDetails")[0].style.display = "none";
 	} else {
-		let currentCall = CallCache.active[currCall].dispatch;
+		let currentCall = CallCache?.active[currCall]?.dispatch;
+		if (!currentCall) return;
 		buttonShow("#btnAttach", true);
 		if (isAttached(CallCache.active[currCall])) {
 			buttonShow("#btnAttach", true, "Detach");
@@ -84,7 +85,7 @@ function refreshCall() {
 				$("#callNotes")[0].innerHTML += '<span class="callnote">' + currentCall.notes[i] + '</span>';
 			}
 		}
-		if (currentCall.units != undefined && currentCall.units.length > 0) {
+		if (currentCall.units?.length > 0) {
 			$("#callUnits")[0].innerHTML = '';
 			for (var i = 0; i<currentCall.units.length; i++) {
 				//console.log(currentCall.units[i].status);

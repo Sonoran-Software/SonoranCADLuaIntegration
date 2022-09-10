@@ -146,6 +146,10 @@ function performApiRequest(postData, type, cb)
                 if res == "Sonoran CAD: Backend Service Reached" or res == "Backend Service Reached" then
                     errorLog(("API ERROR: Invalid endpoint (URL: %s). Ensure you're using a valid endpoint."):format(url))
                 else
+                    if res == nil then
+                        res = {}
+                        debugLog("Warning: Response had no result, setting to empty table.")
+                    end
                     cb(res, true)
                 end
             elseif statusCode == 400 then

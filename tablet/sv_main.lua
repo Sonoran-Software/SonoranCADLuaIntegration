@@ -42,6 +42,7 @@ CreateThread(function()
         if ident == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) return end
         if ident.data == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) return end
         if ident.data.apiIds[1] == nil then TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, false) return end
+        TriggerClientEvent("SonoranCAD::mini:CallSync", source, CallCache, EmergencyCache)
         TriggerClientEvent("SonoranCAD::mini:OpenMini:Return", source, true, ident.id)
     end)
     

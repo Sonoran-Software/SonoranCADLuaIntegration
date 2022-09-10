@@ -83,3 +83,19 @@ function getServerVersion()
     local i = string.gsub(s:sub(v),"v1.0.0.",""):sub(1,4)
     return i
 end
+
+function compareVersions(version1, version2)
+    _, _, v1, v2, v3 = string.find( version1, "(%d+)%.(%d+)%.(%d+)" )
+    _, _, r1, r2, r3 = string.find( version2, "(%d+)%.(%d+)%.(%d+)" )
+    if r3 == nil then r3 = 0 end
+    if v3 == nil then v3 = 0 end
+    if r2 == nil then r2 = 0 end
+    if v2 == nil then v2 = 0 end
+    if v1 == nil then v1 = 1 end
+    if r1 == nil then r1 = 1 end
+    local parsedVersion2 = r3+(r2*100)+(r1*1000)
+    local parsedVersion1 = v3+(v2*100)+(v1*1000)
+    local tbl = { result = (parsedVersion2 < parsedVersion1), parsedVersion1 = parsedVersion1, parsedVersion2 = parsedVersion2, version1 = version1, version2 = version2 }
+    debugLog(json.encode(tbl))
+    return tbl
+end
