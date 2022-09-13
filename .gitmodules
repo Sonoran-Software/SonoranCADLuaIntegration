@@ -31,9 +31,6 @@
 [submodule "plugins/civintegration"]
 	path = sonorancad/plugins/civintegration
 	url = https://github.com/Sonoran-Software/sonoran_civintegration.git
-[submodule "plugins/esxsupport"]
-	path = sonorancad/plugins/esxsupport
-	url = https://github.com/Sonoran-Software/sonoran_esxsupport.git
 [submodule "plugins/forcereg"]
 	path = sonorancad/plugins/forcereg
 	url = https://github.com/Sonoran-Software/sonoran_forcereg.git
@@ -49,9 +46,9 @@
 [submodule "sonoran_idcard"]
 	path = sonoran_idcard
 	url = https://github.com/Sonoran-Software/id_card_ui.git
-[submodule "sonorancad/plugins/characterphoto"]
-	path = sonorancad/plugins/characterphoto
-	url = https://github.com/Sonoran-Software/characterphoto.git
 [submodule "sonorancad/plugins/sonrad"]
 	path = sonorancad/plugins/sonrad
 	url = https://github.com/Sonoran-Software/sonoran_sonrad.git
+[submodule "sonorancad/plugins/frameworksupport"]
+	path = sonorancad/plugins/frameworksupport
+	url = https://github.com/Sonoran-Software/sonoran_frameworksupport
