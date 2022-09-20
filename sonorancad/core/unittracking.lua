@@ -153,7 +153,7 @@ Citizen.CreateThread(function()
             OldUnits[k] = v
         end
         if GetNumPlayerIndices() > 0 then
-            local payload = { serverId = Config.serverId}
+            local payload = { serverId = Config.serverId, unitsOnly = false }
             performApiRequest({payload}, "GET_ACTIVE_UNITS", function(runits)
                 local allUnits = json.decode(runits)
                 if allUnits ~= nil then
