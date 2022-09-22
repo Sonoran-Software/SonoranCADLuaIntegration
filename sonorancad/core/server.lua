@@ -19,6 +19,7 @@ function getApiUrl()
 end
 
 CreateThread(function()
+    infoLog("Starting SonoranCAD from "..GetResourcePath("sonorancad"))
     Config.apiUrl = getApiUrl()
     performApiRequest({}, "GET_VERSION", function(result, ok)
         if not ok then
