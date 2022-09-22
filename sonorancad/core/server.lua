@@ -23,13 +23,13 @@ CreateThread(function()
     Config.apiUrl = getApiUrl()
     performApiRequest({}, "GET_VERSION", function(result, ok)
         if not ok then
-            errorLog("API_ERROR")
+            logError("API_ERROR")
             Config.critError = true
             return
         end
         Config.apiVersion = tonumber(string.sub(result, 1, 1))
         if Config.apiVersion < 2 then
-            errorLog("API_PAID_ONLY")
+            logError("API_PAID_ONLY")
             Config.critError = true
         end
         debugLog(("Set version %s from response %s"):format(Config.apiVersion, result))
