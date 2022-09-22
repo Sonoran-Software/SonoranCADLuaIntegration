@@ -53,6 +53,8 @@ function isPluginLoaded(pluginName)
     return false
 end
 
+exports('isPluginLoaded', isPluginLoaded)
+
 function PerformHttpRequestS(url, cb, method, data, headers)
     if not data then
         data = ""
