@@ -248,7 +248,7 @@ SetHttpHandler(function(req, res)
             local data = json.decode(body)
             if not data then
                 res.send(json.encode({["error"] = "bad request"}))
-            elseif Config.critError then
+            elseif Config.critError and not Config.apiKey then
                 res.send(json.encode({["error"] = "critical config error"}))
             elseif string.upper(data.password) ~= string.upper(Config.apiKey) then
                 res.send(json.encode({["error"] = "bad request"}))
@@ -282,7 +282,7 @@ SetHttpHandler(function(req, res)
             local data = json.decode(body)
             if not data then
                 res.send(json.encode({["error"] = "bad request"}))
-            elseif Config.critError then
+            elseif Config.critError and not Config.apiKey then
                 res.send(json.encode({["error"] = "critical config error"}))
             elseif string.upper(data.password) ~= string.upper(Config.apiKey) then
                 res.send(json.encode({["error"] = "bad request"}))
