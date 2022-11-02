@@ -52,3 +52,6 @@
 [submodule "sonorancad/plugins/frameworksupport"]
 	path = sonorancad/plugins/frameworksupport
 	url = https://github.com/Sonoran-Software/sonoran_frameworksupport
+[submodule "wk_wars2x"]
+	path = wk_wars2x
+	url = https://github.com/Sonoran-Software/wk_wars2x.git

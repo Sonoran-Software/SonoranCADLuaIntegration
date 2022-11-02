@@ -144,7 +144,7 @@ SonoranCAD Help
 ]])
     elseif args[1] == "debugmode" then
         Config.debugMode = not Config.debugMode
-        SetConvar("sonoran_debugMode", not Config.debugMode)
+        SetConvar("sonoran_debugMode", Config.debugMode)
         infoLog(("Debug mode toggled to %s"):format(Config.debugMode))
         TriggerClientEvent("SonoranCAD::core:debugModeToggle", -1, Config.debugMode)
     elseif args[1] == "info" then
