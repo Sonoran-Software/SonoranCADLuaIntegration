@@ -1,6 +1,5 @@
 CallCache = {}
 EmergencyCache = {}
-UnitCache = {}
 
 CreateThread(function()
     while GetResourceState("sonorancad") ~= "started" do
@@ -8,24 +7,64 @@ CreateThread(function()
         Wait(5000)
     end
 
-    CreateThread(function()
-        while true do
-            Wait(1000)
-            CallCache = exports["sonorancad"]:GetCallCache()
-            UnitCache = exports["sonorancad"]:GetUnitCache()
-            for k, v in pairs(CallCache) do
-                v.dispatch.units = {}
-                if v.dispatch.idents then
-                    for ka, va in pairs(v.dispatch.idents) do
-                        local unit
-                        local unitId = exports["sonorancad"]:GetUnitById(va)
-                        table.insert(v.dispatch.units, UnitCache[unitId]);
-                    end
+    local function debounce(fn, time)
+        local i = 0
+        return function()
+            i = i + 1
+            local iCopy = i
+            Citizen.CreateThread(function()
+                Wait(time)
+                -- invoke if 'i' hasn't been incremented since this thread was created
+                if i == iCopy then fn() end
+            end)
+        end
+    end
+    -- safely remove keys of an object based on a predicate
+    local function removeKeyAt(obj, predicate)
+        local kToRemove = {}
+        for k, v in pairs(obj) do
+            if predicate(k, v) then
+                table.insert(kToRemove, k)
+            end
+        end
+        for _, k in ipairs(kToRemove) do
+            obj[k] = nil
+        end
+        return obj
+    end
+
+    local function miniCadCallSync()
+        local callCache = exports['sonorancad']:GetCallCache()
+        local unitCache = exports['sonorancad']:GetUnitCache()
+        removeKeyAt(callCache, function(k, v)
+            -- only include active calls
+            if v.dispatch.status ~= 1 then return true end
+
+            -- add unit info to the call (idk if this is really needed)
+            v.dispatch.units = {}
+            if v.dispatch.idents then
+                for _, va in pairs(v.dispatch.idents) do
+                    local unitId = exports['sonorancad']:GetUnitById(va)
+                    table.insert(v.dispatch.units, unitCache[unitId])
                 end
             end
-            --TriggerClientEvent("SonoranCAD::mini:CallSync", -1, CallCache, EmergencyCache)
-        end
-    end)
+            return false
+        end)
+        CallCache = callCache
+
+        -- the cache already removes stale 911 calls, no need to use removeKeyAt
+        EmergencyCache = exports["sonorancad"]:GetEmergencyCache()
+
+        -- TODO: only send to active units
+        TriggerClientEvent("SonoranCAD::mini:CallSync", -1, CallCache, EmergencyCache)
+    end
+    local miniCadCallSyncDebounced = debounce(miniCadCallSync, 1000)
+    miniCadCallSyncDebounced() -- call immediately for sync
+
+    -- watch for calls and emergencies
+    -- NOTE: debounce because these can come through in quick succession
+    AddEventHandler('SonoranCAD::pushevents:CallCacheUpdated', miniCadCallSyncDebounced)
+    AddEventHandler('SonoranCAD::pushevents:EmergencyCacheUpdated', miniCadCallSyncDebounced)
 
     RegisterNetEvent("SonoranCAD::mini:CallSync_S")
     AddEventHandler("SonoranCAD::mini:CallSync_S", function()
