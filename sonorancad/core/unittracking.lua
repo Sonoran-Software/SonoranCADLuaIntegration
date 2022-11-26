@@ -59,12 +59,12 @@ function SetUnitCache(k, v)
     end
 end
 function SetCallCache(k, v) 
-    TriggerClientEvent('SonoranCAD::mini:CallSync', -1, GetCallCache(), GetEmergencyCache())
-    CallCache[k] = v 
+    CallCache[k] = v
+    TriggerEvent('SonoranCAD::pushevents:CallCacheUpdated')
 end
 function SetEmergencyCache(k, v) 
-    TriggerClientEvent('SonoranCAD::mini:CallSync', -1, GetCallCache(), GetEmergencyCache())
-    EmergencyCache[k] = v 
+    EmergencyCache[k] = v
+    TriggerEvent('SonoranCAD::pushevents:EmergencyCacheUpdated')
 end
 
 
@@ -95,6 +95,7 @@ end
 exports('GetUnitByPlayerId', GetUnitByPlayerId)
 exports('GetUnitCache', GetUnitCache)
 exports('GetCallCache', GetCallCache)
+exports('GetEmergencyCache', GetEmergencyCache)
 exports('GetUnitById', GetUnitById)
 
 

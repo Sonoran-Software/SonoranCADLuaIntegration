@@ -69,6 +69,7 @@ local PushEventHandler = {
             if GetCallCache()[id] ~= nil then
                 local call = GetCallCache()[id].dispatch
                 local d = { dispatch_type = "CALL_CLOSE", dispatch = call.dispatch ~= nil and call.dispatch or call }
+                d.dispatch.status = 2 -- make sure its updated to closed status
                 SetCallCache(id, d)
                 TriggerEvent('SonoranCAD::pushevents:DispatchEvent', d)
                 return true
