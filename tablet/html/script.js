@@ -82,7 +82,18 @@ function refreshCall() {
 		$("#callNotes")[0].innerHTML = '';
 		if (currentCall.notes) {
 			for (var i = currentCall.notes.length-1; i>0; i--) {
-				$("#callNotes")[0].innerHTML += '<span class="callnote">' + currentCall.notes[i] + '</span>';
+				let callnote = "";
+				if (currentCall.notes[i].time == null) {
+					callnote = currentCall.notes[i];
+				} else {
+					if (currentCall.notes[i].type == "text") {
+						callnote = currentCall.notes[i].content;
+					} else {
+						console.log('Call note is not text');
+						callnote = "(Misc Attachment)";
+					}
+				}
+				$("#callNotes")[0].innerHTML += '<span class="callnote">' + callnote + '</span>';
 			}
 		}
 		if (currentCall.units?.length > 0) {
