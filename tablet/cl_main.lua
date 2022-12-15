@@ -19,6 +19,7 @@ Citizen.CreateThread(function()
 	-- Set Default Module Sizes
 	InitModuleSize("cad")
 	InitModuleSize("hud")
+	InitModuleConfig("hud")
 
 	local comId = GetConvar("sonoran_communityID", "")
 	if comId ~= "" then
@@ -54,6 +55,31 @@ function InitModuleSize(module)
 			module = module
 		})
 	end
+end
+
+function InitModuleConfig(module)
+	local moduleMaxRows = GetResourceKvpString(module .. "maxrows")
+	if moduleMaxRows ~= nil then
+		DebugMessage("retrieving config presets", module)
+		-- Send messsage to NUI to update config of specified module.
+		SetModuleConfigValue(module, "maxrows", moduleMaxRows)
+		SendNUIMessage({
+			type = "refresh",
+			module = module
+		})
+	end
+end
+
+function SetModuleConfigValue(module, key, value)
+	DebugMessage(("MODULE %s Setting %s to %s"):format(module, key, value))
+	SendNUIMessage({
+		type = "config",
+		module = module,
+		key = key,
+		value = value
+	})
+	DebugMessage("saving config value to kvp")
+	SetResourceKvp(module .. key, value)
 end
 
 -- Set a Module's Size
@@ -195,6 +221,19 @@ end)
 RegisterCommand("minicadrefresh", function()
 	RefreshModule("hud")
 end)
+
+RegisterCommand("minicadrows", function(source, args, rawCommand)
+	if #args ~= 1 then
+		PrintChatMessage("Please specify a number of rows to display.")
+		return
+	else 
+		SetModuleConfigValue("hud", "maxrows", tonumber(args[1]) - 1)
+		PrintChatMessage("Maximum Mini-CAD call notes set to " .. args[1])
+	end
+end)
+TriggerEvent('chat:addSuggestion', '/minicadrows', "Specify max number of call notes on Mini-CAD.", {
+	{ name="rows", help="any number (default 10)" }
+})
 
 -- CAD Module Commands
 RegisterCommand("showcad", function(source, args, rawCommand)

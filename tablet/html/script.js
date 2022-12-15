@@ -7,6 +7,8 @@ var CallCache = {
 	emergency: []
 };
 
+var maxrows = 10;
+
 const KeyMaps = {
 	previous: "",
 	attach: "",
@@ -81,8 +83,28 @@ function refreshCall() {
 		$("#callDescription")[0].innerText = currentCall.description;
 		$("#callNotes")[0].innerHTML = '';
 		if (currentCall.notes) {
-			for (var i = currentCall.notes.length-1; i>0; i--) {
-				$("#callNotes")[0].innerHTML += '<span class="callnote">' + currentCall.notes[i] + '</span>';
+			if (currentCall.notes.length > maxrows) {
+				$("#callNotes")[0].innerHTML += '<span class="callnote">** NOTE: ' + (currentCall.notes.length - maxrows) +' notes hidden. (Use /minicadrows) ***</span>';
+			}
+			for (var i = (currentCall.notes.length-1 > maxrows ? maxrows : currentCall.notes.length-1); i>=0; i--) {
+				let callnote = "";
+				if (currentCall.notes[i].content == null || currentCall.notes[i].type == null || currentCall.notes[i].time == null) {
+					callnote = currentCall.notes[i].toString();
+				} else {
+					switch (currentCall.notes[i].type) {
+						case "text":
+							if (currentCall.notes[i].label == "Sonoran CAD") {
+								callnote = currentCall.notes[i].time + " | " + currentCall.notes[i].content;
+							} else {
+								callnote = currentCall.notes[i].time + " | " + currentCall.notes[i].label + ": " + currentCall.notes[i].content;
+							}
+							break;
+						default:
+							callnote = currentCall.notes[i].time + " | " + currentCall.notes[i].label + ": " + "(" + currentCall.notes[i].type + " attachment.)";
+							break;
+					}
+				}
+				$("#callNotes")[0].innerHTML += '<span class="callnote">' + callnote + '</span>';
 			}
 		}
 		if (currentCall.units?.length > 0) {
@@ -189,6 +211,18 @@ $(function () {
 				//$("#check-api-data").show();
 			}
 			setHotkeys(event.data.keyMap);
+		}
+		else if (event.data.type == "config") {
+			switch (event.data.key) {
+				case 'maxrows':
+					maxrows = event.data.value;
+					console.log("Rows set to " + event.data.value);
+					refreshCall();
+					break;
+				default:
+					console.log("Invalid Config Option");
+					break;
+			}
 		}
 		else if (event.data.type == "command") {
 			switch (event.data.key) {
