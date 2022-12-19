@@ -177,11 +177,17 @@ local PushEventHandler = {
         return true
     end,
     EVENT_UNIT_PANIC = function(body)
-        local unit = GetUnitById(body.data.identId)
-        if unit then
-            TriggerEvent("SonoranCAD::pushevents:UnitPanic", unit, body.data.identId, body.data.isPanic)
-        else
-            debugLog("Ignore panic event, unit not found")
+        local identIds = body.data.identIds or {}
+        -- for legacy
+        if body.data.identId then table.insert(identIds, body.data.identId) end
+
+        for _, identId in ipairs(identIds) do
+            local unit = GetUnitById(identId)
+            if unit then
+                TriggerEvent("SonoranCAD::pushevents:UnitPanic", unit, identId, body.data.isPanic)
+            else
+                debugLog(("Ignore panic event, unit ident %s not found"):format(tostring(identId)))
+            end
         end
     end,
     EVENT_STREETSIGN_UPDATED = function(body)
