@@ -1,5 +1,6 @@
 local MessageBuffer = {}
 local DebugBuffer = {}
+local ErrorBuffer = {}
 
 local ErrorCodes = {
     ['STEAM_ERROR'] = "You have set SonoranCAD to Steam mode, but have not configured a Steam Web API key. Please see FXServer documentation. SonoranCAD will not function in Steam mode without this set.",
@@ -42,6 +43,9 @@ local function sendConsole(level, color, message)
     if (debugging and level == "DEBUG") or (not debugging and level ~= "DEBUG") then
         print(msg)
     end
+    if (level == "ERROR" or level == "WARNING") and IsDuplicityVersion() then
+        table.insert(ErrorBuffer, 1, msg)
+    end
     if level == "DEBUG" and IsDuplicityVersion() then
         if #DebugBuffer > 50 then
             table.remove(DebugBuffer)
@@ -59,6 +63,10 @@ end
 
 function getDebugBuffer()
     return DebugBuffer
+end
+
+function getErrorBuffer()
+    return ErrorBuffer
 end
 
 function debugLog(message)

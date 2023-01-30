@@ -135,6 +135,7 @@ SonoranCAD Help
     debugmode - Toggles debugging mode
     info - dump version info, configuration
     support - dump useful data for support staff 
+    errors - display all error/warning messages since last startup
     plugin <name> - show info about a plugin (config)
     update - Run core updater
     pluginupdate - Run plugin updater
@@ -187,6 +188,13 @@ SonoranCAD Help
         else
             errorLog("Invalid argument.")
         end
+    elseif args[1] == "errors" then
+        print("----ERROR/WARNING BUFFER START----")
+        local buf = getErrorBuffer()
+        for i=1, #buf do
+            print(buf[i])
+        end
+        print("----ERROR/WARNING BUFFER END----")
     else
         print("Missing command. Try \"sonoran help\" for help.")
     end
