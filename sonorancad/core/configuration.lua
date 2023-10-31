@@ -20,11 +20,11 @@ Config.RegisterPluginConfig = function(pluginName, configs)
     for k, v in pairs(configs) do
         Config.plugins[pluginName][k] = v
         --debugLog(("plugin %s set %s = %s"):format(pluginName, k, v))
-    end 
+    end
     table.insert(Plugins, pluginName)
 end
 
-Config.GetPluginConfig = function(pluginName) 
+Config.GetPluginConfig = function(pluginName)
     if Config.plugins[pluginName] ~= nil then
         if Config.critError then
             Config.plugins[pluginName].enabled = false
@@ -93,7 +93,7 @@ end
 for k, v in pairs(json.decode(conf)) do
     local cvar = GetConvar("sonoran_"..k, "NONE")
     local val = nil
-    if cvar ~= "NONE" and cvar ~= "statusLabels" then
+    if cvar ~= "NONE" and cvar ~= "statusLabels" and (Config[k] == "" or Config[k] == nil) then
         debugLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
         if cvar == "true" then
             cvar = true
@@ -218,7 +218,7 @@ CreateThread(function()
                     end
                 end
                 debugLog(("Send payload: %s"):format(json.encode(payload)))
-                performApiRequest(json.encode(payload), "SET_SERVERS", function(resp) 
+                performApiRequest(json.encode(payload), "SET_SERVERS", function(resp)
                     debugLog("SET_SERVERS: "..tostring(resp))
                 end)
             end
