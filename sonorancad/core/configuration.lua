@@ -102,10 +102,12 @@ for k, v in pairs(json.decode(conf)) do
         end
         Config[k] = cvar
         val = cvar
-    else
+	else
         Config[k] = v
         val = v
-        debugLog(("Configuration: Using config option %s with value %s even though convar value: %s was provided"):format(k, v, cvar))
+		if (cvar ~= "NONE" and cvar ~= "statusLabels") then
+			warnLog(("Configuration: Using config option %s with value %s even though convar value: %s was provided"):format(k, v, cvar))
+		end
     end
     if k ~= "apiKey" then
         SetConvar("sonoran_"..k, tostring(val))
