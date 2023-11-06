@@ -110,6 +110,8 @@ AddEventHandler("SonoranCAD::core:writeLog", function(level, message)
         infoLog(message)
     elseif level == "error" then
         errorLog(message)
+    elseif level == "warn" then
+        warnLog(message)
     else
         debugLog(message)
     end
@@ -124,11 +126,11 @@ AddEventHandler("SonoranCAD::core:RequestLogBuffer", function()
 end)
 
 print(("^5%s^0"):format([[
-    _____                                    _________    ____     
-   / ___/____  ____  ____  _________ _____  / ____/   |  / __ \    
-   \__ \/ __ \/ __ \/ __ \/ ___/ __ `/ __ \/ /   / /| | / / / /    
-  ___/ / /_/ / / / / /_/ / /  / /_/ / / / / /___/ ___ |/ /_/ /     
- /____/\____/_/ /_/\____/_/   \__,_/_/ /_/\____/_/  |_/_____/      
-                                                                   
+    _____                                    _________    ____
+   / ___/____  ____  ____  _________ _____  / ____/   |  / __ \
+   \__ \/ __ \/ __ \/ __ \/ ___/ __ `/ __ \/ /   / /| | / / / /
+  ___/ / /_/ / / / / /_/ / /  / /_/ / / / / /___/ ___ |/ /_/ /
+ /____/\____/_/ /_/\____/_/   \__,_/_/ /_/\____/_/  |_/_____/
+
 ]]))
 infoLog("Starting up...")
