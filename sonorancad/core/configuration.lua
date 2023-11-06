@@ -93,8 +93,10 @@ end
 for k, v in pairs(json.decode(conf)) do
     local cvar = GetConvar("sonoran_"..k, "NONE")
     local val = nil
-    if cvar ~= "NONE" and cvar ~= "statusLabels" and (Config[k] == 'apiKey' or Config[k] == 'communityID') then
-        infoLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+    if cvar ~= "NONE" and cvar ~= "statusLabels" then
+		if Config[k] ~= '' or Config[k] ~= nil then
+        	infoLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+		end
         if cvar == "true" then
             cvar = true
         elseif cvar == "false" then
@@ -105,9 +107,6 @@ for k, v in pairs(json.decode(conf)) do
 	else
         Config[k] = v
         val = v
-		if (cvar ~= "NONE" and cvar ~= "statusLabels") then
-			warnLog(("Configuration: Using config option %s with value %s even though convar value: %s was provided"):format(k, v, cvar))
-		end
     end
     if k ~= "apiKey" then
         SetConvar("sonoran_"..k, tostring(val))
