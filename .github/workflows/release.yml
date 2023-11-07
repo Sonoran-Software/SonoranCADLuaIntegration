@@ -1,0 +1,87 @@
+name: Sonoran CAD Framework Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Extract Version
+        id: extract-version
+        run: |
+          VERSION=$(grep -oP "version '\K\d+\.\d+\.\d+" sonorancad/fxmanifest.lua)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Grabbed version number of $VERSION, will be used for this release..."
+        shell: bash
+
+      - name: Clone included submodules
+        id: clone-submodules
+        run: |
+          git clone https://github.com/Sonoran-Software/wk_wars2x.git wk_wars2x
+          git clone https://github.com/Sonoran-Software/id_card_ui.git sonoran_idcard
+        shell: bash
+
+      - name: Cleanup & Zip Directories
+        id: zip-dirs
+        run: |
+          VERSION=${{ steps.extract-version.outputs.version }}
+          find sonorancad/plugins -mindepth 1 -type d -exec sh -c 'case "$0" in */readme.md|*/template) ;; *) rm -r "$0" ;; esac' {} \; & wait
+          rsync -a --exclude="[sonorancad]" --exclude=".git" --exclude=".vscode" --exclude=".github" ./ ./[sonorancad]
+          zip -r "sonorancad-$VERSION.zip" [sonorancad]/
+          echo "Zipped sonorancad/ and sonorancad_updatehelper/ directories"
+        shell: bash
+
+      - name: Create or Recreate Release
+        id: create-update-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ steps.extract-version.outputs.version }}
+          RELEASE_NAME="Release $VERSION"
+          RELEASE_TAG="v$VERSION"
+          
+          # Check if the release already exists
+          if curl --fail -sSL "https://api.github.com/repos/${{ github.repository }}/releases/tags/$RELEASE_TAG"; then
+            echo "Deleting existing release $RELEASE_NAME"
+            RELEASE_ID=$(curl -X GET "https://api.github.com/repos/${{ github.repository }}/releases/tags/$RELEASE_TAG" \
+              -H "Authorization: token $GITHUB_TOKEN" | jq -r '.id')
+            curl -X DELETE "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID" \
+              -H "Authorization: token $GITHUB_TOKEN"
+          else
+            echo "Release $RELEASE_NAME does not exist"
+          fi
+
+          # Check if the tag exists, and if it does, delete it
+          if curl --fail -sSL "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$RELEASE_TAG"; then
+            echo "Deleting existing tag $RELEASE_TAG"
+            REF_SHA=$(curl -sSL "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$RELEASE_TAG" | jq -r '.object.sha')
+            curl -X DELETE "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$RELEASE_TAG" \
+              -H "Authorization: token $GITHUB_TOKEN"
+          else
+            echo "Tag $RELEASE_TAG does not exist"
+          fi
+
+          echo "Creating a new release $RELEASE_NAME"
+            RESPONSE=$(curl -X POST "https://api.github.com/repos/${{ github.repository }}/releases" \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -d "{\"tag_name\":\"$RELEASE_TAG\",\"name\":\"$RELEASE_NAME\",\"target_commitish\":\"master\",\"draft\":false,\"prerelease\":false,\"generate_release_notes\":true,\"make_latest\":\"true\"}")
+          
+          echo $RESPONSE
+
+          RELEASE_ID=$(echo $RESPONSE | jq -r '.id')
+          
+          # Upload the zip file as a release asset
+          echo "Uploading zip to release $RELEASE_NAME"
+          UPLOAD_URL="https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=sonorancad-$VERSION.zip"
+          curl -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Content-Type: application/zip" \
+               --data-binary "@sonorancad-$VERSION.zip" \
+               "$UPLOAD_URL"
+        shell: bash
