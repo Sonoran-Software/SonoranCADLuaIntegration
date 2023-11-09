@@ -98,9 +98,11 @@ for k, v in pairs(json.decode(conf)) do
         if cvar_setter == "NONE" or cvar_setter == "server" then
             infoLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
             SetConvar("sonoran_"..k.."_setter", "server")
+            cvar_setter = "server"
         else
             infoLog(("Configuration: Reusing config option %s from server boot. New value: %s"):format(k, cvar))
             SetConvar("sonoran_"..k.."_setter", "framework")
+            cvar_setter = "framework"
         end
         if cvar == "true" then
             cvar = true
