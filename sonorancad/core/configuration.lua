@@ -100,7 +100,7 @@ for k, v in pairs(json.decode(conf)) do
             SetConvar("sonoran_"..k.."_setter", "server")
             cvar_setter = "server"
         else
-            infoLog(("Configuration: Reusing config option %s from server boot. New value: %s"):format(k, cvar))
+            infoLog(("Configuration: Reusing config option %s from server boot. New value: %s, reboot the server if you made a change to this value..."):format(k, cvar))
             SetConvar("sonoran_"..k.."_setter", "framework")
             cvar_setter = "framework"
         end
