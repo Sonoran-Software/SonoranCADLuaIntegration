@@ -92,9 +92,16 @@ if parsedConfig == nil then
 end
 for k, v in pairs(json.decode(conf)) do
     local cvar = GetConvar("sonoran_"..k, "NONE")
+    local cvar_setter = GetConvar("sonoran_"..k.."_setter", "NONE")
     local val = nil
     if cvar ~= "NONE" and cvar ~= "statusLabels" then
-        infoLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+        if cvar_setter == "NONE" or cvar_setter == "server" then
+            infoLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+            SetConvar("sonoran_"..k.."_setter", "server")
+        else
+            infoLog(("Configuration: Reusing config option %s from server boot. New value: %s"):format(k, cvar))
+            SetConvar("sonoran_"..k.."_setter", "framework")
+        end
         if cvar == "true" then
             cvar = true
         elseif cvar == "false" then
@@ -108,6 +115,9 @@ for k, v in pairs(json.decode(conf)) do
     end
     if k ~= "apiKey" then
         SetConvar("sonoran_"..k, tostring(val))
+        if cvar_setter == "NONE" then
+            SetConvar("sonoran_"..k.."_setter", "framework")
+        end
     end
 end
 
