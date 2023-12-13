@@ -233,6 +233,8 @@ CreateThread(function()
                 performApiRequest(json.encode(payload), "SET_SERVERS", function(resp)
                     debugLog("SET_SERVERS: "..tostring(resp))
                 end)
+            else
+                warnLog("disableOverride is true, skipping any potential auto-IP/port fixing")
             end
         end, "GET", nil, nil)
     end)
