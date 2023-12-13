@@ -216,7 +216,7 @@ CreateThread(function()
                     end
                 end
             end
-            local disableOverride = (Config.disableIpOverride ~= nil and Config.disableIpOverride or false)
+            local disableOverride = (Config.disableOverride ~= nil and Config.disableOverride or false)
             if needSetup and not disableOverride then
                 local payload = nil
                 if ServerInfo == nil then
