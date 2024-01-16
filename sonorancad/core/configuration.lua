@@ -92,9 +92,18 @@ if parsedConfig == nil then
 end
 for k, v in pairs(json.decode(conf)) do
     local cvar = GetConvar("sonoran_"..k, "NONE")
+    local cvar_setter = GetConvar("sonoran_"..k.."_setter", "NONE")
     local val = nil
-    if cvar ~= "NONE" and cvar ~= "statusLabels" and (Config[k] == "" or Config[k] == nil) then
-        debugLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+    if cvar ~= "NONE" and cvar ~= "statusLabels" then
+        if cvar_setter == "NONE" or cvar_setter == "server" then
+            infoLog(("Configuration: Overriding config option %s with convar. New value: %s"):format(k, cvar))
+            SetConvar("sonoran_"..k.."_setter", "server")
+            cvar_setter = "server"
+        else
+            infoLog(("Configuration: Reusing config option %s from server boot. New value: %s, reboot the server if you made a change to this value..."):format(k, cvar))
+            SetConvar("sonoran_"..k.."_setter", "framework")
+            cvar_setter = "framework"
+        end
         if cvar == "true" then
             cvar = true
         elseif cvar == "false" then
@@ -102,13 +111,15 @@ for k, v in pairs(json.decode(conf)) do
         end
         Config[k] = cvar
         val = cvar
-    else
+	else
         Config[k] = v
         val = v
-        debugLog(("Configuration: Using config option %s with value %s even though convar value: %s was provided"):format(k, v, cvar))
     end
     if k ~= "apiKey" then
         SetConvar("sonoran_"..k, tostring(val))
+        if cvar_setter == "NONE" then
+            SetConvar("sonoran_"..k.."_setter", "framework")
+        end
     end
 end
 
@@ -205,7 +216,7 @@ CreateThread(function()
                     end
                 end
             end
-            local disableOverride = (Config.disableIpOverride ~= nil and Config.disableIpOverride or false)
+            local disableOverride = (Config.disableOverride ~= nil and Config.disableOverride or false)
             if needSetup and not disableOverride then
                 local payload = nil
                 if ServerInfo == nil then
@@ -222,6 +233,8 @@ CreateThread(function()
                 performApiRequest(json.encode(payload), "SET_SERVERS", function(resp)
                     debugLog("SET_SERVERS: "..tostring(resp))
                 end)
+            else
+                warnLog("disableOverride is true, skipping any potential auto-IP/port fixing")
             end
         end, "GET", nil, nil)
     end)
