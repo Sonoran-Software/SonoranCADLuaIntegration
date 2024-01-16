@@ -50,6 +50,7 @@ CreateThread(function()
     if GetResourceState("sonoran_updatehelper") == "started" then
         ExecuteCommand("stop sonoran_updatehelper")
     end
+    manuallySetUnitCache() -- set unit cache on startup
 end)
 
 exports("getCadVersion", function()
@@ -112,7 +113,7 @@ exports("registerApiType", registerApiType)
 local rateLimitedEndpoints = {}
 
 function performApiRequest(postData, type, cb)
-    -- apply required headers 
+    -- apply required headers
     local payload = {}
     payload["id"] = Config.communityID
     payload["key"] = Config.apiKey
@@ -189,7 +190,7 @@ function performApiRequest(postData, type, cb)
     else
         debugLog(("Endpoint %s is ratelimited. Dropped request: %s"):format(type, json.encode(payload)))
     end
-    
+
 end
 
 exports("performApiRequest", performApiRequest)
