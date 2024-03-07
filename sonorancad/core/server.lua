@@ -238,7 +238,24 @@ AddEventHandler("SonoranCAD::core:PlayerReady", function()
 end)
 
 -- Jordan - Add universal handler for 911 calls
-function call911(caller, location, description, postal, plate, cb)
+--[[
+    SonoranCAD API Handler - 911 Calls
+    @param caller string
+    @param location string
+    @param description string
+    @param postal number
+    @param plate string (optional)
+    @param cb function
+    @param silenceAlert boolean
+    @param useLocation boolean
+]]
+function call911(caller, location, description, postal, plate, cb, silenceAlert, useLocation)
+    if not silenceAlert then
+        silenceAlert = false
+    end
+    if not useLocation then
+        useLocation = false
+    end
 	exports['sonorancad']:performApiRequest({
 		{
 			['serverId'] = GetConvar('sonoran_serverId', 1),
@@ -248,7 +265,9 @@ function call911(caller, location, description, postal, plate, cb)
 			['description'] = description,
 			['metaData'] = {
 				['plate'] = plate,
-				['postal'] = postal
+				['postal'] = postal,
+                ['useLocation'] = useLocation,
+                ['silenceAlert'] = silenceAlert
 			}
 		}
 	}, 'CALL_911', cb)
