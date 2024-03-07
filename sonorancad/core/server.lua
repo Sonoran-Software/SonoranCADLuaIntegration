@@ -247,14 +247,14 @@ end)
     @param plate string (optional)
     @param cb function
     @param silenceAlert boolean
-    @param useLocation boolean
+    @param useCallLocation boolean
 ]]
-function call911(caller, location, description, postal, plate, cb, silenceAlert, useLocation)
+function call911(caller, location, description, postal, plate, cb, silenceAlert, useCallLocation)
     if not silenceAlert then
         silenceAlert = false
     end
-    if not useLocation then
-        useLocation = false
+    if not useCallLocation then
+        useCallLocation = false
     end
 	exports['sonorancad']:performApiRequest({
 		{
@@ -266,15 +266,15 @@ function call911(caller, location, description, postal, plate, cb, silenceAlert,
 			['metaData'] = {
 				['plate'] = plate,
 				['postal'] = postal,
-                ['useLocation'] = useLocation,
+                ['useCallLocation'] = useCallLocation,
                 ['silenceAlert'] = silenceAlert
 			}
 		}
 	}, 'CALL_911', cb)
 end
 
-RegisterNetEvent('SonoranScripts::Call911', function(caller, location, description, postal, plate, cb, silenceAlert, useLocation)
+RegisterNetEvent('SonoranScripts::Call911', function(caller, location, description, postal, plate, cb, silenceAlert, useCallLocation)
 	call911(caller, location, description, postal, plate, function(response)
 		json.encode(response) -- Not, CB's can only be used on the server side, so we just print this here for you to see.
-	end, silenceAlert, useLocation)
+	end, silenceAlert, useCallLocation)
 end)
