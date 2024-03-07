@@ -273,8 +273,8 @@ function call911(caller, location, description, postal, plate, cb, silenceAlert,
 	}, 'CALL_911', cb)
 end
 
-RegisterNetEvent('SonoranScripts::Call911', function(caller, location, description, postal, plate, cb)
+RegisterNetEvent('SonoranScripts::Call911', function(caller, location, description, postal, plate, cb, silenceAlert, useLocation)
 	call911(caller, location, description, postal, plate, function(response)
 		json.encode(response) -- Not, CB's can only be used on the server side, so we just print this here for you to see.
-	end)
+	end, silenceAlert, useLocation)
 end)
