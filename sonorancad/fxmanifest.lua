@@ -22,6 +22,7 @@ server_scripts {
     ,'core/plugin_loader.lua'
     ,'plugins/**/sv_*.lua'
     ,'plugins/**/sv_*.js'
+    ,'core/screenshot.lua'
                }
 client_scripts {
     'core/logging.lua'
