@@ -50,6 +50,7 @@ CreateThread(function()
     if GetResourceState("sonoran_updatehelper") == "started" then
         ExecuteCommand("stop sonoran_updatehelper")
     end
+    manuallySetUnitCache() -- set unit cache on startup
 end)
 
 exports("getCadVersion", function()
@@ -112,7 +113,7 @@ exports("registerApiType", registerApiType)
 local rateLimitedEndpoints = {}
 
 function performApiRequest(postData, type, cb)
-    -- apply required headers 
+    -- apply required headers
     local payload = {}
     payload["id"] = Config.communityID
     payload["key"] = Config.apiKey
@@ -189,7 +190,7 @@ function performApiRequest(postData, type, cb)
     else
         debugLog(("Endpoint %s is ratelimited. Dropped request: %s"):format(type, json.encode(payload)))
     end
-    
+
 end
 
 exports("performApiRequest", performApiRequest)
@@ -234,4 +235,46 @@ AddEventHandler("SonoranCAD::core:PlayerReady", function()
     if ids[Config.primaryIdentifier] == nil then
         warnLog(("Player %s connected, but did not have an %s ID."):format(source, Config.primaryIdentifier))
     end
+end)
+
+-- Jordan - Add universal handler for 911 calls
+--[[
+    SonoranCAD API Handler - 911 Calls
+    @param caller string
+    @param location string
+    @param description string
+    @param postal number
+    @param plate string (optional)
+    @param cb function
+    @param silenceAlert boolean
+    @param useCallLocation boolean
+]]
+function call911(caller, location, description, postal, plate, cb, silenceAlert, useCallLocation)
+    if not silenceAlert then
+        silenceAlert = false
+    end
+    if not useCallLocation then
+        useCallLocation = false
+    end
+	exports['sonorancad']:performApiRequest({
+		{
+			['serverId'] = GetConvar('sonoran_serverId', 1),
+			['isEmergency'] = true,
+			['caller'] = caller,
+			['location'] = location,
+			['description'] = description,
+			['metaData'] = {
+				['plate'] = plate,
+				['postal'] = postal,
+                ['useCallLocation'] = useCallLocation,
+                ['silenceAlert'] = silenceAlert
+			}
+		}
+	}, 'CALL_911', cb)
+end
+
+RegisterNetEvent('SonoranScripts::Call911', function(caller, location, description, postal, plate, cb, silenceAlert, useCallLocation)
+	call911(caller, location, description, postal, plate, function(response)
+		json.encode(response) -- Not, CB's can only be used on the server side, so we just print this here for you to see.
+	end, silenceAlert, useCallLocation)
 end)

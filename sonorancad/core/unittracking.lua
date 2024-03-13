@@ -45,12 +45,12 @@ function GetSourceByApiId(apiIds)
         end
     end
     return nil
-end 
+end
 
 function GetUnitCache() return UnitCache end
 function GetCallCache() return CallCache end
 function GetEmergencyCache() return EmergencyCache end
-function SetUnitCache(k, v) 
+function SetUnitCache(k, v)
     local key = findUnitById(k)
     if key ~= nil and UnitCache[key] ~= nil then
         UnitCache[key] = v
@@ -58,11 +58,11 @@ function SetUnitCache(k, v)
         table.insert(UnitCache, v)
     end
 end
-function SetCallCache(k, v) 
+function SetCallCache(k, v)
     CallCache[k] = v
     TriggerEvent('SonoranCAD::pushevents:CallCacheUpdated')
 end
-function SetEmergencyCache(k, v) 
+function SetEmergencyCache(k, v)
     EmergencyCache[k] = v
     TriggerEvent('SonoranCAD::pushevents:EmergencyCacheUpdated')
 end
@@ -189,7 +189,7 @@ Citizen.CreateThread(function()
                     table.insert(UnitCache, v)
                 end
             end)
-        end        
+        end
         Citizen.Wait(60000)
     end
 end)
@@ -218,3 +218,51 @@ CreateThread(function()
         Citizen.Wait(60 * 1000)
     end
 end)
+
+
+function manuallySetUnitCache()
+    local OldUnits = {}
+    local NewUnits = {}
+    for k, v in pairs(UnitCache) do
+        OldUnits[k] = v
+    end
+    if GetNumPlayerIndices() > 0 then
+        local payload = { serverId = Config.serverId, unitsOnly = false }
+        performApiRequest({payload}, "GET_ACTIVE_UNITS", function(runits)
+            local allUnits = json.decode(runits)
+            if allUnits ~= nil then
+                for _, v in pairs(allUnits) do
+                    local playerId = GetSourceByApiId(v.data.apiIds)
+                    if playerId then
+                        PlayerUnitMapping[playerId] = v.id
+                        table.insert(NewUnits, v)
+                        TriggerEvent("SonoranCAD::core:AddPlayer", playerId, v)
+                    else
+                        debugLog(("Couldn't find unit, not adding %s (%s)"):format(playerId, json.encode(v.data.apiIds)))
+                    end
+                end
+            end
+            for k, v in pairs(OldUnits) do
+                local exists = false
+                for _, n in pairs(NewUnits) do
+                    if n.id == v.id then
+                        exists = true
+                    end
+                end
+                if not exists then
+                    debugLog(("Removing player %s, not on units list"):format(k))
+                    PlayerUnitMapping[k] = nil
+                    TriggerEvent("SonoranCAD::core:RemovePlayer", k, v)
+                    TriggerClientEvent("SonoranCAD::core:RemovePlayer", k, v)
+                end
+            end
+            UnitCache = {}
+            for _, v in pairs(NewUnits) do
+                debugLog("Insert unit "..json.encode(v))
+                table.insert(UnitCache, v)
+            end
+        end)
+    end
+end
+
+exports('ManuallySetUnitCache', manuallySetUnitCache())
