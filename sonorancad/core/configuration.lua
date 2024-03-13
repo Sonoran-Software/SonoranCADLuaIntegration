@@ -188,7 +188,8 @@ AddEventHandler('SonoranCAD::core:sendClientConfig', function()
 		bodycamOverlayEnabled = Config.bodycamOverlayEnabled,
 		bodycamOverlayLocation = Config.bodycamOverlayLocation,
 		bodycamCommandToggle = Config.bodycamCommandToggle,
-		bodycamCommandChangeFrequncy = Config.bodycamCommandChangeFrequncy
+		bodycamCommandChangeFrequncy = Config.bodycamCommandChangeFrequncy,
+		apiVersion = Config.apiVersion
 	}
 	TriggerClientEvent('SonoranCAD::core:recvClientConfig', source, config)
 end)

@@ -1,40 +1,84 @@
 <html>
-    <head>
-        <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
-        <script src="js/http.js" tyle="text/javascript"></script>
-    </head>
-    <body style="display:none;">
-        <script>
-            // CRED: https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript/20285053#20285053
-            function toDataUrl(url, callback) {
-                var xhr = new XMLHttpRequest();
-                xhr.onload = function() {
-                    var reader = new FileReader();
-                    reader.onloadend = function() {
-                        callback(reader.result);
-                    }
-                    reader.readAsDataURL(xhr.response);
-                };
-                xhr.open("GET", url);
-                xhr.responseType = "blob";
-                xhr.send();
-            }
-
-            window.addEventListener("message", function(event) {
-                if (event.data.type === "convert_base64") {
-                    toDataUrl(event.data.img, function(base64) {
-                        fetch(`https://${GetParentResourceName()}/base64`, {
-                            method: "POST",
-                            headers: {"Content-Type": "application/json; charset=UTF-8"},
-                            body: JSON.stringify({
-                                base64: base64,
-                                handle: event.data.handle,
-                                id: event.data.id
-                            })
-                        });
-                    });
-                }
-            });
-        </script>
-    </body>
+	<head>
+		<script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+		<script src="js/http.js" tyle="text/javascript"></script>
+	</head>
+	<body style="display: none">
+		<script>
+			// CRED: https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript/20285053#20285053
+			function toDataUrl(url, callback) {
+				var xhr = new XMLHttpRequest();
+				xhr.onload = function () {
+					var reader = new FileReader();
+					reader.onloadend = function () {
+						callback(reader.result);
+					};
+					reader.readAsDataURL(xhr.response);
+				};
+				xhr.open("GET", url);
+				xhr.responseType = "blob";
+				xhr.send();
+			}
+			var audioPlayer = null;
+			window.addEventListener("message", function (event) {
+				if (event.data.type === "convert_base64") {
+					toDataUrl(event.data.img, function (base64) {
+						fetch(`https://${GetParentResourceName()}/base64`, {
+							method: "POST",
+							headers: { "Content-Type": "application/json; charset=UTF-8" },
+							body: JSON.stringify({
+								base64: base64,
+								handle: event.data.handle,
+								id: event.data.id,
+							}),
+						});
+					});
+				}
+			});
+		</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.1/howler.min.js" type="text/javascript"></script>
+		<script>
+			var audioPlayer = null;
+			var showGif = false;
+			window.addEventListener("message", function (event) {
+				if (event.data.type == "playSound") {
+					if (audioPlayer != null) {
+						audioPlayer.pause();
+					}
+					audioPlayer = new Howl({
+						src: ["./sounds/" + event.data.transactionFile + ".mp3"],
+					});
+					audioPlayer.volume(event.data.transactionVolume);
+					audioPlayer.play();
+				}
+				if (event.data.type == "toggleGif") {
+					showGif = !showGif;
+					if (showGif) {
+						document.body.style.display = "block";
+						switch (event.data.location) {
+							case "top-left":
+								document.getElementById("overlay").style.top = "0";
+								document.getElementById("overlay").style.left = "0";
+								break;
+							case "top-right":
+								document.getElementById("overlay").style.top = "0";
+								document.getElementById("overlay").style.right = "0";
+								break;
+							case "bottom-left":
+								document.getElementById("overlay").style.bottom = "0";
+								document.getElementById("overlay").style.left = "0";
+								break;
+							case "bottom-right":
+								document.getElementById("overlay").style.bottom = "0";
+								document.getElementById("overlay").style.right = "0";
+								break;
+						}
+					} else {
+						document.body.style.display = "none";
+					}
+				}
+			});
+		</script>
+		<img src="./img/logo.gif" alt="header" style="height: 6vh; position: absolute" id="overlay" />
+	</body>
 </html>

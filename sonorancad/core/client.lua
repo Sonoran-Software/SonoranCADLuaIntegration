@@ -3,8 +3,8 @@ Config = {
 }
 Plugins = {}
 
-local bodyCamOn = false;
-local bodyCamFrequency = 2000
+bodyCamOn = false;
+bodyCamFrequency = 2000;
 local bodyCamConfigReady = false;
 
 Config.RegisterPluginConfig = function(pluginName, configs)
@@ -117,12 +117,14 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 		end
 		if bodyCamOn then
 			bodyCamOn = false
+			TriggerServerEvent('SonoranCAD::core::bodyCamOff')
 			TriggerEvent('chat:addMessage', {
 				args = {
 					'Sonoran Bodycam',
 					'Bodycam disabled.'
 				}
 			})
+			SendNUIMessage({type = 'toggleGif', location = Config.bodycamOverlayLocation})
 		else
 			bodyCamOn = true
 			TriggerEvent('chat:addMessage', {
@@ -131,6 +133,7 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 					'Bodycam enabled.'
 				}
 			})
+			SendNUIMessage({type = 'toggleGif', location = Config.bodycamOverlayLocation})
 		end
 	end, false)
 	-- Command to change the frequency of bodycam screenshots
@@ -147,8 +150,8 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 		end
 		if args[1] then
 			args[1] = tonumber(args[1])
-			if not args[1] or args[1] < 2 or args[1] > 10 then
-				errorLog('Frequency must a number greater than 1 and less than than 10 seconds.')
+			if not args[1] or args[1] <= 0 or args[1] > 10 then
+				errorLog('Frequency must a number greater than 0 and less than than 10 seconds.')
 				TriggerEvent('chat:addMessage', {
 					args = {
 						'Sonoran Bodycam',
@@ -157,18 +160,18 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 				})
 				return
 			end
-			bodyCamFrequency = tonumber(args[1])
+			bodyCamFrequency = (tonumber(args[1]) * 1000)
 			TriggerEvent('chat:addMessage', {
 				args = {
 					'Sonoran Bodycam',
-					('Frequency set to %s.'):format(bodyCamFrequency)
+					('Frequency set to %s.'):format((bodyCamFrequency/1000))
 				}
 			})
 		else
 			TriggerEvent('chat:addMessage', {
 				args = {
 					'Sonoran Bodycam',
-					('Current bodycam frequency is %s.'):format(bodyCamFrequency)
+					('Current bodycam frequency is %s.'):format((bodyCamFrequency/1000))
 				}
 			})
 		end
@@ -179,6 +182,19 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 		{
 			name = 'frequency',
 			help = 'Frequency in seconds.'
+		}
+	})
+end)
+
+--[[
+	SonoranCAD Bodycam Callback if unit is not found in CAD
+]]
+RegisterNetEvent('SonoranCAD::core::ScreenshotOff', function()
+	bodyCamOn = false
+	TriggerEvent('chat:addMessage', {
+		args = {
+			'Sonoran Bodycam',
+			'Bodycam disabled - You must be in CAD to enable bodycam'
 		}
 	})
 end)
@@ -235,7 +251,7 @@ CreateThread(function()
 		Wait(1)
 		if Config.bodycamPlayBeeps then
 			if bodyCamOn then
-				-- PLAY BEEPS
+				SendNUIMessage({type = 'playSound', transactionFile = 'beeps', transactionVolume = 0.3})
 				Wait(Config.bodycamBeepFrequency)
 			end
 		end

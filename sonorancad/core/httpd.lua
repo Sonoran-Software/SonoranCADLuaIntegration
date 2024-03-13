@@ -446,7 +446,6 @@ SetHttpHandler(function(req, res)
 		-- Check if 'ident' and 'image' parameters exist and proceed with your logic
 		if ident and image then
 			local imagePath = GetResourcePath(GetCurrentResourceName()) .. '/screenshots/' .. ident .. '/' .. image
-            print('Image Path: ', imagePath)
 			-- Your logic here, for example, fetching and sending the image
 			local imageFile = io.open(imagePath, 'rb')
 			if not imageFile then
