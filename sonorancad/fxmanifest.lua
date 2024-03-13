@@ -22,6 +22,7 @@ server_scripts {
     ,'core/plugin_loader.lua'
     ,'plugins/**/sv_*.lua'
     ,'plugins/**/sv_*.js'
+    ,'core/screenshot.lua'
                }
 client_scripts {
     'core/logging.lua'
@@ -39,7 +40,9 @@ ui_page 'core/client_nui/index.html'
 files {
     'stream/**/*.ytyp',
     'core/client_nui/index.html',
-    'core/client_nui/js/*.js'
+    'core/client_nui/js/*.js',
+    'core/client_nui/sounds/*.mp3',
+    'core/client_nui/img/logo.gif'
 }
 
 data_file 'DLC_ITYP_REQUEST' 'stream/**/*.ytyp'

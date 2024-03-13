@@ -21,6 +21,7 @@ end
 CreateThread(function()
     infoLog("Starting SonoranCAD from "..GetResourcePath("sonorancad"))
     Config.apiUrl = getApiUrl()
+    exports['sonorancad']:clearScreenshotsFolder()
     performApiRequest({}, "GET_VERSION", function(result, ok)
         if not ok then
             logError("API_ERROR")
