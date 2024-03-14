@@ -105,7 +105,7 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 	Wait(5000)
 	-- Command to toggle bodycam on and off
 	RegisterCommand(Config.bodycamCommandToggle, function(source, args, rawCommand)
-		if Config.apiVersion > 4 then
+		if Config.apiVersion < 4 then
 			errorLog('Bodycam is only enabled with Sonoran CAD Pro.')
 			TriggerEvent('chat:addMessage', {
 				args = {
@@ -138,7 +138,7 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 	end, false)
 	-- Command to change the frequency of bodycam screenshots
 	RegisterCommand(Config.bodycamCommandChangeFrequncy, function(source, args, rawCommand)
-		if Config.apiVersion > 4 then
+		if Config.apiVersion < 4 then
 			errorLog('Bodycam is only enabled with Sonoran CAD Pro.')
 			TriggerEvent('chat:addMessage', {
 				args = {
