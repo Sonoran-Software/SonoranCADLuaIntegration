@@ -166,8 +166,10 @@ if Config.updateBranch == nil then
 	Config.updateBranch = 'master'
 end
 
-if GetConvar('web_baseUrl', '') ~= '' then
-	Config.proxyUrl = ('https://%s/sonorancad/'):format(GetConvar('web_baseUrl', ''))
+local baseUrl = GetConvar('web_baseUrl', GetConvar('sonoran_baseUrlFallback', ''))
+if baseUrl ~= '' then
+	Config.proxyUrl = ('https://%s/sonorancad/'):format(baseUrl)
+	baseUrl = nil
 end
 
 RegisterNetEvent('SonoranCAD::core:sendClientConfig')
