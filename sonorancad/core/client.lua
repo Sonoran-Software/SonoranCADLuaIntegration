@@ -102,7 +102,25 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 	Config.inited = true
 	debugLog('Configuration received')
 	debugLog('Bodycam config ready')
-	Wait(5000)
+end)
+
+--[[
+	SonoranCAD Bodycam Callback if unit is not found in CAD
+]]
+RegisterNetEvent('SonoranCAD::core::ScreenshotOff', function()
+	bodyCamOn = false
+	SendNUIMessage({
+		type = 'toggleGif'
+	})
+	TriggerEvent('chat:addMessage', {
+		args = {
+			'Sonoran Bodycam',
+			'Bodycam disabled - You must be in CAD to enable bodycam'
+		}
+	})
+end)
+
+RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 	-- Command to toggle bodycam on and off
 	RegisterCommand(Config.bodycamCommandToggle, function(source, args, rawCommand)
 		if Config.apiVersion < 4 then
@@ -124,7 +142,10 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 					'Bodycam disabled.'
 				}
 			})
-			SendNUIMessage({type = 'toggleGif', location = Config.bodycamOverlayLocation})
+			SendNUIMessage({
+				type = 'toggleGif',
+				location = Config.bodycamOverlayLocation
+			})
 		else
 			bodyCamOn = true
 			TriggerEvent('chat:addMessage', {
@@ -133,7 +154,10 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 					'Bodycam enabled.'
 				}
 			})
-			SendNUIMessage({type = 'toggleGif', location = Config.bodycamOverlayLocation})
+			SendNUIMessage({
+				type = 'toggleGif',
+				location = Config.bodycamOverlayLocation
+			})
 		end
 	end, false)
 	-- Command to change the frequency of bodycam screenshots
@@ -164,14 +188,14 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 			TriggerEvent('chat:addMessage', {
 				args = {
 					'Sonoran Bodycam',
-					('Frequency set to %s.'):format((bodyCamFrequency/1000))
+					('Frequency set to %s.'):format((bodyCamFrequency / 1000))
 				}
 			})
 		else
 			TriggerEvent('chat:addMessage', {
 				args = {
 					'Sonoran Bodycam',
-					('Current bodycam frequency is %s.'):format((bodyCamFrequency/1000))
+					('Current bodycam frequency is %s.'):format((bodyCamFrequency / 1000))
 				}
 			})
 		end
@@ -182,19 +206,6 @@ AddEventHandler('SonoranCAD::core:recvClientConfig', function(config)
 		{
 			name = 'frequency',
 			help = 'Frequency in seconds.'
-		}
-	})
-end)
-
---[[
-	SonoranCAD Bodycam Callback if unit is not found in CAD
-]]
-RegisterNetEvent('SonoranCAD::core::ScreenshotOff', function()
-	bodyCamOn = false
-	TriggerEvent('chat:addMessage', {
-		args = {
-			'Sonoran Bodycam',
-			'Bodycam disabled - You must be in CAD to enable bodycam'
 		}
 	})
 end)
@@ -251,7 +262,11 @@ CreateThread(function()
 		Wait(1)
 		if Config.bodycamPlayBeeps then
 			if bodyCamOn then
-				SendNUIMessage({type = 'playSound', transactionFile = 'beeps', transactionVolume = 0.3})
+				SendNUIMessage({
+					type = 'playSound',
+					transactionFile = 'beeps',
+					transactionVolume = 0.3
+				})
 				Wait(Config.bodycamBeepFrequency)
 			end
 		end
