@@ -233,6 +233,7 @@ local inited = false
 AddEventHandler('playerSpawned', function()
 	TriggerServerEvent('SonoranCAD::core:PlayerReady')
 	inited = true
+	TriggerServerEvent('SonoranCAD::Core::RequestBodycam')
 end)
 
 RegisterNetEvent('SonoranCAD::core:debugModeToggle')
