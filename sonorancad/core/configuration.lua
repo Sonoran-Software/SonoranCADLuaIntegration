@@ -311,6 +311,22 @@ CreateThread(function()
 	end
 end)
 
+AddEventHandler('playerJoining', function()
+	local attempts = 0
+	local max_retries = 20
+	while attempts <= max_retries do
+		Wait(1000)
+		attempts = attempts + 1
+		if attempts == max_retries then
+			errorLog('Failed to initialize bodycam due to missing web_baseUrl convar.')
+		end
+		if GetConvar('web_baseUrl', '') ~= '' then
+			TriggerClientEvent('SonoranCAD::Core::InitBodycam', -1)
+			break;
+		end
+	end
+end)
+
 CreateThread(function()
 	while Config.apiVersion == -1 do
 		Wait(100)

@@ -121,6 +121,7 @@ RegisterNetEvent('SonoranCAD::core::ScreenshotOff', function()
 end)
 
 RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
+	print('Bodycam init')
 	-- Command to toggle bodycam on and off
 	RegisterCommand(Config.bodycamCommandToggle, function(source, args, rawCommand)
 		if Config.apiVersion < 4 then
