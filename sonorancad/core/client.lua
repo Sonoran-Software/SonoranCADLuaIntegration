@@ -110,9 +110,11 @@ end)
 RegisterNetEvent('SonoranCAD::core::ScreenshotOff', function()
 	if Config.bodycamEnabled then
 		bodyCamOn = false
-		SendNUIMessage({
-			type = 'toggleGif'
-		})
+		if Config.bodycamOverlayEnabled then
+			SendNUIMessage({
+				type = 'toggleGif'
+			})
+		end
 		TriggerEvent('chat:addMessage', {
 			args = {
 				'Sonoran Bodycam',
@@ -146,10 +148,12 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 					'Bodycam disabled.'
 				}
 			})
-			SendNUIMessage({
-				type = 'toggleGif',
-				location = Config.bodycamOverlayLocation
-			})
+			if Config.bodycamOverlayEnabled then
+				SendNUIMessage({
+					type = 'toggleGif',
+					location = Config.bodycamOverlayLocation
+				})
+			end
 		else
 			bodyCamOn = true
 			TriggerEvent('chat:addMessage', {
@@ -158,10 +162,12 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 					'Bodycam enabled.'
 				}
 			})
-			SendNUIMessage({
-				type = 'toggleGif',
-				location = Config.bodycamOverlayLocation
-			})
+			if Config.bodycamOverlayEnabled then
+				SendNUIMessage({
+					type = 'toggleGif',
+					location = Config.bodycamOverlayLocation
+				})
+			end
 		end
 	end, false)
 	-- Command to change the frequency of bodycam screenshots
