@@ -306,6 +306,7 @@ CreateThread(function()
 		end
 		if GetConvar('web_baseUrl', '') ~= '' then
 			TriggerClientEvent('SonoranCAD::Core::InitBodycam', -1)
+			Config.proxyUrl = ('https://%s/sonorancad/'):format(GetConvar('web_baseUrl', ''))
 			break;
 		end
 	end
@@ -315,15 +316,19 @@ RegisterNetEvent('SonoranCAD::Core::RequestBodycam', function()
 	local attempts = 0
 	local max_retries = 20
 	local source = source
-	while attempts <= max_retries do
-		Wait(1000)
-		attempts = attempts + 1
-		if attempts == max_retries then
-			errorLog('Failed to initialize bodycam due to missing web_baseUrl convar.')
-		end
-		if GetConvar('web_baseUrl', '') ~= '' then
-			TriggerClientEvent('SonoranCAD::Core::InitBodycam', source)
-			break;
+	if Config.proxyUrl ~= '' then
+		TriggerClientEvent('SonoranCAD::Core::InitBodycam', source)
+	else
+		while attempts <= max_retries do
+			Wait(1000)
+			attempts = attempts + 1
+			if attempts == max_retries then
+				errorLog('Failed to initialize bodycam due to missing web_baseUrl convar.')
+			end
+			if GetConvar('web_baseUrl', '') ~= '' then
+				TriggerClientEvent('SonoranCAD::Core::InitBodycam', source)
+				break;
+			end
 		end
 	end
 end)
