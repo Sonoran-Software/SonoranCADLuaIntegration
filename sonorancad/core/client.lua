@@ -108,19 +108,22 @@ end)
 	SonoranCAD Bodycam Callback if unit is not found in CAD
 ]]
 RegisterNetEvent('SonoranCAD::core::ScreenshotOff', function()
-	bodyCamOn = false
-	SendNUIMessage({
-		type = 'toggleGif'
-	})
-	TriggerEvent('chat:addMessage', {
-		args = {
-			'Sonoran Bodycam',
-			'Bodycam disabled - You must be in CAD to enable bodycam'
-		}
-	})
+	if Config.bodycamEnabled then
+		bodyCamOn = false
+		SendNUIMessage({
+			type = 'toggleGif'
+		})
+		TriggerEvent('chat:addMessage', {
+			args = {
+				'Sonoran Bodycam',
+				'Bodycam disabled - You must be in CAD to enable bodycam'
+			}
+		})
+	end
 end)
 
 RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
+	if Config.bodycamEnabled then
 	print('Bodycam init')
 	-- Command to toggle bodycam on and off
 	RegisterCommand(Config.bodycamCommandToggle, function(source, args, rawCommand)
@@ -209,6 +212,7 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 			help = 'Frequency in seconds.'
 		}
 	})
+	end
 end)
 
 CreateThread(function()
