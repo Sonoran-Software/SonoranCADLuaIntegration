@@ -115,14 +115,12 @@ RegisterNetEvent('SonoranCAD::core::ScreenshotOff', function()
 				type = 'toggleGif'
 			})
 		end
-		--[[
 		TriggerEvent('chat:addMessage', {
 			args = {
 				'Sonoran Bodycam',
 				'Bodycam disabled - You must be in CAD to enable bodycam'
 			}
 		})
-		]]
 	end
 end)
 
