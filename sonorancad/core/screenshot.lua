@@ -25,7 +25,7 @@ RegisterNetEvent('SonoranCAD::core::bodyCamOff', function()
 	local unit = GetUnitByPlayerId(source)
 	if unit == nil then
 		debugLog('Unit not found')
-		TriggerClientEvent('SonoranCAD::core::ScreenshotOff', source)
+		-- TriggerClientEvent('SonoranCAD::core::ScreenshotOff', source)
 		return
 	end
 	local screenshotDirectory = exports['sonorancad']:createScreenshotDirectory(tostring(unit.id))
