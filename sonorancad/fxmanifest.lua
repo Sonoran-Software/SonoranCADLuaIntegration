@@ -3,46 +3,44 @@ games {'gta5'}
 
 author 'Sonoran CAD'
 description 'Sonoran CAD FiveM Integration'
-version '2.9.29'
+version '3.0.0'
 
 server_scripts {
-    'core/http.js'
-    ,'core/unzipper/unzip.js'
-    ,'core/image.js'
-    ,'core/logging.lua'
-    ,'core/shared_functions.lua'
-    ,'core/configuration.lua'
-    ,'core/server.lua'
-    ,'core/commands.lua'
-    ,'core/httpd.lua'
-    ,'core/unittracking.lua'
-    ,'core/updater.lua'
-    ,'core/apicheck.lua'
-    ,'plugins/**/config_*.lua'
-    ,'core/plugin_loader.lua'
-    ,'plugins/**/sv_*.lua'
-    ,'plugins/**/sv_*.js'
-    ,'core/screenshot.lua'
-               }
+    'config.lua'
+    ,'server/utils/*.js'
+    ,'server/unzipper/unzip.js'
+    ,'server/image.js'
+    ,'server/logging.lua'
+    ,'server/shared_functions.lua'
+    ,'server/configuration.lua'
+    ,'server/server.lua'
+    ,'server/commands.lua'
+    ,'server/httpd.lua'
+    ,'server/unittracking.lua'
+    ,'server/updater.lua'
+    ,'server/apicheck.lua'
+    ,'server/screenshot.lua'
+    ,'modules/**/sv_*.lua'
+    ,'modules/**/sv_*.js'
+}
 client_scripts {
-    'core/logging.lua'
-    ,'core/headshots.lua'
-    ,'core/shared_functions.lua'
-    ,'core/client.lua'
-    ,'core/lighting.lua'
-    ,'plugins/**/config_*.lua'
-    ,'plugins/**/cl_*.lua'
-    ,'plugins/**/cl_*.js'
+    'server/logging.lua'
+    ,'server/headshots.lua'
+    ,'server/shared_functions.lua'
+    ,'client/client.lua'
+    ,'client/lighting.lua'
+    ,'modules/**/cl_*.lua'
+    ,'modules/**/cl_*.js'
 }
 
-ui_page 'core/client_nui/index.html'
+ui_page 'client/client_nui/index.html'
 
 files {
     'stream/**/*.ytyp',
-    'core/client_nui/index.html',
-    'core/client_nui/js/*.js',
-    'core/client_nui/sounds/*.mp3',
-    'core/client_nui/img/logo.gif'
+    'client/client_nui/index.html',
+    'client/client_nui/js/*.js',
+    'client/client_nui/sounds/*.mp3',
+    'client/client_nui/img/logo.gif'
 }
 
 data_file 'DLC_ITYP_REQUEST' 'stream/**/*.ytyp'
