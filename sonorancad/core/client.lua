@@ -128,33 +128,11 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 	if Config.bodycamEnabled then
 	print('Bodycam init')
 	-- Command to toggle bodycam on and off
-	RegisterCommand(Config.bodycamCommandToggle, function(source, args, rawCommand)
-		if Config.apiVersion < 4 then
-			errorLog('Bodycam is only enabled with Sonoran CAD Pro.')
-			TriggerEvent('chat:addMessage', {
-				args = {
-					'Sonoran Bodycam',
-					'Bodycam is only enabled with Sonoran CAD Pro.'
-				}
-			})
-			return
-		end
-		if bodyCamOn then
-			bodyCamOn = false
-			TriggerServerEvent('SonoranCAD::core::bodyCamOff')
-			TriggerEvent('chat:addMessage', {
-				args = {
-					'Sonoran Bodycam',
-					'Bodycam disabled.'
-				}
-			})
-			if Config.bodycamOverlayEnabled then
-				SendNUIMessage({
-					type = 'toggleGif',
-					location = Config.bodycamOverlayLocation
-				})
-			end
-		else
+	local function EnableBodyCam(enable)
+		if bodyCamOn == true and enable == true then return end
+		if bodyCamOn == false and enable == false then return end
+
+		if bodyCamOn == false and enable == true then
 			bodyCamOn = true
 			TriggerEvent('chat:addMessage', {
 				args = {
@@ -168,10 +146,31 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 					location = Config.bodycamOverlayLocation
 				})
 			end
+		elseif bodyCamOn == true and enable == false then
+			bodyCamOn = false
+			TriggerEvent('chat:addMessage', {
+				args = {
+					'Sonoran Bodycam',
+					'Bodycam disabled.'
+				}
+			})
+			if Config.bodycamOverlayEnabled then
+				SendNUIMessage({
+					type = 'toggleGif'
+				})
+			end
 		end
-	end, false)
-	-- Command to change the frequency of bodycam screenshots
-	RegisterCommand(Config.bodycamCommandChangeFrequncy, function(source, args, rawCommand)
+	end
+
+	local function ToggleBodyCam()
+		if bodyCamOn then
+			EnableBodyCam(false)
+		else
+			EnableBodyCam(true)
+		end
+	end
+
+	RegisterCommand(Config.bodycamCommandToggle, function(source, args, rawCommand)
 		if Config.apiVersion < 4 then
 			errorLog('Bodycam is only enabled with Sonoran CAD Pro.')
 			TriggerEvent('chat:addMessage', {
@@ -181,10 +180,16 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 				}
 			})
 			return
+		else
+			ToggleBodyCam()
 		end
-		if args[1] then
-			args[1] = tonumber(args[1])
-			if not args[1] or args[1] <= 0 or args[1] > 10 then
+	end, false)
+	-- Command to change the frequency of bodycam screenshots
+
+	local function ChangeBodyCamFrequency(raw)
+		if raw then
+			local frequency = tonumber(raw)
+			if not frequency or frequency <= 0 or frequency > 10 then
 				errorLog('Frequency must a number greater than 0 and less than than 10 seconds.')
 				TriggerEvent('chat:addMessage', {
 					args = {
@@ -194,7 +199,7 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 				})
 				return
 			end
-			bodyCamFrequency = (tonumber(args[1]) * 1000)
+			bodyCamFrequency = (tonumber(frequency) * 1000)
 			TriggerEvent('chat:addMessage', {
 				args = {
 					'Sonoran Bodycam',
@@ -209,7 +214,23 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 				}
 			})
 		end
+	end
+
+	RegisterCommand(Config.bodycamCommandChangeFrequncy, function(source, args, rawCommand)
+		if Config.apiVersion < 4 then
+			errorLog('Bodycam is only enabled with Sonoran CAD Pro.')
+			TriggerEvent('chat:addMessage', {
+				args = {
+					'Sonoran Bodycam',
+					'Bodycam is only enabled with Sonoran CAD Pro.'
+				}
+			})
+			return
+		else
+			ChangeBodyCamFrequency(args[1])
+		end
 	end, false)
+
 	-- Add suggestions to the chat
 	TriggerEvent('chat:addSuggestion', '/' .. Config.bodycamCommandToggle, 'Enable or disable bodycam mode.')
 	TriggerEvent('chat:addSuggestion', '/' .. Config.bodycamCommandChangeFrequncy, 'Change the frequency of bodycam screenshots.', {
@@ -219,6 +240,19 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function()
 		}
 	})
 	end
+
+	--EXPORTS
+	exports('EnableBodyCam', EnableBodyCam)
+	exports('ToggleBodyCam', ToggleBodyCam)
+	exports('ChangeBodyCamFrequency', ChangeBodyCamFrequency)
+	exports('bodyCamState', function()
+		return bodyCamOn
+	end)
+
+	--EVENTS
+	RegisterNetEvent('SonoranCAD::core::EnableBodyCam', EnableBodyCam)
+	RegisterNetEvent('SonoranCAD::core::ToggleBodyCam', ToggleBodyCam)
+	RegisterNetEvent('SonoranCAD::core::ChangeBodyCamFrequency', ChangeBodyCamFrequency)
 end)
 
 CreateThread(function()
