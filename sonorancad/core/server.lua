@@ -279,3 +279,249 @@ RegisterNetEvent('SonoranScripts::Call911', function(caller, location, descripti
 		json.encode(response) -- Not, CB's can only be used on the server side, so we just print this here for you to see.
 	end, silenceAlert, useCallLocation)
 end)
+
+-- Jordan - CAD Utils
+dispatchOnline = false
+ActiveDispatchers = {}
+
+registerEndpoints = function()
+	exports['sonorancad']:registerApiType('MODIFY_BLIP', 'emergency')
+	exports['sonorancad']:registerApiType('ADD_BLIP', 'emergency')
+	exports['sonorancad']:registerApiType('REMOVE_BLIP', 'emergency')
+	exports['sonorancad']:registerApiType('GET_BLIPS', 'emergency')
+	exports['sonorancad']:registerApiType('MODIFY_BLIP', 'emergency')
+	exports['sonorancad']:registerApiType('CALL_911', 'emergency')
+	exports['sonorancad']:registerApiType('ADD_CALL_NOTE', 'emergency')
+	exports['sonorancad']:registerApiType('REMOVE_911', 'emergency')
+	exports['sonorancad']:registerApiType('LOOKUP', 'general')
+	exports['sonorancad']:registerApiType('SET_CALL_POSTAL', 'emergency')
+	exports['sonorancad']:registerApiType('GET_ACTIVE_UNITS', 'emergency')
+end
+addBlip = function(coords, colorHex, subType, toolTip, icon, dataTable, cb)
+	local data = {
+		{
+			['serverId'] = GetConvar('sonoran_serverId', 1),
+			['blip'] = {
+				['id'] = -1,
+				['subType'] = subType,
+				['coordinates'] = {
+					['x'] = coords.x,
+					['y'] = coords.y
+				},
+				['icon'] = icon,
+				['color'] = colorHex,
+				['tooltip'] = toolTip,
+				['data'] = dataTable
+			}
+		}
+	}
+	exports['sonorancad']:performApiRequest(data, 'ADD_BLIP', function(res)
+		if cb ~= nil then
+			cb(res)
+		end
+	end)
+end
+addBlips = function(blips, cb)
+	exports['sonorancad']:performApiRequest(blips, 'ADD_BLIP', function(res)
+		if cb ~= nil then
+			cb(res)
+		end
+	end)
+end
+removeBlip = function(ids, cb)
+	exports['sonorancad']:performApiRequest({
+		{
+			['ids'] = ids
+		}
+	}, 'REMOVE_BLIP', function(res)
+		if cb ~= nil then
+			cb(res)
+		end
+	end)
+end
+modifyBlipd = function(blipId, dataTable)
+	exports['sonorancad']:performApiRequest({
+		{
+			['id'] = blipId,
+			['data'] = dataTable
+		}
+	}, 'MODIFY_BLIP', function(_)
+	end)
+end
+getBlips = function(cb)
+	local data = {
+		{
+			['serverId'] = GetConvar('sonoran_serverId', 1)
+		}
+	}
+	exports['sonorancad']:performApiRequest(data, 'GET_BLIPS', function(res)
+		if cb ~= nil then
+			cb(res)
+		end
+	end)
+end
+removeWithSubtype = function(subType, cb)
+	getBlips(function(res)
+		local dres = json.decode(res)
+		local ids = {}
+		if type(dres) == 'table' then
+			for _, v in ipairs(dres) do
+				if v.subType == subType then
+					table.insert(ids, #ids + 1, v.id)
+				end
+			end
+            if #ids > 0 then
+			    removeBlip(ids, cb)
+            end
+		else
+			warnLog('No blips were returned.')
+		end
+	end)
+end
+call911 = function(caller, location, description, postal, plate, cb)
+	exports['sonorancad']:performApiRequest({
+		{
+			['serverId'] = GetConvar('sonoran_serverId', 1),
+			['isEmergency'] = true,
+			['caller'] = caller,
+			['location'] = location,
+			['description'] = description,
+			['metaData'] = {
+				['plate'] = plate,
+				['postal'] = postal
+			}
+		}
+	}, 'CALL_911', cb)
+end
+addTempBlipData = function(blipId, blipData, waitSeconds, returnToData)
+	exports['sonorancad']:performApiRequest({
+		{
+			['id'] = blipId,
+			['data'] = blipData
+		}
+	}, 'MODIFY_BLIP', function(_)
+
+	end)
+
+	Citizen.CreateThread(function()
+		Citizen.Wait(waitSeconds * 1000)
+		exports['sonorancad']:performApiRequest({
+			{
+				['id'] = blipId,
+				['data'] = returnToData
+			}
+		}, 'MODIFY_BLIP', function(_)
+
+		end)
+	end)
+end
+addTempBlipColor = function(blipId, color, waitSeconds, returnToColor)
+	exports['sonorancad']:performApiRequest({
+		{
+			['id'] = blipId,
+			['color'] = color
+		}
+	}, 'MODIFY_BLIP', function(_)
+
+	end)
+
+	Citizen.CreateThread(function()
+		Citizen.Wait(waitSeconds * 1000)
+		exports['sonorancad']:performApiRequest({
+			{
+				['id'] = blipId,
+				['color'] = returnToColor
+			}
+		}, 'MODIFY_BLIP', function(_)
+
+		end)
+	end)
+end
+remove911 = function(callId)
+	exports['sonorancad']:performApiRequest({
+		{
+			['serverId'] = GetConvar('sonoran_serverId', 1),
+			['callId'] = callId
+		}
+	}, 'REMOVE_911', function(_)
+	end)
+end
+addCallNote = function(callId, caller)
+	exports['sonorancad']:performApiRequest({
+		{
+			['serverId'] = GetConvar('sonoran_serverId', 1),
+			['callId'] = callId,
+			['note'] = caller
+		}
+	}, 'ADD_CALL_NOTE', function(_)
+	end)
+end
+setCallPostal = function(callId, postal)
+	exports['sonorancad']:performApiRequest({
+		{
+			['serverId'] = GetConvar('sonoran_serverId', 1),
+			['callId'] = callId,
+			['postal'] = postal
+		}
+	}, 'SET_CALL_POSTAL', function(_)
+	end)
+end
+performLookup = function(plate, cb)
+	exports['sonorancad']:performApiRequest({
+		{
+			['types'] = {
+				2,
+				3
+			},
+			['plate'] = plate,
+			['partial'] = false,
+			['first'] = '',
+			['last'] = '',
+			['mi'] = ''
+		}
+	}, 'LOOKUP', function(res)
+		if cb ~= nil then
+			cb(res)
+		end
+	end)
+end
+checkCADSubscriptionType = function()
+	while exports['sonorancad']:getCadVersion() == nil or exports['sonorancad']:getCadVersion() == -1 do
+		Citizen.Wait(100)
+	end
+	local version = exports['sonorancad']:getCadVersion()
+	if version ~= 4 and version == 3 then
+		errorLog('The live map blip feature require the Pro plan for the CAD. It will be disabled for this run.'
+						                           .. ' We recommend either upgrading your plan or disabling this feature in the config file.')
+		Config.integration.SonoranCAD_integration.addLiveMapBlips = false
+		Config.modified = true
+		TriggerClientEvent(GetCurrentResourceName() .. '::ModifiedConfig', -1, Config)
+	elseif version ~= 4 and version ~= 3 and version ~= 5 and version ~= 6 then
+		errorLog('SonoranCAD integration with this script requires at least a Plus plan for the CAD. It will be'
+						                           .. ' disabled for this run. We recommend either upgrading your plan or disabling this' .. ' feature in the config file.')
+		Config.integration.SonoranCAD_integration.use = false
+		Config.modified = true
+		TriggerClientEvent(GetCurrentResourceName() .. '::ModifiedConfig', -1, Config)
+	end
+end
+getDispatchStatus = function(_)
+	return dispatchOnline
+end
+
+exports('registerEndpoints', registerEndpoints)
+exports('addBlip', addBlip)
+exports('addBlips', addBlips)
+exports('removeBlip', removeBlip)
+exports('modifyBlipd', modifyBlipd)
+exports('getBlips', getBlips)
+exports('removeWithSubtype', removeWithSubtype)
+exports('call911', call911)
+exports('addTempBlipData', addTempBlipData)
+exports('addTempBlipColor', addTempBlipColor)
+exports('remove911', remove911)
+exports('addCallNote', addCallNote)
+exports('setCallPostal', setCallPostal)
+exports('performLookup', performLookup)
+exports('checkCADSubscriptionType', checkCADSubscriptionType)
+exports('getDispatchStatus', getDispatchStatus)
+-- Jordan - CAD Utils
