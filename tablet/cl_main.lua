@@ -128,8 +128,9 @@ function SetModuleUrl(module, url, hasComID)
 	DebugMessage("sending url update message to nui", module)
 	SendNUIMessage({
 		type = "setUrl",
-		url = url + hasComID and ("&cachebuster=" + GetGameTimer()) or ("?cachebuster=" + GetGameTimer()),
-		module = module
+		url = url,
+		module = module,
+		comId = hasComID
 	})
 end
 
