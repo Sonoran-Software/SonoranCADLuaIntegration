@@ -20,8 +20,8 @@ Citizen.CreateThread(function()
 	InitModuleSize("cad")
 	InitModuleSize("hud")
 	InitModuleConfig("hud")
-
-	local comId = GetConvar("sonoran_communityID", "")
+	local convar = GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/')
+	local comId = convar:match("comid=(%w+)")
 	if comId ~= "" then
 		SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/login?comid='..comId), true)
 	else

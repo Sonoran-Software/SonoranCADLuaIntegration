@@ -259,12 +259,12 @@ $(function () {
 		}
 		else if (event.data.type == "setUrl") {
 			if (event.data.module == "cad") {
+                let date = Date.now()
 				if (event.data.comId) {
-					document.getElementById("cadFrame").src = event.data.url + "&cachebuster=" + new Date.now();
+					document.getElementById("cadFrame").src = event.data.url + "&cachebuster=" + date;
 				} else {
-					document.getElementById("cadFrame").src = event.data.url + "?cachebuster=" + new Date.now();
+					document.getElementById("cadFrame").src = event.data.url + "?cachebuster=" + date;
 				}
-				document.getElementById("cadFrame").src = event.data.url;
 				document.getElementById('cadFrame').setAttribute("name", Date.now())
 			}
 		}
