@@ -20,12 +20,12 @@ Citizen.CreateThread(function()
 	InitModuleSize("cad")
 	InitModuleSize("hud")
 	InitModuleConfig("hud")
-
-	local comId = GetConvar("sonoran_communityID", "")
+	local convar = GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/')
+	local comId = convar:match("comid=(%w+)")
 	if comId ~= "" then
-		SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/login?comid='..comId))
+		SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/login?comid='..comId), true)
 	else
-		SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/'))
+		SetModuleUrl("cad", GetConvar("sonorantablet_cadUrl", 'https://sonorancad.com/'), false)
 	end
 
 	TriggerServerEvent("SonoranCAD::mini:CallSync_S")
@@ -124,12 +124,13 @@ function DisplayModule(module, show)
 end
 
 -- Set Module URL (for iframes)
-function SetModuleUrl(module, url)
+function SetModuleUrl(module, url, hasComID)
 	DebugMessage("sending url update message to nui", module)
 	SendNUIMessage({
 		type = "setUrl",
 		url = url,
-		module = module
+		module = module,
+		comId = hasComID
 	})
 end
 
@@ -226,7 +227,7 @@ RegisterCommand("minicadrows", function(source, args, rawCommand)
 	if #args ~= 1 then
 		PrintChatMessage("Please specify a number of rows to display.")
 		return
-	else 
+	else
 		SetModuleConfigValue("hud", "maxrows", tonumber(args[1]) - 1)
 		PrintChatMessage("Maximum Mini-CAD call notes set to " .. args[1])
 	end
@@ -322,11 +323,11 @@ AddEventHandler("SonoranCAD::mini:CallSync", function(CallCache, EmergencyCache)
 	})
 end)
 
-AddEventHandler('onClientResourceStart', function(resourceName) --When resource starts, stop the GUI showing. 
+AddEventHandler('onClientResourceStart', function(resourceName) --When resource starts, stop the GUI showing.
 	if(GetCurrentResourceName() ~= resourceName) then
 		return
 	end
-	SetFocused(false)	
+	SetFocused(false)
 	TriggerServerEvent("sonoran:tablet:forceCheckApiId")
 end)
 

@@ -170,7 +170,7 @@ function attach() {
 	// Don't reattach to the same call.
 	if (isAttached(CallCache.active[currCall])) {
 		for (const call of CallCache.active) {
-			// Detach from other calls.			
+			// Detach from other calls.
 			if (isAttached(call)) {
 				console.log("Detaching from call #" + call.dispatch.callId);
 				$.post('https://tablet/DetachFromCall', JSON.stringify({callId: call.dispatch.callId}));
@@ -178,7 +178,7 @@ function attach() {
 		}
 	} else {
 		for (const call of CallCache.active) {
-			// Detach from other calls.			
+			// Detach from other calls.
 			if (isAttached(call)) {
 				console.log("Detaching from call #" + call.dispatch.callId);
 				$.post('https://tablet/DetachFromCall', JSON.stringify({callId: call.dispatch.callId}));
@@ -259,7 +259,12 @@ $(function () {
 		}
 		else if (event.data.type == "setUrl") {
 			if (event.data.module == "cad") {
-				document.getElementById("cadFrame").src = event.data.url;
+                let date = Date.now()
+				if (event.data.comId) {
+					document.getElementById("cadFrame").src = event.data.url + "&cachebuster=" + date;
+				} else {
+					document.getElementById("cadFrame").src = event.data.url + "?cachebuster=" + date;
+				}
 				document.getElementById('cadFrame').setAttribute("name", Date.now())
 			}
 		}
@@ -304,7 +309,7 @@ $(function () {
 		switch (data.which) {
 			case 27:
 				$.post('https://tablet/NUIFocusOff', JSON.stringify({}));
-				break;	
+				break;
 			default:
 				break;
 		}
@@ -322,7 +327,7 @@ function dragElement(elmnt) {
 		// if present, the header is where you move the DIV from:
 		document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
 	} else {
-		// otherwise, move the DIV from anywhere inside the DIV: 
+		// otherwise, move the DIV from anywhere inside the DIV:
 		elmnt.onmousedown = dragMouseDown;
 	}
 
