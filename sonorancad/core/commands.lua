@@ -9,7 +9,7 @@
 --[[ /sonoran
     debugmode - old caddebug toggle
     info - dump version info, configuration
-    support - dump useful data for support staff 
+    support - dump useful data for support staff
     verify - run hash checks to confirm all files are untampered
     plugin <name> - show info about a plugin (config)
     update - attempt to auto-update
@@ -35,7 +35,7 @@ function dumpInfo()
     for k, v in pairs(Config) do
         if (k == "plugins") then goto continue end
         if type(v) == "function" then goto continue end
-        if type(v) == "table" then 
+        if type(v) == "table" then
             table.insert(coreConfig, ("%s = %s"):format(k, json.encode(v)))
             goto continue
         end
@@ -134,7 +134,7 @@ RegisterCommand("sonoran", function(source, args, rawCommand)
 SonoranCAD Help
     debugmode - Toggles debugging mode
     info - dump version info, configuration
-    support - dump useful data for support staff 
+    support - dump useful data for support staff
     errors - display all error/warning messages since last startup
     plugin <name> - show info about a plugin (config)
     update - Run core updater
@@ -145,8 +145,14 @@ SonoranCAD Help
 ]])
     elseif args[1] == "debugmode" then
         Config.debugMode = not Config.debugMode
-        SetConvar("sonoran_debugMode", Config.debugMode)
-        infoLog(("Debug mode toggled to %s"):format(Config.debugMode))
+        local convarString = ""
+        if Config.debugMode then
+            convarString = "true"
+        else
+            convarString = "false"
+        end
+        SetConvar("sonoran_debugMode", convarString)
+        infoLog(("Debug mode toggled to %s"):format(convarString))
         TriggerClientEvent("SonoranCAD::core:debugModeToggle", -1, Config.debugMode)
     elseif args[1] == "info" then
         print(dumpInfo())
