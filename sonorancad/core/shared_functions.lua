@@ -82,7 +82,8 @@ end
 function getServerVersion()
     local s = GetConvar("version", "")
     local v = s:find("v1.0.0.")
-    local i = string.gsub(s:sub(v),"v1.0.0.",""):sub(1,4)
+    local e = string.gsub(s:sub(v),"v1.0.0.","")
+    local i = e:sub(1, string.len(e) - e:find(" "))
     return i
 end
 
