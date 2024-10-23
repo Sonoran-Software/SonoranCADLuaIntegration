@@ -15,7 +15,7 @@ local ErrorCodes = {
     ['ERROR_ABORT'] = "Aborted startup due to critical errors reported. Review logs for troubleshooting.",
     ['PLUGIN_DEPENDENCY_ERROR'] = "Plugin %s requires %s, which is not loaded! Skipping.",
     ['PLUGIN_VERSION_MISMATCH'] = "PLUGIN ERROR: Plugin %s requires %s at version %s or higher, but only %s was found. Use the command \"sonoran pluginupdate\" to check for updates.",
-    ['PLUGIN_CONFIG_OUTDATED'] = "Plugin Updater: %s has a new configuration version (%s ~= %s). You should look at the template configuration file (CHANGEMEconfig_%s.lua) and update your configuration before using this plugin.",
+    ['PLUGIN_CONFIG_OUTDATED'] = "Plugin Updater: %s has a new configuration version (%s ~= %s). You should look at the template configuration file (%s_config.dist.lua) and update your configuration before using this plugin.",
     ['PLUGIN_CORE_OUTDATED'] = "PLUGIN ERROR: Plugin %s requires Core Version %s, but you have %s. Please update SonoranCAD to use this plugin. Force disabled."
 }
 

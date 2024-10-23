@@ -7,7 +7,7 @@ try {
   cpuInfo = require('cpu-features')();
 } catch {}
 
-const { bindingAvailable } = require('./crypto.js');
+const { bindingAvailable, CIPHER_INFO, MAC_INFO } = require('./crypto.js');
 
 const eddsaSupported = (() => {
   if (typeof crypto.sign === 'function'
@@ -76,7 +76,11 @@ const SUPPORTED_SERVER_HOST_KEY = DEFAULT_SERVER_HOST_KEY.concat([
 ]);
 
 
-const DEFAULT_CIPHER = [
+const canUseCipher = (() => {
+  const ciphers = crypto.getCiphers();
+  return (name) => ciphers.includes(CIPHER_INFO[name].sslName);
+})();
+let DEFAULT_CIPHER = [
   // http://tools.ietf.org/html/rfc5647
   'aes128-gcm@openssh.com',
   'aes256-gcm@openssh.com',
@@ -99,12 +103,15 @@ if (cpuInfo && cpuInfo.flags && !cpuInfo.flags.aes) {
 } else {
   DEFAULT_CIPHER.push('chacha20-poly1305@openssh.com');
 }
+DEFAULT_CIPHER = DEFAULT_CIPHER.filter(canUseCipher);
 const SUPPORTED_CIPHER = DEFAULT_CIPHER.concat([
   'aes256-cbc',
   'aes192-cbc',
   'aes128-cbc',
   'blowfish-cbc',
   '3des-cbc',
+  'aes128-gcm',
+  'aes256-gcm',
 
   // http://tools.ietf.org/html/rfc4345#section-4:
   'arcfour256',
@@ -112,9 +119,13 @@ const SUPPORTED_CIPHER = DEFAULT_CIPHER.concat([
 
   'cast128-cbc',
   'arcfour',
-]);
+].filter(canUseCipher));
 
 
+const canUseMAC = (() => {
+  const hashes = crypto.getHashes();
+  return (name) => hashes.includes(MAC_INFO[name].sslName);
+})();
 const DEFAULT_MAC = [
   'hmac-sha2-256-etm@openssh.com',
   'hmac-sha2-512-etm@openssh.com',
@@ -122,7 +133,7 @@ const DEFAULT_MAC = [
   'hmac-sha2-256',
   'hmac-sha2-512',
   'hmac-sha1',
-];
+].filter(canUseMAC);
 const SUPPORTED_MAC = DEFAULT_MAC.concat([
   'hmac-md5',
   'hmac-sha2-256-96', // first 96 bits of HMAC-SHA256
@@ -130,7 +141,7 @@ const SUPPORTED_MAC = DEFAULT_MAC.concat([
   'hmac-ripemd160',
   'hmac-sha1-96',     // first 96 bits of HMAC-SHA1
   'hmac-md5-96',      // first 96 bits of HMAC-MD5
-]);
+].filter(canUseMAC));
 
 const DEFAULT_COMPRESSION = [
   'none',
@@ -148,6 +159,7 @@ const COMPAT = {
   OLD_EXIT: 1 << 1,
   DYN_RPORT_BUG: 1 << 2,
   BUG_DHGEX_LARGE: 1 << 3,
+  IMPLY_RSA_SHA2_SIGALGS: 1 << 4,
 };
 
 module.exports = {
@@ -159,6 +171,7 @@ module.exports = {
     DEBUG: 4,
     SERVICE_REQUEST: 5,
     SERVICE_ACCEPT: 6,
+    EXT_INFO: 7, // RFC 8308
 
     // Transport layer protocol -- algorithm negotiation (20-29)
     KEXINIT: 20,
@@ -316,9 +329,10 @@ module.exports = {
   COMPAT,
   COMPAT_CHECKS: [
     [ 'Cisco-1.25', COMPAT.BAD_DHGEX ],
-    [ /^Cisco-1\./, COMPAT.BUG_DHGEX_LARGE ],
+    [ /^Cisco-1[.]/, COMPAT.BUG_DHGEX_LARGE ],
     [ /^[0-9.]+$/, COMPAT.OLD_EXIT ], // old SSH.com implementations
-    [ /^OpenSSH_5\.\d+/, COMPAT.DYN_RPORT_BUG ],
+    [ /^OpenSSH_5[.][0-9]+/, COMPAT.DYN_RPORT_BUG ],
+    [ /^OpenSSH_7[.]4/, COMPAT.IMPLY_RSA_SHA2_SIGALGS ],
   ],
 
   // KEX proposal-related

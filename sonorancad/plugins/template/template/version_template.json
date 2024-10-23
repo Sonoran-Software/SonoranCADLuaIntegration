@@ -1,8 +1,0 @@
-{
-    "version": "1.0",
-    "check_url": "https://raw.githubusercontent.com/path/to/version.json",
-    "download_url": "https://github.com/path/",
-    "configVersion": "1.0",
-    "minCoreVersion": "2.5.7",
-    "pluginDepends": [{ "name": "pluginname", "version": "1.0.0", "critical": true }]
-}
