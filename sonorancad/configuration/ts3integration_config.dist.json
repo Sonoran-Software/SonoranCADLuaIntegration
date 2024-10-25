@@ -1,0 +1,13 @@
+{
+    "note": "If you do not wish to set the ts3server variable here you may leave these blank and utilize convars in your server.cfg instead",
+    "note2": "Convars are as follows: sonorants3_server_host, sonorants3_server_port, sonorants3_server_qport, sonorants3_server_user, sonorants3_server_pass",
+    "ts3server_host": "127.0.0.1",
+    "ts3server_port": 9987,
+    "ts3server_qport": 10011,
+    "ts3server_user": "",
+    "ts3server_pass": "",
+    "onduty_servergroup": "On Duty",
+    "enforced_channels": ["test", "example"],
+    "logoutGraceTime": 5000,
+    "loginGraceTime": 5000
+}
