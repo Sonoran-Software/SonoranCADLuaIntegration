@@ -1,12 +1,14 @@
-name: Sonoran CAD Framework Release
+name: Sonoran CAD Framework Resource Build
 
 on:
   push:
     branches:
       - master
+      - '**'  # This will trigger on all branches
 
 jobs:
   release:
+    if: github.ref == 'refs/heads/master'  # Run only on master branch
     runs-on: ubuntu-latest
     
     steps:
@@ -85,3 +87,42 @@ jobs:
                --data-binary "@sonorancad-$VERSION.zip" \
                "$UPLOAD_URL"
         shell: bash
+
+  upload-artifact:
+    if: github.ref != 'refs/heads/master'  # Run only on non-master branches
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Extract Version
+        id: extract-version
+        run: |
+          VERSION=$(grep -oP "version '\K\d+\.\d+\.\d+" sonorancad/fxmanifest.lua)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Grabbed version number of $VERSION, will be used for this artifact..."
+        shell: bash
+
+      - name: Clone included submodules
+        id: clone-submodules
+        run: |
+          git clone https://github.com/Sonoran-Software/wk_wars2x.git wk_wars2x
+          git clone https://github.com/Sonoran-Software/id_card_ui.git sonoran_idcard
+        shell: bash
+
+      - name: Cleanup & Zip Directories
+        id: zip-dirs
+        run: |
+          VERSION=${{ steps.extract-version.outputs.version }}
+          find sonorancad/plugins -mindepth 1 -type d -exec sh -c 'case "$0" in */readme.md|*/template) ;; *) rm -r "$0" ;; esac' {} \; & wait
+          rsync -a --exclude="[sonorancad]" --exclude=".git" --exclude=".vscode" --exclude=".github" ./ ./[sonorancad]
+          zip -r "sonorancad-$VERSION.zip" [sonorancad]/
+          echo "Zipped sonorancad/ and sonorancad_updatehelper/ directories"
+        shell: bash
+
+      - name: Upload ZIP as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonorancad-artifact
+          path: sonorancad-*.zip
