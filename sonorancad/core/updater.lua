@@ -38,7 +38,7 @@ local function doUpdate(latest)
             warnLog(("Failed to download from %s: %s %s"):format(releaseUrl, code, data))
         end
     end, "GET")
-    
+
 end
 
 function RunAutoUpdater(manualRun)
@@ -58,7 +58,9 @@ function RunAutoUpdater(manualRun)
     end
     versionFile = string.gsub(versionFile, "{branch}", Config.updateBranch)
     local myVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0)
-
+    if string.sub(myVersion, 1, 2) == "2." then
+        warnLog('SonoranCAD Core Version 2.X.X is now considered legacy and is no longer supported. Please update to the latest version to ensure compatibility and access to new features. Download the latest version here: https://sonoran.link/v3')
+    end
     PerformHttpRequestS(versionFile, function(code, data, headers)
         if code == 200 then
             local remote = json.decode(data)
